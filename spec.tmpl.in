@@ -1,0 +1,38 @@
+Summary: The RoboCup Soccer Simulator Log Player
+Name: @PACKAGE@
+Version: @VERSION@
+Release: 0
+Copyright: LGPL
+Group: X11/Applications
+Source0: http://prdownloads.sourceforge.net/sserver/%{name}-%{version}.tar.gz
+URL: http://sserver.sf.net
+BuildRoot: %{_tmppath}/%{name}-root
+Prefix: %{_prefix}
+
+%description
+The RoboCup Soccer Simulator Log Player (rcsslogplayer) is used to
+replay games that have been logged by the rcssserver. The rcsslogplayer
+is used to control the playback of the log (*.rcg files), but a
+monitor (such as rcssmonitor or rcssmonitorclassic) must be used
+to view the replay.
+
+%prep
+%setup
+
+%build
+%configure
+make
+
+%install
+%makeinstall
+
+%clean
+rm -rf $RPM_BUILD_ROOT
+
+%files
+%defattr(-,root,root)
+
+
+%doc AUTHORS BUGS COPYING ChangeLog INSTALL NEWS README PLATFORMS
+
+%changelog

@@ -1,0 +1,716 @@
+2007-06-12  Hidehisa Akiyama  <akky@users.sourceforge.jp>
+
+	* NEWS:
+	* configure.ac:
+	Updated a point version. Official Release 11.1.0.
+
+2007-06-04  Hidehisa Akiyama  <akky@users.sourceforge.jp>
+
+	* configure.ac:
+	Fixed a X11 library configuration problem on some platforms.
+
+2007-05-31  Hidehisa Akiyama  <akky@users.sourceforge.jp>
+
+	* configure.ac:
+	Fixed a build problem on some platforms.
+	Updated a minor version number. Official Release 11.1.0.
+
+2007-05-24  Hidehisa Akiyama  <akky@users.sourceforge.jp>
+
+	* BUGS:
+	* Makefile.am:
+	* NEWS:
+	* configure.ac:
+	* rcgparserexample/ChangeLog:
+	* rcgparserexample/INSTALL:
+	* rcgparserexample/Makefile.am:
+	* rcgparserexample/aclocal.m4:
+	* rcgparserexample/configure.ac:
+	* rcgparserexample/src/Makefile.am:
+	Fiexd a defect of the wrong library linking in the
+	rcgparserexample.
+	Updated a point version number. Release Candidate 11.0.3.
+
+2007-05-23  Hidehisa Akiyama  <akky@users.sourceforge.jp>
+
+	* src/controler.C:
+	Fixed a replay speed in the rewind and forward mode.
+
+2007-05-22  Hidehisa Akiyama  <akky@users.sourceforge.jp>
+
+	* configure.ac:
+	* src/logplayer.C:
+	Fixed a bug in the command line parsing. A missing return
+	statement is added to parseCmdLine()..
+	Fixed a flicker while the stop mode.
+	Updated a point version number.
+
+2007-05-21  Hidehisa Akiyama  <akky@users.sourceforge.jp>
+
+	* src/logplayer.C:
+	* src/logplayer.h:
+	Fixed a build problem on some platform.
+	Fixed a defect in the wait time initialization.
+
+2007-05-15  Hidehisa Akiyama  <akky@users.sourceforge.jp>
+
+	* src/controler.C:
+	* src/logplayer.C:
+	* src/logplayer.h:
+	* src/netif.C:
+	* src/nowindow.C:
+	Reimplemented a no window log player.
+	Added 'help' command for the stdin mode in the no window player.
+	Added 'load' command for the stdin mode in the no window player.
+
+	* configure.ac:
+	Increment a micro version.
+
+	* README:
+	Modified.
+
+	* PLATFORM:
+	Removed from a distribution target.
+
+	* src/logplayer.C:
+	Fixed an illegal version number data type in the file header
+	rocording.
+	Fixed an illegal size of team data recording.
+	Disabled a parameter sending.in the case of old log format.
+
+2007-05-14  Hidehisa Akiyama  <akky@users.sourceforge.jp>
+
+	* src/controler.C:
+	* src/controler.h:
+	* src/logplayer.C:
+	* src/logplayer.h:
+	* src/main.C:
+	* src/nowindow.C:
+	* src/rcsslogplay:
+	More cleaned up.
+	Added signal handler for SIGINT.
+	Added a copyright notice and a version message.
+
+	* src/controler.C:
+	* src/logplayer.C:
+	* src/logplayer.h:
+	* src/netif.C:
+	* src/netif.h:
+	* src/nowindow.C:
+	* src/rcsslogplay:
+	* src/utility.h:
+:	Reimplemented as a memory based logplayer.
+
+	* src/rcsslogplay:
+	Fixed an illegal signal name.
+	Fixed an illegal subroutine name.
+
+	* src/logplayer.C:
+	* src/logplayer.h:
+	Reimplemented a command line parser with boost::program_options.
+	TODO: command line parser should be reimplemented with
+	rcssconfparser.
+
+	* configure.ac:
+	Added checking of boost::program_options.
+
+	* src/Makefile.am:
+	* src/rcgsplit.cpp:
+	Added a source of rcgsplit command.
+
+2007-04-12  Hidehisa Akiyama  <akky@users.sourceforge.jp>
+
+	* src/controler.C:
+	* src/controler.h:
+	* src/file.C:
+	* src/file.h:
+	* src/logplayer.C:
+	* src/logplayer.h:
+	* src/main.C:
+	* src/netif.C:
+	* src/netif.h:
+	* src/nowindow.C:
+	* src/types.h:
+	Supported gzipped log file.
+
+2007-04-11  Hidehisa Akiyama  <akky@users.sourceforge.jp>
+
+	* configure.ac:
+	Added Boost checking.
+
+2007-04-10  Hidehisa Akiyama  <akky@users.sourceforge.jp>
+
+	* Makefile.am:
+	* bootstrap:
+	* configure.ac:
+	* src/Makefile.am:
+	* src/netif.C:
+	* src/rcgparser.cpp:
+	* src/rcgparser.hpp:
+	Fixed build problems.
+	Updated major version number.
+
+2005-02-24	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./Makefile.am
+	* ./acinclude.m4
+	* ./bootstrap
+	* ./configure.ac
+	* ./acdir/ax_append_to_file.m4
+	* ./acdir/ax_dist_rpm.m4
+	* ./acdir/ax_extra_dist.m4
+	* ./acdir/ax_file_escapes.m4
+	* ./acdir/ax_mk_macros.m4
+	* ./acdir/ax_print_to_file.m4
+	* ./acdir/ax_split_version.m4
+	* ./acdir/ax_upload.m4
+	* ./src/Makefile.am
+	More release system updates
+
+2005-02-11	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./configure.ac
+	Update version number
+
+2005-02-11	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./configure.ac
+	Released rcsslogplayer-10.0.1
+	You can access this release by running:
+	    `cvs -d:pserver:anonymous@cvs.sourceforge.:net:/cvsroot/sserver login`
+	    `cvs -d:pserver:anonymous@cvs.sourceforge.:net:/cvsroot/sserver co -r rcsslogplayer-10_0_1 -d rcsslogplayer-10.0.1 rcsslogplayer`
+	The release will then be available in the rcsslogplayer-10.0.1 directory
+
+2005-02-11	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./Makefile.am
+	Fixed typo in CLEAN_FILES
+
+2005-02-11	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./Makefile.am
+	Added libtool.tmp to clean files
+
+2005-02-10	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./Makefile.am
+	* ./configure.ac
+	* ./acdir/ax_add_recursive_mk_macro.m4
+	* ./acdir/ax_append_to_file.m4
+	* ./acdir/ax_dist_rpm.m4
+	* ./acdir/ax_file_escapes.m4
+	* ./acdir/ax_mk_macros.m4
+	* ./acdir/ax_print_to_file.m4
+	* ./acdir/ax_split_version.m4
+	More release system fixes
+
+2005-02-08	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./Makefile.am
+	* ./bootstrap
+	* ./configure.ac
+	* ./acdir/ax_add_am_macro.m4 (removed)
+	* ./acdir/ax_add_mk_macro.m4 (added)
+	* ./acdir/ax_add_recursive_am_macro.m4 (removed)
+	* ./acdir/ax_add_recursive_mk_macro.m4 (added)
+	* ./acdir/ax_am_macros.m4 (removed)
+	* ./acdir/ax_append_to_file.m4
+	* ./acdir/ax_cvs.m4
+	* ./acdir/ax_dist_msi.m4
+	* ./acdir/ax_dist_rpm.m4
+	* ./acdir/ax_extra_dist.m4
+	* ./acdir/ax_file_escapes.m4
+	* ./acdir/ax_install_files.m4
+	* ./acdir/ax_mk_macros.m4 (added)
+	* ./acdir/ax_print_to_file.m4
+	* ./acdir/ax_split_version.m4
+	* ./acdir/ax_upload.m4
+	* ./src/Makefile.am
+	Fixed bug in dev rules
+
+2005-01-18	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./rel.awk (removed)
+	Removed obsoleted file
+
+2005-01-18	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./Makefile.am
+	* ./NEWS
+	* ./PLATFORMS (added)
+	* ./acinclude.m4
+	* ./bootstrap
+	* ./configure.ac (added)
+	* ./configure.in (removed)
+	* ./acdir/ax_add_am_macro.m4 (added)
+	* ./acdir/ax_add_recursive_am_macro.m4 (added)
+	* ./acdir/ax_am_macros.m4 (added)
+	* ./acdir/ax_append_to_file.m4 (added)
+	* ./acdir/ax_cvs.m4 (added)
+	* ./acdir/ax_dist_msi.m4 (added)
+	* ./acdir/ax_dist_rpm.m4 (added)
+	* ./acdir/ax_extra_dist.m4 (added)
+	* ./acdir/ax_file_escapes.m4 (added)
+	* ./acdir/ax_install_files.m4 (added)
+	* ./acdir/ax_print_to_file.m4 (added)
+	* ./acdir/ax_split_version.m4 (added)
+	* ./acdir/ax_upload.m4 (added)
+	* ./src/Makefile.am
+	* ./src/netif.C
+	* ./src/types.h
+	Updated for new developer macros and removed some older configuration
+	code
+
+2005-01-18	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./spec.tmpl (removed)
+	* ./spec.tmpl.in (added)
+	Moved spec.tml to spec.tmpl.in
+
+2004-09-24	Itsuki Noda	<i.noda@aist.go.jp>
+
+	* ./src/netif.C
+	* ./src/types.h
+	Fixed compilation error during netif.C.
+	The error comes from changes of "rcssbase/net/addr.hpp".
+
+2003-10-29	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./Makefile.am
+	* ./configure.in
+	* ./spec.tmpl
+	* ./src/Makefile.am
+	* ./src/rcg-0.1.xsd
+	* ./src/rcg.xsd
+	* ./src/rcg2xml.cpp
+	* ./src/rcgparser.cpp
+	Fixed bugs in xsd and in the generated output.  The output now
+	is now valid.
+
+2003-06-02	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./Makefile.am
+	Fixed bug in upload_rpm target
+
+2003-05-30	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./configure.in
+	Released rcsslogplayer-9.3.7
+
+2003-05-30	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./Makefile.am
+	Fixed bug in upload_bz2 target
+
+2003-05-29	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./Makefile.am
+	* ./configure.in
+	* ./spec.tmpl
+	Updated release procedure.  make release now just does a distcheck
+	and tags the release.  You then need to check out the release and
+	run make upload_gz, upload_bz2, upload_rpm and/or upload_sprm to
+	create the distributions and upload them to SF.  You then need to
+	go to the SF page and add them to the appropriate release.
+
+2003-05-19	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./configure.in
+	Released rcsslogplayer-9.3.6
+
+2003-04-29	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./configure.in
+	Released rcsslogplayer-9.3.5
+
+2003-03-28	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./configure.in
+	Released rcsslogplayer-9.3.4
+
+2003-03-24	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./src/ac_lib_rcgparser.m4
+	* ./src/Makefile.am
+	* ./src/rcgparser.hpp
+	Added library detection macros and fixes some small bugs
+
+	* ./rcgparserexample/AUTHORS
+	* ./rcgparserexample/BUGS
+	* ./rcgparserexample/COPYING
+	* ./rcgparserexample/ChangeLog
+	* ./rcgparserexample/INSTALL
+	* ./rcgparserexample/Makefile.am
+	* ./rcgparserexample/NEWS
+	* ./rcgparserexample/README
+	* ./rcgparserexample/acinclude.m4
+	* ./rcgparserexample/aclocal.m4
+	* ./rcgparserexample/bootstrap
+	* ./rcgparserexample/configure.ac
+	* ./rcgparserexample/src/Makefile.am
+	* ./rcgparserexample/src/rcgparserexample.cpp
+	Added example parser.
+
+2003-03-18	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./configure.in
+	Released rcsslogplayer-9.3.3
+
+2003-03-18	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./Makefile.am
+	Added quick releases
+
+2003-03-18	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./src/Makefile.am
+	* ./src/rcsslogplay
+	Added rcsslogplay from the rcsoccersim directory
+
+2003-03-17	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./src/Makefile.am
+	* ./src/rcg.xsd
+	* ./src/rcg2xml.cpp
+	Converted to using xsd's.  Limit output to first 100 cycles (for
+	debugging)
+
+2003-02-25	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./src/rcg2xml.cpp
+	* ./src/rcgparser.cpp
+	Fixed bugs
+
+2003-02-21	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./src/Makefile.am
+	* ./src/rcg.dtd
+	* ./src/rcg2xml.cpp
+	Updated xml format and added dtd
+
+2003-02-21	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./src/logplayer.C
+	* ./src/logplayer.h
+	* ./src/nowindow.C
+	* ./src/rcgdatahandler.hpp
+	* ./src/rcgparser.cpp
+	* ./src/rcgparser.hpp
+	log player now uses the rcgparser lib
+
+2003-02-20	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./ChangeLog
+	* ./bootstrap
+	* ./configure.in
+	* ./src/Makefile.am
+	* ./src/logplayer.C
+	* ./src/logplayer.h
+	* ./src/netif.C
+	* ./src/rcg2xml.cpp
+	* ./src/rcgdatahandler.hpp
+	* ./src/rcgparser.cpp
+	* ./src/rcgparser.hpp
+	* ./src/types.h
+	Added rcg parsing lib and rcg2xml program
+
+2003-02-20	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./acinclude.m4
+	Added include for new macros
+
+2003-02-19	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./configure.in
+	Fixed small bug in configure.in
+
+2003-02-19	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./configure.in
+	Released rcsslogplayer-9.3.2
+
+2003-02-19	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./configure.in
+	Released rcsslogplayer-9.3.2
+
+2003-02-19	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./configure.in
+	Fixed bug in configure
+
+2003-02-19	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./configure.in
+	Updated release number
+
+2003-02-19	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./configure.in
+	* ./src/Makefile.am
+	* ./src/file.C
+	* ./src/file.h
+	* ./src/logplayer.C
+	* ./src/netif.C
+	* ./src/netif.h
+	* ./src/nowindow.C
+	* ./src/types.h
+	Now uses rcssnet library and supports the use of
+	either sstream or strstream
+
+2003-01-30	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./configure.in
+	Released rcsslogplayer-9.2.4
+
+2003-01-30	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./configure.in
+	Fixed missing lib on Solaris 9
+
+2003-01-28	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./configure.in
+	Released rcsslogplayer-9.2.3
+
+2003-01-22	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./ChangeLog
+	* ./Makefile.am
+	* ./configure.in
+	* ./spec.tmpl
+	* ./src/Makefile.am
+	Merged from 9_2 branch
+
+2003-01-21	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./configure.in
+	Released rcsslogplayer-9.2.2
+
+2003-01-21	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./Makefile.am
+	* ./configure.in
+	* ./spec.tmpl
+	* ./src/Makefile.am
+	Added rpm building support
+
+2003-01-10	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./configure.in
+	Released rcsslogplayer-9.2.1
+
+2003-01-02	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./configure.in
+	Released rcsslogplayer-9.2.0
+
+2003-01-02	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./configure.in
+	* ./src/Makefile.am
+	* ./src/controler.C
+	* ./src/controler.h
+	* ./src/logplayer.C
+	* ./src/logplayer.h
+	* ./src/nowindow.C
+	Fixed linking problems on Cygwin and logplayer will now compile if
+	X is not available
+
+2003-01-02	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./ChangeLog
+	* ./Makefile.am
+	* ./NEWS
+	* ./configure.in
+	Merged 9_1 branch
+
+2002-12-18	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./ChangeLog
+	* ./Makefile.am
+	* ./NEWS
+	Merged 9_1 branch
+
+2002-12-18	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./configure.in
+	Released rcsslogplayer-9.1.5
+
+2002-12-11	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./Makefile.am
+	Fixed bugs in branching targets
+
+2002-12-11	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./ChangeLog
+	* ./Makefile.am
+	* ./rel.awk
+	Merged 9_1 branch
+
+2002-12-10	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./Makefile.am
+	Added branching targets
+
+2002-12-04	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./ChangeLog
+	Merged 9.1.4 branch
+
+2002-12-03	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./configure.in
+	Released rcsslogplayer-9.1.4
+
+2002-11-19	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./.cvsignore
+	added addlog
+
+	* ./Makefile.am
+	Fixed bug in addlog
+
+2002-11-18	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./ChangeLog
+	* ./Makefile.am
+	* ./NEWS
+	* ./configure.in
+	* ./src/controler.C
+	* ./src/file.C
+	* ./src/file.h
+	* ./src/logplayer.C
+	* ./src/logplayer.h
+	* ./src/main.C
+	* ./src/netif.C
+	* ./src/nowindow.C
+	* ./src/utility.h
+	Merged sstream branch
+
+	* ./configure.in
+	Updated version
+
+2002-11-15	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./ChangeLog
+	Moved changes from rcsoccersim/ChangeLog.base
+
+	* ./Makefile.am
+	addlog no longer creates empty logs
+
+2002-11-15	Michael Gollin	<michaelgollin@users.sourceforge.net>
+
+	* ./src/controler.C
+	* ./src/file.C
+	* ./src/file.h
+	* ./src/logplayer.C
+	* ./src/logplayer.h
+	* ./src/main.C
+	* ./src/netif.C
+	* ./src/nowindow.C
+	* ./src/utility.h
+	removed warnings concerning deprecated header files (gcc 3.2)
+
+2002-11-15	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./Makefile.am
+	tag target now creates branch
+
+2002-10-25	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./src/.cvsignore
+	Added rcsslogplayer to cvs ignore
+
+2002-10-25	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./.cvsignore
+	* ./src/.cvsignore
+	Added cvs ignore files
+
+2002-10-25	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./Makefile.am
+	Updated addlog target
+
+	* ./bootstrap
+	Removed auto* generated files and added bootstrap
+
+2002-10-24	Oliver Obst	<fruit@robolog.org>
+
+	* ./src/logplayer.C
+	Fixes for gcc 3.2
+
+2002-07-11	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./configure.in
+	Released rcsslogplayer-9.0.2
+
+2002-07-11	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./src/nowindow.C
+	Fixed compilation problem on Solaris 8
+
+2002-06-18	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./configure.in
+	Released rcsslogplayer-8.05.6
+
+2002-06-05	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./Makefile.am
+	* ./configure.in
+	Fixed problems with old awks.
+
+2002-05-23	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./NEWS
+	* ./configure
+	* ./configure.in
+	Updated version number and NEWS
+
+2002-05-22	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./src/types.h
+	Added new playmodes
+
+2002-04-16	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./Makefile.am
+	* ./configure.in
+	* ./rel.awk
+	Moved release number into version number
+
+2002-04-09	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./Makefile.am
+	Added 'make addlog'
+
+	* ./src/logplayer.C
+	Fixed (hopefully) compilation problems on some solaris platforms
+
+2002-03-27	Automatic	<sserver-admin@lists.sf.net>
+
+  	* ./ChangeLog
+	Released rcsslogplayer-8.03-rel_2
+
+
+2002-01-14	Tom Howard	<tomhoward@users.sf.net>
+
+	* configure.in
+	Update version number
+
+[8.02]
+	Logplayer now compiles with gcc-3.0
+
+	Fixed bug in using v1 monitor with a logplayer reading a v3 log
+[0.2]
+	Logplayer can read gzipped game logs
+
+	Fixed `nowindow' mode to allow v2 monitors
+
+[0.1]
+	Copied from the logplayer that comes with soccer server 7.10
+
+	Converted it to use automake and autoconf

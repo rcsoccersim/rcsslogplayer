@@ -1,0 +1,109 @@
+[11.1.1]
+  * Fixed a X11 library configuration problem on some platforms.
+
+[11.1.0]
+  * Just updated a minor version number. Official relasese for the
+	RoboCup2007.
+
+[11.0.3]
+  * Fixed a defect of the wrong library linking in the
+    rcgparserexample. Thanks go to Ralf Berger for reporting the
+    problem.
+
+  * Fixed a replay speed in the rewind and forward mode.
+
+[11.0.2]
+  * Fixed a bug in the command line parsing.
+
+  * Fixed a flicker while the stop mode.
+
+[11.0.1]
+  * Reimplemented as a memory based log player.
+
+  * Added 'rcgsplit' command, that can split a large game log file
+    into the several segments.
+
+[11.0.0]
+  * Supported 64-bits OS.
+
+  * Supported a gzipped log file.
+
+  * Fixed build problems on some platforms.
+
+  * Renamed a parser library name to librcssrcgparser.
+
+[10.0.1]
+  * Ported to OS X
+
+  * Fixed compilation error during "src/netif.C".
+    The error is caused by changes of "rcsbase/net/addr.h".
+
+[10.0.0]
+  * Fixed bug in rcg2xml and in it's schema.  The output now validates
+    without error.  The schema can be found at
+
+      http://sserver.sf.net/xml-schema/rcg/rcg-0.1.xsd
+
+    and it is also included in the distribution.
+
+  * rcg2xml now generates and xml file for the entire source file.
+
+[9.3.4]
+  * Fixed some the #includes in the rcgparser library
+
+  * For those of you using autoconf and automake in your own
+    projects, ac_lib_rcgparser.m4 has been added for easy detection
+    of the rcgparser library.
+
+  * For those of you wishing to create your own parsers, an example
+    has been added in rcgparserexample.  Feel free to copy this code
+    and modify it to your hearts content.
+
+[9.3.3]
+  * The rcsslogplay script now reports errors if the logplayer or a
+    monitor cannot be found.  The script has also been modifed to use
+    the monitor specified by the RCSSMONITOR enviroment variable as the
+    default monitor (this can be handy of you use your own monitor or
+    wish to change the default to the classic monitor).  If RCSSMONITOR
+    is not set, the script will try to use either rcssmonitor or failing
+    that, rcssmonitor_classic.  At anytime you can override the default
+    by using the -frameview and -classic options.  Finally, the script
+    now allows any number of parameters to be passed to rcsslogplayer.
+    If -frameview or -classic is specified in the parameters, it will be
+    removed from the parameters before they are passed to rcsslogplayer.
+
+  * The log player now provides a very basic rcg parsing library.
+
+  * A tool (rcg2xml) to convert rcg files to xml has been added.  It
+    reads the rcl file from stdin and output the xml to stdout.  Only
+    version 2 and 3 rcg files are supported.  It also only permits
+    the first 100 cycles to be outputted.  This is to create
+    small(ish) files for testing purposes.
+
+[9.3.2]
+  * The log player now uses the rcssnet library for all networking.
+
+  * The log player can now compile with either sstream or strstream.
+
+[9.2.4]
+  * Fixed linking defect on Solaris plaforms, where the xnet library
+  is required
+
+[9.2.0]
+  * Fixed warnings with gcc3.2
+
+  * The log player will now compile on systems that do not have X or
+    when X is disabled (--without-x in configure's arguments) and will
+    run in no window mode in those cases.
+
+  * Actually fixed library problems on Cygwin this time.
+
+[9.1.5]
+  * Fixed library problem on cygwin
+
+[9.0.2]
+  * Fixed problem compiling on Solaris 8
+
+[8.05]
+  [rel_6]
+  * Added support for new playmodes

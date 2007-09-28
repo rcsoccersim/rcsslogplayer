@@ -1,0 +1,5 @@
+[0.0.0]
+ * Initial version of rcgparserexample.  It's a simple example of how
+ you can create your own rcg logfile readers using the rcgparser
+ library.  This example will read a logfile from stdin and print to
+ stdout the timestamps for each showinfo that is in the logfile.

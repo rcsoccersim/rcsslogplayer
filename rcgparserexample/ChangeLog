@@ -1,0 +1,12 @@
+2007-05-23  Hidehisa Akiyama  <akky@users.sourceforge.jp>
+
+	* acinclude.m4:
+	* aclocal.m4:
+	* bootstrap:
+	* configure.ac:
+	Fixed a wrong library name.
+	Updated aclocal.m4 using 'WANT_AUTOMAKE=1.10 ./bootstrap'
+
+2003-03-18	Tom Howard	<tomhoward@users.sf.net>
+
+	* Initial version
