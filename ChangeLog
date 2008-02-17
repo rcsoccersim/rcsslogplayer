@@ -1,5 +1,19 @@
 2008-02-17  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 
+	* src/Makefile.am:
+	* src/param.h:
+	* src/controler.cpp:
+	* src/logplayer.cpp:
+	* src/logplayer.h:
+	* src/netif.cpp:
+	* src/netif.h:
+	* src/nowindow.cpp:
+	* src/rcgdatahandler.hpp:
+	* src/rcgparser.cpp:
+	* src/rcgparser.hpp:
+	* src/types.h:
+	- removed param.h.
+
 	* src/logplayer.cpp:
 	* src/netif.cpp:
 	* src/netif.h:

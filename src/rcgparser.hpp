@@ -32,9 +32,15 @@ class RCGDataHandler;
 class RCGParser
     : public Parser {
 private:
-    RCGDataHandler & m_handler;
+    RCGDataHandler & M_handler;
+
+    // not used
+    RCGParser();
+    RCGParser( const RCGParser & );
+    RCGParser & operator=( const RCGParser & );
 
 public:
+    explicit
     RCGParser( RCGDataHandler & handler );
 
     ~RCGParser()
@@ -77,6 +83,10 @@ private:
                           std::streampos pos );
 
     bool strmErr( std::istream & strm );
+
+
+    // version 4
+    bool parseLines( std::istream & strm );
 
 };
 

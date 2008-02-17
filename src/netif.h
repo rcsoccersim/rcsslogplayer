@@ -60,6 +60,9 @@ struct Monitor {
  *===================================================================
  */
 class Port {
+public:
+    static const int DEFAULT_PORT_NUMBER;
+
 private:
     rcss::net::Addr M_listen_addr;
     rcss::net::UDPSocket M_socket;

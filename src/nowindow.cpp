@@ -42,7 +42,6 @@
 
 #include "logplayer.h"
 
-#include "param.h"
 #include "types.h"
 
 #include <cstdlib>
@@ -56,7 +55,6 @@
 #include <sys/types.h> // select() : previous standards
 #include <unistd.h> // select() : previous standards
 
-#define BUF_MAX		64
 #define PROMPT		"LogPlayer=> "
 
 extern Player player;
@@ -196,8 +194,8 @@ Player::nwLoop()
     */
 
     std::string buf;
-    char com[BUF_MAX];
-    char arg[3][BUF_MAX];
+    char com[64];
+    char arg[3][64];
     bool stdin_flag = false;
 
     if ( ! M_com_strm.is_open() )
@@ -205,7 +203,7 @@ Player::nwLoop()
         stdin_flag = true;
     }
 
-    for ( ;; )
+    while ( 1 )
     {
         if ( stdin_flag )
         {
@@ -240,7 +238,7 @@ Player::nwLoop()
             }
         }
 
-        if ( std::sscanf( buf.c_str(), "%s", com ) < 1 )
+        if ( std::sscanf( buf.c_str(), "%63s", com ) < 1 )
         {
             std::cerr << "Illegal command: [" << buf << "]" << std::endl;
             continue;
@@ -259,7 +257,7 @@ Player::nwLoop()
             int tmp;
             int from, to;
 
-            int n = std::sscanf( buf.c_str(), "%s %s %s %s",
+            int n = std::sscanf( buf.c_str(), "%63s %63s %63s %63s",
                                  com, arg[0], arg[1], arg[2] );
             if ( n == 4 && ! std::strcmp( arg[1], "to" ) )
             {
@@ -350,7 +348,9 @@ Player::nwLoop()
                   || ! std::strcmp( com, "step" ) )
         {
             int tmp;
-            int n = std::sscanf( buf.c_str(), "%s %s %s", com, arg[0], arg[1] );
+            int n = std::sscanf( buf.c_str(),
+                                 "%63s %63s %63s",
+                                 com, arg[0], arg[1] );
             if ( n == 3 && ! std::strcmp( arg[0], "to" ) )
             {
                 if ( std::sscanf( arg[1], "%d", &tmp ) == 1 )
@@ -421,8 +421,8 @@ Player::nwLoop()
         else if ( ! std::strcmp( com, "sleep" ) )
         {
             unsigned wait_time = 0;
-            char tmp[BUF_MAX];
-            if ( std::sscanf( buf.c_str(), "%s %d", com, &wait_time ) == 2 )
+            char tmp[64];
+            if ( std::sscanf( buf.c_str(), "%63s %d", com, &wait_time ) == 2 )
             {
                 if ( ! stdin_flag )
                 {
@@ -450,8 +450,8 @@ Player::nwLoop()
                 continue;
             }
 
-            char filepath[MAX_FILE_LEN];
-            if ( std::sscanf( buf.c_str(), "%s %s",
+            char filepath[256];
+            if ( std::sscanf( buf.c_str(), "%63s %255s",
                               com, filepath ) == 2 )
             {
                 M_com_strm.close();

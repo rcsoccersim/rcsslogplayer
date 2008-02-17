@@ -36,8 +36,6 @@
 #ifndef RCSSLOGPLAYER_TYPES_H
 #define RCSSLOGPLAYER_TYPES_H
 
-#include "param.h"
-
 #include <boost/cstdint.hpp>
 
 //[2004-09-24:I.Noda]
@@ -239,10 +237,16 @@ enum PlayMode {
     PM_MAX
 };
 
-enum MPObjectType {
-    MPO_Ball,
-    MPO_Player,
-};
+const int MAX_PLAYER = 11;
+
+const double SHOWINFO_SCALE = 16.0;
+const double SHOWINFO_SCALE2 = 65536.0;
+
+const int REC_OLD_VERSION = 1;
+const int REC_VERSION_2 = 2;
+const int REC_VERSION_3 = 3;
+const int REC_VERSION_4 = 4;
+const int DEFAULT_REC_VERSION = REC_VERSION_4;
 
 enum DispInfoMode {
     NO_INFO = 0,
@@ -256,7 +260,6 @@ enum DispInfoMode {
     PARAM_MODE = 8,
     PPARAM_MODE = 9,
 };
-
 
 struct pos_t {
     Int16 enable;

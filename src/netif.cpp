@@ -40,7 +40,6 @@
 
 #include "netif.h"
 
-#include "param.h"
 #include "types.h"
 #include "logplayer.h"
 
@@ -51,22 +50,13 @@
 #include <cerrno>
 #include <cmath>
 
-/*
- *===================================================================
- *  UDP Send
- *===================================================================
- */
+
+const int Port::DEFAULT_PORT_NUMBER = 6000;
+
 
 Port::~Port()
 {
-//     displist_t * p = top.next;
-//     while ( p != NULL )
-//     {
-//         displist_t * prev = p;
-//         p = p->next;
 
-//         delete prev;
-//     }
 }
 
 void

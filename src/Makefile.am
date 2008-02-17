@@ -17,8 +17,7 @@ librcssrcgparserincludedir = $(includedir)/rcsslogplayer
 librcssrcgparserinclude_HEADERS = \
 	rcgparser.hpp \
 	rcgdatahandler.hpp \
-	types.h \
-	param.h
+	types.h
 
 librcssrcgparser_la_LDFLAGS = -version-info 0:0:0
 

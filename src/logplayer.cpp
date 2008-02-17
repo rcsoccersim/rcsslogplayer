@@ -42,7 +42,6 @@
 #include "logplayer.h"
 
 #include "controler.h"
-#include "param.h"
 #include "types.h"
 #include "utility.h"
 
@@ -66,6 +65,9 @@
 #include <sys/time.h>
 #include <sched.h>
 #include <netinet/in.h>
+
+
+const int Player::TIMEDELTA = 10;
 
 extern Player player;
 
@@ -769,7 +771,7 @@ Player::doHandleShowInfo( std::streampos pos,
     show2->ball.x = nstonl( info.pos[0].x );
     show2->ball.y = nstonl( info.pos[0].y );
 
-    for ( int i = 0; i < MAX_PLAYER * 2; i++ )
+    for ( int i = 0; i < MAX_PLAYER * 2; ++i )
     {
         show2->pos[i].mode = info.pos[i+1].enable;
         show2->pos[i].body_angle = (Int32)htonl((Int32)(Deg2Rad( (double)(Int16)ntohs( info.pos[i+1].angle ) ) * SHOWINFO_SCALE2));

@@ -66,6 +66,8 @@ class Player
 {
 public:
 
+    static const int TIMEDELTA;
+
     enum State {
         STATE_WAIT = -1,
         STATE_STOP = 0,

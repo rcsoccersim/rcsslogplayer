@@ -19,15 +19,24 @@
  *                                                                         *
  ***************************************************************************/
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #include "rcgparser.hpp"
 #include "rcgdatahandler.hpp"
 
+#ifdef HAVE_NETINET_IN_H
 #include <netinet/in.h>
+#endif
+#ifdef HAVE_WINDOWS_H
+#include <windows.h>
+#endif
 
 namespace rcss {
 
 RCGParser::RCGParser( RCGDataHandler & handler )
-    : m_handler( handler )
+    : M_handler( handler )
 {
 
 }
@@ -44,12 +53,18 @@ RCGParser::parseBegin( std::istream & strm )
             && buf[ 1 ] == 'L'
             && buf[ 2 ] == 'G' )
         {
-            m_handler.handleLogVersion( buf[ 3 ] );
+            int ver = static_cast< int >( buf[3] );
+            if ( ver != 2 && ver != 3 )
+            {
+                ver -= static_cast< int >( '0' );
+            }
+
+            M_handler.handleLogVersion( ver );
         }
         else
         {
             strm.seekg( 0 );
-            m_handler.handleLogVersion( 1 );
+            M_handler.handleLogVersion( 1 );
         }
         return true;
     }
@@ -68,7 +83,25 @@ RCGParser::doParse( std::istream & strm )
         return false;
     }
 
+    if ( M_handler.getLogVersion() >= REC_VERSION_4 )
+    {
+        return parseLines( strm );
+    }
+
     return parseNext( strm );
+}
+
+bool
+RCGParser::parseNext( std::istream & strm )
+{
+    if ( M_handler.getLogVersion() == REC_OLD_VERSION )
+    {
+        return parseDispInfo( strm );
+    }
+    else
+    {
+        return parseMode( strm );
+    }
 }
 
 bool
@@ -79,7 +112,7 @@ RCGParser::parseDispInfo( std::istream & strm )
     strm.read( reinterpret_cast< char * >( &info ), sizeof( dispinfo_t ) );
     if ( strm.good() )
     {
-        m_handler.handleDispInfo( pos, info );
+        M_handler.handleDispInfo( pos, info );
         return true;
     }
     else
@@ -101,18 +134,6 @@ RCGParser::parseMode( std::istream & strm )
     else
     {
         return strmErr( strm );
-    }
-}
-
-bool
-RCGParser::parseNext( std::istream & strm )
-{
-    switch( m_handler.getLogVersion() ) {
-    case REC_OLD_VERSION:
-        return parseDispInfo( strm );
-
-    default:
-        return parseMode( strm );
     }
 }
 
@@ -147,12 +168,13 @@ bool
 RCGParser::parseShowInfo( std::istream & strm,
                           std::streampos pos )
 {
-    if ( m_handler.getLogVersion() == REC_VERSION_3 )
+    if ( M_handler.getLogVersion() == REC_VERSION_3 )
     {
         short_showinfo_t2 info;
         strm.read( reinterpret_cast< char * >( &info ), sizeof( short_showinfo_t2 ) );
-        if ( strm.good() ) {
-            m_handler.handleShowInfo( pos, info );
+        if ( strm.good() )
+        {
+            M_handler.handleShowInfo( pos, info );
             return true;
         }
         else
@@ -166,7 +188,7 @@ RCGParser::parseShowInfo( std::istream & strm,
         strm.read( reinterpret_cast< char * >( &info ), sizeof( showinfo_t ) );
         if ( strm.good() )
         {
-            m_handler.handleShowInfo( pos, info );
+            M_handler.handleShowInfo( pos, info );
             return true;
         }
         else
@@ -200,7 +222,7 @@ RCGParser::parseMsgInfo( std::istream & strm,
                 // the memory won't be lost.
                 std::string msgstr( msg );
                 delete[] msg;
-                m_handler.handleMsgInfo( pos, board, msgstr );
+                M_handler.handleMsgInfo( pos, board, msgstr );
                 return true;
             }
             else
@@ -218,7 +240,7 @@ RCGParser::parsePlayMode( std::istream & strm,
     strm.read( &playmode, sizeof( char ) );
     if ( strm.good() )
     {
-        m_handler.handlePlayMode( pos, playmode );
+        M_handler.handlePlayMode( pos, playmode );
         return true;
     }
     else
@@ -235,7 +257,7 @@ RCGParser::parseTeamInfo( std::istream & strm,
     strm.read( reinterpret_cast< char * >( team_info ), sizeof( team_t ) * 2 );
     if ( strm.good() )
     {
-        m_handler.handleTeamInfo( pos, team_info[ 0 ], team_info[ 1 ] );
+        M_handler.handleTeamInfo( pos, team_info[ 0 ], team_info[ 1 ] );
         return true;
     }
     else
@@ -252,7 +274,7 @@ RCGParser::parseServerParams( std::istream & strm,
     strm.read( reinterpret_cast< char * >( &params ), sizeof( params ) );
     if ( strm.good() )
     {
-        m_handler.handleServerParams( pos, params );
+        M_handler.handleServerParams( pos, params );
         return true;
     }
     else
@@ -269,7 +291,7 @@ RCGParser::parsePlayerParams( std::istream & strm,
     strm.read( reinterpret_cast< char * >( &params ), sizeof( params ) );
     if( strm.good() )
     {
-        m_handler.handlePlayerParams( pos, params );
+        M_handler.handlePlayerParams( pos, params );
         return true;
     }
     else
@@ -286,7 +308,7 @@ RCGParser::parsePlayerType( std::istream & strm,
     strm.read( reinterpret_cast< char * >( &type ), sizeof( type ) );
     if ( strm.good() )
     {
-        m_handler.handlePlayerType( pos, type );
+        M_handler.handlePlayerType( pos, type );
         return true;
     }
     else
@@ -300,8 +322,19 @@ RCGParser::strmErr( std::istream & strm )
 {
     if ( strm.eof() )
     {
-        m_handler.handleEOF();
+        M_handler.handleEOF();
     }
     return false;
 }
+
+
+bool
+RCGParser::parseLines( std::istream & strm )
+{
+
+    return true;
+
+}
+
+
 }
