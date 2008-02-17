@@ -1,5 +1,13 @@
 2008-02-17  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 
+	* src/logplayer.cpp:
+	* src/netif.cpp:
+	* src/netif.h:
+	* src/nowindow.cpp:
+	* src/types.h:
+	- removed displist_t and replaced it with std::vector.
+	- set private to member variables in Port.
+
 	* configure.ac:
 	- fixed AC_CONFIG_SRCDIR.
 

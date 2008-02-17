@@ -320,8 +320,7 @@ Player::parseCmdLine( int argc, char **argv )
         return false;
     }
 
-    M_port.m_listen_addr = rcss::net::Addr( port_number,
-                                            M_port.m_listen_addr.getHost() );
+    M_port.setListenPort( port_number );
 
     return true;
 }
@@ -630,12 +629,14 @@ Player::updateImpl()
 
     if ( M_rect >= 400 )
     {
+        size_t monitor_size = M_port.monitors().size();
         int n = M_port.recv_info();
         if ( n > 0
              && M_state == STATE_WAIT )
         {
             M_limit = PLAY_CYCLE;
-            if ( ! std::strncmp( M_port.rbuf, "(dispinit", 9 ) )
+            //if ( ! std::strncmp( M_port.rbuf, "(dispinit", 9 ) )
+            if ( monitor_size != M_port.monitors().size() )
             {
                 M_sent = 0;
                 M_state = STATE_STOP;
@@ -1045,21 +1046,23 @@ Player::sendLog( const std::size_t index )
     }
 
     int counter = 0;
-    for ( displist_t * p = M_port.top.next; p != NULL; p = p->next )
+    for ( std::vector< Monitor >::const_iterator p = M_port.monitors().begin();
+          p != M_port.monitors().end();
+          ++p )
     {
         ++counter;
-        if ( p->version == 1 )
+        if ( p->version_ == 1 )
         {
             if ( index <= M_showinfo_cache.size() )
             {
-                M_port.send_info( &disp, p->m_addr );
+                M_port.send_info( &disp, p->addr_ );
             }
         }
-        else // if ( p->version == 2 )
+        else if ( p->version_ == 2 )
         {
             if ( index <= M_showinfo2_cache.size() )
             {
-                M_port.send_info( &disp2, p->m_addr );
+                M_port.send_info( &disp2, p->addr_ );
             }
         }
     }
@@ -1122,22 +1125,24 @@ Player::sendParams()
         return;
     }
 
-    static std::set< displist_t * > S_sent_set;
-    for ( displist_t * p = M_port.top.next; p != NULL; p = p->next )
+    static std::set< const Monitor * > S_sent_set;
+    for ( std::vector< Monitor >::const_iterator p = M_port.monitors().begin();
+          p != M_port.monitors().end();
+          ++p )
     {
-        if ( S_sent_set.find( p ) == S_sent_set.end() )
+        if ( S_sent_set.find( &(*p) ) == S_sent_set.end() )
         {
-            if ( p->version >= 2 )
+            if ( p->version_ == 2 )
             {
                 dispinfo_t2 disp2;
 
                 disp2.mode = htons( PARAM_MODE );
                 disp2.body.sparams = M_server_param;
-                M_port.send_info( &disp2, p->m_addr );
+                M_port.send_info( &disp2, p->addr_ );
 
                 disp2.mode = htons( PPARAM_MODE );
                 disp2.body.pparams = M_player_param;
-                M_port.send_info( &disp2, p->m_addr );
+                M_port.send_info( &disp2, p->addr_ );
 
                 disp2.mode = htons( PT_MODE );
                 for ( std::vector< player_type_t >::iterator it = M_player_types.begin();
@@ -1145,11 +1150,11 @@ Player::sendParams()
                       ++it )
                 {
                     disp2.body.ptinfo = *it;
-                    M_port.send_info( &disp2, p->m_addr );
+                    M_port.send_info( &disp2, p->addr_ );
                 }
             }
 
-            S_sent_set.insert( p );
+            S_sent_set.insert( &(*p) );
         }
     }
 

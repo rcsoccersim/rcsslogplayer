@@ -80,7 +80,7 @@ Player::nwInit()
 
     FD_ZERO( &read_fds );
     //FD_SET( 0, &read_fds ); // stdin
-    FD_SET( M_port.m_socket.getFD(), &read_fds );
+    FD_SET( M_port.socket().getFD(), &read_fds );
     read_fds_back = read_fds;
 
     std::cout << "Wait for monitor..." << std::endl;;
@@ -92,7 +92,7 @@ Player::nwInit()
         wait.tv_sec = interval_msec / 1000;
         wait.tv_usec = ( interval_msec % 1000 ) * 1000;
         //select( 0, NULL, NULL, NULL, &wait );
-        int ret = ::select( M_port.m_socket.getFD() + 1,
+        int ret = ::select( M_port.socket().getFD() + 1,
                             &read_fds,
                             static_cast< fd_set * >( 0 ),
                             static_cast< fd_set * >( 0 ),
@@ -118,10 +118,12 @@ Player::nwInit()
 //                 std::cout << "\n"PROMPT << std::flush;
 //             }
 //             else
-            if ( FD_ISSET( M_port.m_socket.getFD(), &read_fds ) )
+            if ( FD_ISSET( M_port.socket().getFD(), &read_fds ) )
             {
+                std::size_t monitor_size = M_port.monitors().size();
                 if ( M_port.recv_info() > 0
-                     && ! std::strncmp( M_port.rbuf, "(dispinit", 9 ) )
+                    //&& ! std::strncmp( M_port.rbuf, "(dispinit", 9 ) )
+                     && monitor_size != M_port.monitors().size() )
                 {
                     M_state = STATE_STOP;
                     std::cout << "LogPlayer is started.\n" << std::endl;

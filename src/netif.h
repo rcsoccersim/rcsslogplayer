@@ -42,27 +42,54 @@
 #include <rcssbase/net/addr.hpp>
 #include <rcssbase/net/udpsocket.hpp>
 
+#include <vector>
+
+struct Monitor {
+    rcss::net::Addr addr_;
+    int version_;
+
+    Monitor()
+        : addr_()
+        , version_( 1 )
+      { }
+};
+
 /*
  *===================================================================
  *Part: Port class
  *===================================================================
  */
 class Port {
-public:
-    char rbuf[256] ;			/* recv buffer */
-    displist_t top;
+private:
+    rcss::net::Addr M_listen_addr;
+    rcss::net::UDPSocket M_socket;
 
+    std::vector< Monitor > M_monitors;
+
+public:
 
     ~Port();
 
-		void	init();
-		void	send_info( const dispinfo_t *, const rcss::net::Addr& dest );
-		void	send_info( const dispinfo_t2 *, const rcss::net::Addr& dest );
-		int		recv_info();
-		void	monitor_init();
+		void init();
+    void setListenPort( const int port );
 
-    rcss::net::Addr m_listen_addr;
-    rcss::net::UDPSocket m_socket;
+    const
+    rcss::net::UDPSocket & socket() const
+      {
+          return M_socket;
+      }
+
+    const
+    std::vector< Monitor > & monitors() const
+      {
+          return M_monitors;
+      }
+
+		void send_info( const dispinfo_t *, const rcss::net::Addr& dest );
+		void send_info( const dispinfo_t2 *, const rcss::net::Addr& dest );
+		int recv_info();
+		void monitor_init();
+
 };
 
 #endif

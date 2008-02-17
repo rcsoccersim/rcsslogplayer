@@ -9,27 +9,27 @@
 /*
  *Copyright:
 
-    Copyright (C) 1996-2000 Electrotechnical Laboratory.
-    	Itsuki Noda, Yasuo Kuniyoshi and Hitoshi Matsubara.
-    Copyright (C) 2000, 2001- RoboCup Soccer Server Maintainance Group.
-    	Patrick Riley, Tom Howard, Daniel Polani, Itsuki Noda,
-	Mikhail Prokopenko, Jan Wendler
+ Copyright (C) 1996-2000 Electrotechnical Laboratory.
+ Itsuki Noda, Yasuo Kuniyoshi and Hitoshi Matsubara.
+ Copyright (C) 2000, 2001- RoboCup Soccer Server Maintainance Group.
+ Patrick Riley, Tom Howard, Daniel Polani, Itsuki Noda,
+ Mikhail Prokopenko, Jan Wendler
 
-    This file is a part of SoccerServer.
+ This file is a part of SoccerServer.
 
-    This code is free software; you can redistribute it and/or
-    modify it under the terms of the GNU Lesser General Public
-    License as published by the Free Software Foundation; either
-    version 2.1 of the License, or (at your option) any later version.
+ This code is free software; you can redistribute it and/or
+ modify it under the terms of the GNU Lesser General Public
+ License as published by the Free Software Foundation; either
+ version 2.1 of the License, or (at your option) any later version.
 
-    This library is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-    Lesser General Public License for more details.
+ This library is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ Lesser General Public License for more details.
 
-    You should have received a copy of the GNU Lesser General Public
-    License along with this library; if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ You should have received a copy of the GNU Lesser General Public
+ License along with this library; if not, write to the Free Software
+ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
  *EndCopyright:
  */
@@ -259,142 +259,117 @@ enum DispInfoMode {
 
 
 struct pos_t {
-	Int16 enable;
-	Int16 side;
-	Int16 unum;
-	Int16 angle;
-	Int16 x;
-	Int16 y;
+    Int16 enable;
+    Int16 side;
+    Int16 unum;
+    Int16 angle;
+    Int16 x;
+    Int16 y;
 };
 
 struct team_t {
-	char name[16];
-	Int16 score;
+    char name[16];
+    Int16 score;
 };
 
 struct showinfo_t {
-	char pmode;
-	team_t team[2];
-	pos_t pos[MAX_PLAYER * 2 + 1];
-	Int16 time;
+    char pmode;
+    team_t team[2];
+    pos_t pos[MAX_PLAYER * 2 + 1];
+    Int16 time;
 };
 
 const int max_message_length_for_display = 2048;
 struct msginfo_t {
-	Int16 board;
-	char message[max_message_length_for_display];
+    Int16 board;
+    char message[max_message_length_for_display];
 };
 
 
 const int COLOR_NAME_MAX = 64;
 
 struct pointinfo_t {
-	Int16 x;
-	Int16 y;
-	char color[COLOR_NAME_MAX];
+    Int16 x;
+    Int16 y;
+    char color[COLOR_NAME_MAX];
 };
 
 struct circleinfo_t {
-	Int16 x;
-	Int16 y;
-	Int16 r;
-	char color[COLOR_NAME_MAX];
+    Int16 x;
+    Int16 y;
+    Int16 r;
+    char color[COLOR_NAME_MAX];
 };
 
 struct lineinfo_t {
-	Int16 x1;
-	Int16 y1;
-	Int16 x2;
-	Int16 y2;
-	char color[COLOR_NAME_MAX];
+    Int16 x1;
+    Int16 y1;
+    Int16 x2;
+    Int16 y2;
+    char color[COLOR_NAME_MAX];
 };
 
 struct drawinfo_t {
-	Int16 mode;
-	union {
-		pointinfo_t		pinfo;
-		circleinfo_t	cinfo;
-		lineinfo_t		linfo;
-	} object;
+    Int16 mode;
+    union {
+        pointinfo_t		pinfo;
+        circleinfo_t	cinfo;
+        lineinfo_t		linfo;
+    } object;
 };
 
 struct dispinfo_t {
-	Int16 mode;
-	union {
-		showinfo_t	show;
-		msginfo_t	msg;
-		drawinfo_t	draw;
-	} body;
+    Int16 mode;
+    union {
+        showinfo_t	show;
+        msginfo_t	msg;
+        drawinfo_t	draw;
+    } body;
 };
-
-struct displist_t {
-    rcss::net::Addr m_addr;
-    int version;
-    struct displist_t * next;
-    displist_t()
-        : m_addr(),
-          version( 1 ),
-          next( NULL )
-      { }
-};
-
-struct option_t {
-	char	optname[32];
-	void	*vptr;
-	int		vsize;
-};
-
-#define	V_INT		1
-#define	V_DOUBLE	2
-#define	V_BOOL		3
-#define	V_STRING	4
-#define	V_ONOFF		5
-#define V_NONE		6
-
 
 struct ball_t {
-  Int32 x;
-  Int32 y;
-  Int32 deltax;
-  Int32 deltay;
+    Int32 x;
+    Int32 y;
+    Int32 deltax;
+    Int32 deltay;
 };
 
 struct player_t {
-  Int16 mode;
-  Int16 type;
-  Int32 x;
-  Int32 y;
-  Int32 deltax;
-  Int32 deltay;
-  Int32 body_angle;
-  Int32 head_angle;
-  Int32 view_width;
-  Int16 view_quality;
-  Int32 stamina;
-  Int32 effort;
-  Int32 recovery;
-  Int16 kick_count;
-  Int16 dash_count;
-  Int16 turn_count;
-  Int16 say_count;
-  Int16 tneck_count;
-  Int16 catch_count;
-  Int16 move_count;
-  Int16 chg_view_count;
+    Int16 mode;
+    Int16 type;
+    Int32 x;
+    Int32 y;
+    Int32 deltax;
+    Int32 deltay;
+    Int32 body_angle;
+    Int32 head_angle;
+    Int32 view_width;
+    Int16 view_quality;
+    Int32 stamina;
+    Int32 effort;
+    Int32 recovery;
+    Int16 kick_count;
+    Int16 dash_count;
+    Int16 turn_count;
+    Int16 say_count;
+    Int16 tneck_count;
+    Int16 catch_count;
+    Int16 move_count;
+    Int16 chg_view_count;
 };
 
 struct showinfo_t2 {
-  char pmode;
-  team_t team[2];
-  ball_t ball;
-  player_t pos[MAX_PLAYER * 2];
-  Int16 time;
+    char pmode;
+    team_t team[2];
+    ball_t ball;
+    player_t pos[MAX_PLAYER * 2];
+    Int16 time;
 };
 
 struct short_showinfo_t2 {
-  ball_t ball;
-  player_t pos[MAX_PLAYER * 2];
-  Int16 time;
+    ball_t ball;
+    player_t pos[MAX_PLAYER * 2];
+    Int16 time;
 };
 
 struct player_type_t {
@@ -411,7 +386,7 @@ struct player_type_t {
     Int32 effort_max;
     Int32 effort_min;
 
-  // spare variables which are to be used for paramenter added in the future
+    // spare variables which are to be used for paramenter added in the future
     Int32 sparelong1;
     Int32 sparelong2;
     Int32 sparelong3;
@@ -604,10 +579,10 @@ struct player_params_t {
     Int32 new_dash_power_rate_delta_max;
     Int32 new_stamina_inc_max_delta_factor;
 
-  //Int32 sparelong1;  replaced by seed
-  //Int32 sparelong2;  replaced by new_dash_power_rate_delta_min
-  //Int32 sparelong3;  replaced by new_dash_power_rate_delta_max
-  //Int32 sparelong4;  replaced by new_stamina_inc_max_delta_factor
+    //Int32 sparelong1;  replaced by seed
+    //Int32 sparelong2;  replaced by new_dash_power_rate_delta_min
+    //Int32 sparelong3;  replaced by new_dash_power_rate_delta_max
+    //Int32 sparelong4;  replaced by new_stamina_inc_max_delta_factor
     Int32 sparelong5;
     Int32 sparelong6;
     Int32 sparelong7;
@@ -615,28 +590,28 @@ struct player_params_t {
     Int32 sparelong9;
     Int32 sparelong10;
 
-  Int16 allow_mult_default_type;
-  Int16 spareshort2;
-  Int16 spareshort3;
-  Int16 spareshort4;
-  Int16 spareshort5;
-  Int16 spareshort6;
-  Int16 spareshort7;
-  Int16 spareshort8;
-  Int16 spareshort9;
-  Int16 spareshort10;
+    Int16 allow_mult_default_type;
+    Int16 spareshort2;
+    Int16 spareshort3;
+    Int16 spareshort4;
+    Int16 spareshort5;
+    Int16 spareshort6;
+    Int16 spareshort7;
+    Int16 spareshort8;
+    Int16 spareshort9;
+    Int16 spareshort10;
 
 };
 
 typedef struct {
-  Int16 mode;
-  union {
-      showinfo_t2 		show;
-      msginfo_t 		msg;
-      player_type_t		ptinfo;
-      server_params_t		sparams;
-      player_params_t		pparams;
-  } body;
+    Int16 mode;
+    union {
+        showinfo_t2 		show;
+        msginfo_t 		msg;
+        player_type_t		ptinfo;
+        server_params_t		sparams;
+        player_params_t		pparams;
+    } body;
 } dispinfo_t2;
 
 

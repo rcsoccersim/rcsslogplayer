@@ -59,14 +59,14 @@
 
 Port::~Port()
 {
-    displist_t * p = top.next;
-    while ( p != NULL )
-    {
-        displist_t * prev = p;
-        p = p->next;
+//     displist_t * p = top.next;
+//     while ( p != NULL )
+//     {
+//         displist_t * prev = p;
+//         p = p->next;
 
-        delete prev;
-    }
+//         delete prev;
+//     }
 }
 
 void
@@ -77,20 +77,28 @@ Port::init()
     // This argument should be not specified for normal use, I think.
 
     //    m_listen_addr = rcss::net::Addr( DEFAULT_PORT_NUMBER, "localhost");
-    m_listen_addr = rcss::net::Addr( DEFAULT_PORT_NUMBER ) ;
+    M_listen_addr = rcss::net::Addr( DEFAULT_PORT_NUMBER ) ;
 
-    m_socket.setNonBlocking();
+    M_socket.setNonBlocking();
 
-    m_socket.bind( m_listen_addr );
+    M_socket.bind( M_listen_addr );
 
-    top.next = NULL;
+    //    top.next = NULL;
+}
+
+void
+Port::setListenPort( const int port )
+{
+    M_listen_addr = rcss::net::Addr( port,
+                                     M_listen_addr.getHost() );
+
 }
 
 void
 Port::send_info( const dispinfo_t * msg,
                  const rcss::net::Addr & dest )
 {
-    m_socket.send( reinterpret_cast< const char * >( msg ),
+    M_socket.send( reinterpret_cast< const char * >( msg ),
                    sizeof( dispinfo_t ),
                    dest );
 }
@@ -99,7 +107,7 @@ void
 Port::send_info( const dispinfo_t2 * msg,
                  const rcss::net::Addr & dest )
 {
-    m_socket.send( reinterpret_cast< const char * >( msg ),
+    M_socket.send( reinterpret_cast< const char * >( msg ),
                    sizeof( dispinfo_t2 ),
                    dest );
 }
@@ -107,8 +115,10 @@ Port::send_info( const dispinfo_t2 * msg,
 int
 Port::recv_info()
 {
+    char buf[8192];
+
     rcss::net::Addr from;
-    int n = m_socket.recv( rbuf, sizeof( rbuf ), from );
+    int n = M_socket.recv( buf, sizeof( buf ), from );
 
     if ( n <= 0 )
     {
@@ -116,16 +126,16 @@ Port::recv_info()
     }
 
     int ver = 0;
-    if ( std::sscanf( rbuf, "(dispinit version %d)", &ver ) == 1 )
+    if ( std::sscanf( buf, "(dispinit version %d)", &ver ) == 1 )
     {
         //p->next->version = ver;
     }
-    else if ( ! std::strncpy( rbuf, "(dispinit)", std::strlen( "(dispinit)" ) ) )
+    else if ( ! std::strncpy( buf, "(dispinit)", std::strlen( "(dispinit)" ) ) )
     {
         ver = 1;
         //p->next->version = 1;
     }
-    else if ( ! std::strncpy( rbuf, "(dispbye)", std::strlen( "(dispbye)" ) ) )
+    else if ( ! std::strncpy( buf, "(dispbye)", std::strlen( "(dispbye)" ) ) )
     {
         std::cout << "a monitor disconnected" << std::endl;
         return n;
@@ -136,15 +146,21 @@ Port::recv_info()
         return n;
     }
 
-    displist_t * p = &top;
-    while ( p->next != NULL )
-    {
-        p = p->next;
-    }
+//     displist_t * p = &top;
+//     while ( p->next != NULL )
+//     {
+//         p = p->next;
+//     }
 
-    p->next = new displist_t;
-    p->next->m_addr = from;
-    p->next->version = ver;
+//     p->next = new displist_t;
+//     p->next->m_addr = from;
+//     p->next->version = ver;
+
+    Monitor monitor;
+    monitor.addr_ = from;
+    monitor.version_ = ver;
+
+    M_monitors.push_back( monitor );
 
     std::cout << "a new (v" << ver << ") monitor connected" << std::endl;
 
