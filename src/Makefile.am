@@ -23,11 +23,11 @@ librcssrcgparserinclude_HEADERS = \
 librcssrcgparser_la_LDFLAGS = -version-info 0:0:0
 
 rcsslogplayer_SOURCES = \
-	netif.C \
-	controler.C \
-	logplayer.C \
-	nowindow.C \
-	main.C
+	netif.cpp \
+	controler.cpp \
+	logplayer.cpp \
+	nowindow.cpp \
+	main.cpp
 
 noinst_HEADERS = \
 	netif.h \

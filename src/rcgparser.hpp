@@ -1,14 +1,14 @@
 // -*-c++-*-
 
 /***************************************************************************
-                                rcgparser.hpp 
+                                rcgparser.hpp
                          Class for parsing rcg files
                              -------------------
     begin                : 18-FEB-2003
-    copyright            : (C) 2003 by The RoboCup Soccer Server 
+    copyright            : (C) 2003 by The RoboCup Soccer Server
                            Maintenance Group.
     email                : sserver-admin@lists.sourceforge.net
- ***************************************************************************/
+***************************************************************************/
 
 /***************************************************************************
  *                                                                         *
@@ -25,64 +25,61 @@
 
 #include <rcssbase/parser.h>
 
-namespace rcss
-{
+namespace rcss {
 
 class RCGDataHandler;
 
-    class RCGParser
-        : public Parser
-    {
-    public:
-        RCGParser( RCGDataHandler& handler );
+class RCGParser
+    : public Parser {
+private:
+    RCGDataHandler & m_handler;
 
-        ~RCGParser() {}
+public:
+    RCGParser( RCGDataHandler & handler );
 
-    private:
-        bool
-        doParse( std::istream& strm );
+    ~RCGParser()
+      { }
 
-        bool
-        parseBegin( std::istream& strm );
+private:
+    bool doParse( std::istream & strm );
 
-        bool
-        parseDispInfo( std::istream& strm );
+    bool parseBegin( std::istream & strm );
 
-        bool
-        parseMode( std::istream& strm );
+    bool parseDispInfo( std::istream & strm );
 
-        bool
-        parseNext( std::istream& strm );
+    bool parseMode( std::istream & strm );
 
-        bool
-        parseItem( std::istream& strm, short mode, std::streampos pos );
+    bool parseNext( std::istream & strm );
 
-        bool
-        parseShowInfo( std::istream& strm, std::streampos pos );
+    bool parseItem( std::istream & strm,
+                    short mode,
+                    std::streampos pos );
 
-        bool
-        parseMsgInfo( std::istream& strm, std::streampos pos );
+    bool parseShowInfo( std::istream & strm,
+                        std::streampos pos );
 
-        bool
-        parsePlayMode( std::istream& strm, std::streampos pos );
+    bool parseMsgInfo( std::istream & strm,
+                       std::streampos pos );
 
-        bool
-        parseTeamInfo( std::istream& strm, std::streampos pos );
-		
-        bool
-        parseServerParams( std::istream& strm, std::streampos pos );
+    bool parsePlayMode( std::istream & strm,
+                        std::streampos pos );
 
-        bool
-        parsePlayerParams( std::istream& strm, std::streampos pos );
+    bool parseTeamInfo( std::istream & strm,
+                        std::streampos pos );
 
-        bool
-        parsePlayerType( std::istream& strm, std::streampos pos );
+		bool parseServerParams( std::istream & strm,
+                            std::streampos pos );
 
-        bool
-        strmErr( std::istream& strm );
+    bool parsePlayerParams( std::istream & strm,
+                            std::streampos pos );
 
-        RCGDataHandler& m_handler;
-    };
+    bool parsePlayerType( std::istream & strm,
+                          std::streampos pos );
+
+    bool strmErr( std::istream & strm );
+
+};
+
 }
 
 

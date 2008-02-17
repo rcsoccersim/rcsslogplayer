@@ -1,3 +1,27 @@
+2008-02-17  Hidehisa Akiyama  <akky@users.sourceforge.jp>
+
+	* configure.ac:
+	- fixed AC_CONFIG_SRCDIR.
+
+	* netif.C:
+	* netif.cpp:
+	* file.C:
+	* file.cpp:
+	* main.C:
+	* main.cpp:
+	* logplayer.C:
+	* logplayer.cpp:
+	* nowindow.C
+	* nowindow.cpp:
+	* controler.C:
+	* controler.cpp:
+	- renamed a file extention.
+
+	* types.h
+	* rcgparser.cpp:
+	* rcgparser.hpp:
+	- added new types.
+
 2007-06-12  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 
 	* NEWS:

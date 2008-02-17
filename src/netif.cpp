@@ -87,7 +87,8 @@ Port::init()
 }
 
 void
-Port::send_info( const dispinfo_t * msg, const rcss::net::Addr& dest )
+Port::send_info( const dispinfo_t * msg,
+                 const rcss::net::Addr & dest )
 {
     m_socket.send( reinterpret_cast< const char * >( msg ),
                    sizeof( dispinfo_t ),
@@ -95,7 +96,8 @@ Port::send_info( const dispinfo_t * msg, const rcss::net::Addr& dest )
 }
 
 void
-Port::send_info( const dispinfo_t2 * msg, const rcss::net::Addr& dest )
+Port::send_info( const dispinfo_t2 * msg,
+                 const rcss::net::Addr & dest )
 {
     m_socket.send( reinterpret_cast< const char * >( msg ),
                    sizeof( dispinfo_t2 ),
@@ -106,7 +108,7 @@ int
 Port::recv_info()
 {
     rcss::net::Addr from;
-    int n = m_socket.recv( (char *)rbuf, sizeof( rbuf ), from );
+    int n = m_socket.recv( rbuf, sizeof( rbuf ), from );
 
     if ( n <= 0 )
     {

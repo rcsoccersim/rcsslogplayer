@@ -1,4 +1,4 @@
-/* -*- Mode: C -*-
+/* -*- Mode: c++ -*-
  *Header:
  *File: param.h
  *Author: Noda Itsuki
@@ -34,8 +34,8 @@
  *EndCopyright:
  */
 
-#ifndef _PARAM_H_
-#define _PARAM_H_
+#ifndef RCSSLOGPLAYER_PARAM_H
+#define RCSSLOGPLAYER_PARAM_H
 
 
 /*
@@ -66,18 +66,6 @@
 #define MaxCoachMesgWTime			(MaxCoachMesg + 6)
 #define SEND 1
 #define RECV 2
-
-#define	NO_INFO		0
-#define	SHOW_MODE	1
-#define	MSG_MODE	2
-#define DRAW_MODE	3
-#define	BLANK_MODE	4
-#define	PM_MODE		5
-#define	TEAM_MODE	6
-#define PT_MODE		7
-#define	PARAM_MODE	8
-#define PPARAM_MODE	9
-
 
 #define DrawClear	0
 #define DrawPoint	1
@@ -323,36 +311,6 @@
 #define KICK_RANDOM_RATE	0.1
 #define KICKABLE_MARGIN		1.0
 #define CONTROL_RADIUS		2.0
-
-#define NormalizeDashPower(p)	(max(min((p),stadium->server_param->maxp),stadium->server_param->minp))
-#define ReduceDashPower(p)		(p * player_type->dashPowerRate () )
-#define Sign(x)					(((x) > 0.0) ? 1.0:-1.0)
-#define NormalizeKickPower(p) (max(min((p),stadium->server_param->maxp),stadium->server_param->minp))
-/*
-#define NormalizeKickPower(p) (max(min((p),stadium->server_param->maxp),stadium->server_param->minp) * stadium->server_param->kprate)
-*/
-#define MAXMOMENT	180
-#define MINMOMENT	-180
-#define NormalizeMoment(p) Deg2Rad(max(min((p),stadium->server_param->maxm),stadium->server_param->minm))
-
-#define MAX_NECK_MOMENT	180
-#define MIN_NECK_MOMENT	-180
-#define NormalizeNeckMoment(p) Deg2Rad(max(min((p),stadium->server_param->maxnm),stadium->server_param->minnm))
-
-#define MAX_NECK_ANGLE	90
-#define MIN_NECK_ANGLE	-90
-#define NormalizeNeckAngle(p) (max(min((p),Deg2Rad(stadium->server_param->maxn)),Deg2Rad(stadium->server_param->minn)))
-
-
-#define LEFT_STR	"l"
-#define RIGHT_STR	"r"
-#define SideStr(side)	(((side) == LEFT) ? LEFT_STR : RIGHT_STR )
-
-#define DEF_SAY_MSG_SIZE	256
-
-#define DIST_QSTEP	0.1
-#define LAND_QSTEP	0.01
-#define DIR_QSTEP   0.1
 
 /*
  *===================================================================

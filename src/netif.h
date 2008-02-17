@@ -33,22 +33,9 @@
 
  *EndCopyright:
  */
-
 
 #ifndef RCSSLOGPLAYER_NETIF_H
 #define RCSSLOGPLAYER_NETIF_H
-
-//  #ifdef	Solaris
-//  #include <sys/filio.h>
-//  #else
-//  #include <sys/ioctl.h>
-//  #endif
-//  #include <unistd.h>
-//  #include <netinet/in.h>
-//  #include <arpa/inet.h>
-//  #include <netdb.h>
-//  #include <fcntl.h>
-//  #include <sys/socket.h>
 
 #include "types.h"
 
@@ -62,10 +49,6 @@
  */
 class Port {
 public:
-    //  		int					socketfd ;			/* socket discriptor */
-    //  		char				host[256] ;
-    //  		int					portnum ;
-    //  		struct sockaddr_in	monitor_addr ;		/* monitor addr structure */
     char rbuf[256] ;			/* recv buffer */
     displist_t top;
 

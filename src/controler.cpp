@@ -796,7 +796,7 @@ Player::comJump()
     s = t = (char *)str;
     for ( ; ; ++s )
     {
-        if ( *s == NULLCHAR || s == (char)NULL )
+        if ( *s == '\0' || s == (char)NULL )
         {
             break;
         }

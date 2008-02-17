@@ -2,11 +2,12 @@ dnl Process this file with autoconf to produce a configure script.
 
 AC_PREREQ(2.59)
 
-AC_INIT([RCSSLogPlayer], 11.1.1, sserver-admin@users.sf.net, rcsslogplayer)
-AC_CONFIG_SRCDIR([src/main.C])
+AC_INIT([RCSSLogPlayer], 12.0.0, sserver-admin@users.sf.net, rcsslogplayer)
+AC_CONFIG_SRCDIR([src/types.h])
 AC_CONFIG_HEADERS([config.h])
 
-AM_INIT_AUTOMAKE([gnu 1.7.2 check-news dist-bzip2 dist-zip])
+#AM_INIT_AUTOMAKE([gnu 1.7.2 check-news dist-bzip2 dist-zip])
+AM_INIT_AUTOMAKE([gnu 1.7.2 check-news])
 
 AC_PROG_MAKE_SET
 
