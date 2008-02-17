@@ -33,7 +33,6 @@
 
  *EndCopyright:
  */
-
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"
@@ -87,77 +86,77 @@ static int Argn;
 
 static
 void
-com_rewind(void)
+com_rewind()
 {
     player.comRewind();
 }
 
 static
 void
-com_reverse(void)
+com_reverse()
 {
     player.comReverse();
 }
 
 static
 void
-com_minus(void)
+com_minus()
 {
     player.comMinus();
 }
 
 static
 void
-com_stop(void)
+com_stop()
 {
     player.comStop();
 }
 
 static
 void
-com_play(void)
+com_play()
 {
     player.comPlay();
 }
 
 static
 void
-com_forward(void)
+com_forward()
 {
     player.comForward();
 }
 
 static
 void
-com_plus(void)
+com_plus()
 {
     player.comPlus();
 }
 
 static
 void
-com_record(void)
+com_record()
 {
     player.comRecord();
 }
 
 static
 void
-com_blank(void)
+com_blank()
 {
     player.comBlank();
 }
 
 static
 void
-com_jump(void)
+com_jump()
 {
     player.comJump();
 }
 
 static
 void
-com_quit(void)
+com_quit()
 {
     player.quit();
 }
@@ -173,6 +172,11 @@ static XtActionsRec actions[] = {
  *Part: Controler
  *========================================================================
  */
+
+Controler::~Controler()
+{
+    //std::cerr << "delete controler" << std::endl;
+}
 
 void
 Controler::init( int argc, char *argv[] )
@@ -190,223 +194,224 @@ Controler::init( int argc, char *argv[] )
 
 
 void
-Controler::assign(void)
+Controler::assign()
 {
 #ifdef X11R5
-    main = XtCreateManagedWidget("main", formWidgetClass, top, Args, 0);
+    main = XtCreateManagedWidget( "main", formWidgetClass, top, Args, 0 );
 
-    time = XtCreateManagedWidget("time", labelWidgetClass, main, Args, 0);
+    time = XtCreateManagedWidget( "time", labelWidgetClass, main, Args, 0 );
 
-    status = XtCreateManagedWidget("status", labelWidgetClass, main, Args, 0);
+    status = XtCreateManagedWidget( "status", labelWidgetClass, main, Args, 0 );
 
-    quit = XtCreateManagedWidget("quit", toggleWidgetClass, main, Args, 0);
-    Pixmap quit_pixmap = XCreateBitmapFromData(XtDisplay(quit), rootwin(quit),
-                                               (const char*)quit_bits, quit_width, quit_height);
-    mySetArg_1st(XtNbitmap, (XtArgVal)(XtArgVal)quit_pixmap);
-    XtSetValues(quit, Args, Argn);
-    XtAddCallback(quit, XtNcallback,
-                  (XtCallbackProc)com_quit, (XtPointer)this);
+    quit = XtCreateManagedWidget( "quit", toggleWidgetClass, main, Args, 0 );
+    Pixmap quit_pixmap = XCreateBitmapFromData( XtDisplay( quit ),
+                                                rootwin( quit ),
+                                               (const char*)quit_bits, quit_width, quit_height );
+    mySetArg_1st( XtNbitmap, (XtArgVal)(XtArgVal)quit_pixmap );
+    XtSetValues( quit, Args, Argn );
+    XtAddCallback( quit, XtNcallback,
+                   (XtCallbackProc)com_quit, (XtPointer)this );
 
-    buttons = XtCreateManagedWidget("buttons", formWidgetClass, main, Args, 0);
+    buttons = XtCreateManagedWidget( "buttons", formWidgetClass, main, Args, 0 );
 
-    rew = XtCreateManagedWidget("rew", toggleWidgetClass, buttons, Args, 0);
-    Pixmap rew_pixmap = XCreateBitmapFromData(XtDisplay(rew), rootwin(rew),
-                                              (const char*)rew_bits, rew_width, rew_height);
-    mySetArg_1st(XtNbitmap, (XtArgVal)(XtArgVal)rew_pixmap);
-    XtSetValues(rew, Args, Argn);
-    XtAddCallback(rew, XtNcallback,
-                  (XtCallbackProc)com_rewind, (XtPointer)this);
+    rew = XtCreateManagedWidget( "rew", toggleWidgetClass, buttons, Args, 0 );
+    Pixmap rew_pixmap = XCreateBitmapFromData( XtDisplay( rew ), rootwin( rew ),
+                                               (const char*)rew_bits, rew_width, rew_height );
+    mySetArg_1st( XtNbitmap, (XtArgVal)(XtArgVal)rew_pixmap );
+    XtSetValues( rew, Args, Argn );
+    XtAddCallback( rew, XtNcallback,
+                   (XtCallbackProc)com_rewind, (XtPointer)this );
 
-    rev = XtCreateManagedWidget("rev", toggleWidgetClass, buttons, Args, 0);
-    Pixmap rev_pixmap = XCreateBitmapFromData(XtDisplay(rev), rootwin(rev),
-                                              (const char*)rev_bits, rev_width, rev_height);
-    mySetArg_1st(XtNbitmap, (XtArgVal)rev_pixmap);
-    XtSetValues(rev, Args, Argn);
-    XtAddCallback(rev, XtNcallback,
-                  (XtCallbackProc)com_reverse, (XtPointer)this);
+    rev = XtCreateManagedWidget( "rev", toggleWidgetClass, buttons, Args, 0 );
+    Pixmap rev_pixmap = XCreateBitmapFromData( XtDisplay( rev ), rootwin( rev ),
+                                               (const char*)rev_bits, rev_width, rev_height );
+    mySetArg_1st( XtNbitmap, (XtArgVal)rev_pixmap );
+    XtSetValues( rev, Args, Argn );
+    XtAddCallback( rev, XtNcallback,
+                   (XtCallbackProc)com_reverse, (XtPointer)this );
 
-    minus = XtCreateManagedWidget("minus", toggleWidgetClass, buttons, Args, 0);
-    Pixmap minus_pixmap = XCreateBitmapFromData(XtDisplay(minus),rootwin(minus),
-                                                (const char*)minus_bits, minus_width, minus_height);
-    mySetArg_1st(XtNbitmap, (XtArgVal)minus_pixmap);
-    XtSetValues(minus, Args, Argn);
-    XtAddCallback(minus, XtNcallback,
-                  (XtCallbackProc)com_minus, (XtPointer)this);
+    minus = XtCreateManagedWidget( "minus", toggleWidgetClass, buttons, Args, 0 );
+    Pixmap minus_pixmap = XCreateBitmapFromData( XtDisplay( minus ), rootwin( minus ),
+                                                 (const char*)minus_bits, minus_width, minus_height );
+    mySetArg_1st( XtNbitmap, (XtArgVal)minus_pixmap );
+    XtSetValues( minus, Args, Argn );
+    XtAddCallback( minus, XtNcallback,
+                   (XtCallbackProc)com_minus, (XtPointer)this );
 
-    stop = XtCreateManagedWidget("stop", toggleWidgetClass, buttons, Args, 0);
-    Pixmap stop_pixmap = XCreateBitmapFromData(XtDisplay(stop), rootwin(stop),
-                                               (const char*)stop_bits, stop_width, stop_height);
-    mySetArg_1st(XtNbitmap, (XtArgVal)stop_pixmap);
-    XtSetValues(stop, Args, Argn);
-    XtAddCallback(stop, XtNcallback,
-                  (XtCallbackProc)com_stop, (XtPointer)this);
+    stop = XtCreateManagedWidget( "stop", toggleWidgetClass, buttons, Args, 0 );
+    Pixmap stop_pixmap = XCreateBitmapFromData( XtDisplay( stop ), rootwin( stop ),
+                                                (const char*)stop_bits, stop_width, stop_height );
+    mySetArg_1st( XtNbitmap, (XtArgVal)stop_pixmap );
+    XtSetValues( stop, Args, Argn );
+    XtAddCallback( stop, XtNcallback,
+                   (XtCallbackProc)com_stop, (XtPointer)this );
 
-    plus = XtCreateManagedWidget("plus", toggleWidgetClass, buttons, Args, 0);
-    Pixmap plus_pixmap = XCreateBitmapFromData(XtDisplay(plus), rootwin(plus),
-                                               (const char*)plus_bits, plus_width, plus_height);
-    mySetArg_1st(XtNbitmap, (XtArgVal)plus_pixmap);
-    XtSetValues(plus, Args, Argn);
-    XtAddCallback(plus, XtNcallback,
-                  (XtCallbackProc)com_plus, (XtPointer)this);
+    plus = XtCreateManagedWidget( "plus", toggleWidgetClass, buttons, Args, 0 );
+    Pixmap plus_pixmap = XCreateBitmapFromData( XtDisplay( plus ), rootwin( plus ),
+                                                (const char*)plus_bits, plus_width, plus_height );
+    mySetArg_1st( XtNbitmap, (XtArgVal)plus_pixmap );
+    XtSetValues( plus, Args, Argn );
+    XtAddCallback( plus, XtNcallback,
+                   (XtCallbackProc)com_plus, (XtPointer)this );
 
-    play = XtCreateManagedWidget("play", toggleWidgetClass, buttons, Args, 0);
-    Pixmap play_pixmap = XCreateBitmapFromData(XtDisplay(play), rootwin(play),
+    play = XtCreateManagedWidget( "play", toggleWidgetClass, buttons, Args, 0 );
+    Pixmap play_pixmap = XCreateBitmapFromData( XtDisplay( play ), rootwin( play ),
                                                (const char*)play_bits, play_width, play_height);
-    mySetArg_1st(XtNbitmap, (XtArgVal)play_pixmap);
-    XtSetValues(play, Args, Argn);
-    XtAddCallback(play, XtNcallback,
-                  (XtCallbackProc)com_play, (XtPointer)this);
+    mySetArg_1st( XtNbitmap, (XtArgVal)play_pixmap );
+    XtSetValues( play, Args, Argn );
+    XtAddCallback( play, XtNcallback,
+                   (XtCallbackProc)com_play, (XtPointer)this );
 
-    ff = XtCreateManagedWidget("ff", toggleWidgetClass, buttons, Args, 0);
-    Pixmap ff_pixmap = XCreateBitmapFromData(XtDisplay(ff), rootwin(ff),
-                                             (const char*)ff_bits, ff_width, ff_height);
-    mySetArg_1st(XtNbitmap, (XtArgVal)ff_pixmap);
-    XtSetValues(ff, Args, Argn);
-    XtAddCallback(ff, XtNcallback,
-                  (XtCallbackProc)com_forward, (XtPointer)this);
+    ff = XtCreateManagedWidget( "ff", toggleWidgetClass, buttons, Args, 0 );
+    Pixmap ff_pixmap = XCreateBitmapFromData( XtDisplay( ff ), rootwin( ff ),
+                                              (const char*)ff_bits, ff_width, ff_height );
+    mySetArg_1st( XtNbitmap, (XtArgVal)ff_pixmap );
+    XtSetValues( ff, Args, Argn );
+    XtAddCallback( ff, XtNcallback,
+                   (XtCallbackProc)com_forward, (XtPointer)this );
 
     if ( Play->hasOutputFile() )
     {
-        record_buttons = XtCreateManagedWidget("record",
-                                               formWidgetClass, main, Args, 0);
+        record_buttons = XtCreateManagedWidget( "record",
+                                                formWidgetClass, main, Args, 0 );
 
-        blank = XtCreateManagedWidget("blank", toggleWidgetClass,
-                                      record_buttons, Args, 0);
+        blank = XtCreateManagedWidget( "blank", toggleWidgetClass,
+                                       record_buttons, Args, 0 );
         Pixmap blank_pixmap =
-            XCreateBitmapFromData(XtDisplay(blank), rootwin(blank),
-                                  (const char*)blank_bits, blank_width, blank_height);
-        mySetArg_1st(XtNbitmap, (XtArgVal)blank_pixmap);
-        XtSetValues(blank, Args, Argn);
-        XtAddCallback(blank, XtNcallback,
-                      (XtCallbackProc)com_blank, (XtPointer)this);
+            XCreateBitmapFromData( XtDisplay( blank ), rootwin( blank ),
+                                   (const char*)blank_bits, blank_width, blank_height );
+        mySetArg_1st( XtNbitmap, (XtArgVal)blank_pixmap );
+        XtSetValues( blank, Args, Argn );
+        XtAddCallback( blank, XtNcallback,
+                       (XtCallbackProc)com_blank, (XtPointer)this );
 
-        rec = XtCreateManagedWidget("rec", toggleWidgetClass,
-                                    record_buttons, Args, 0);
-        Pixmap rec_pixmap = XCreateBitmapFromData(XtDisplay(rec), rootwin(rec),
-                                                  (const char*)rec_bits, rec_width, rec_height);
-        mySetArg_1st(XtNbitmap, (XtArgVal)rec_pixmap);
-        XtSetValues(rec, Args, Argn);
-        XtAddCallback(rec, XtNcallback,
-                      (XtCallbackProc)com_record, (XtPointer)this);
+        rec = XtCreateManagedWidget( "rec", toggleWidgetClass,
+                                     record_buttons, Args, 0 );
+        Pixmap rec_pixmap = XCreateBitmapFromData( XtDisplay(rec), rootwin(rec),
+                                                   (const char*)rec_bits, rec_width, rec_height );
+        mySetArg_1st( XtNbitmap, (XtArgVal)rec_pixmap );
+        XtSetValues( rec, Args, Argn );
+        XtAddCallback( rec, XtNcallback,
+                       (XtCallbackProc)com_record, (XtPointer)this );
     }
-    jump = XtCreateManagedWidget("jump", formWidgetClass, main, Args, 0);
+    jump = XtCreateManagedWidget( "jump", formWidgetClass, main, Args, 0 );
 
-    mySetArg_1st(XtNeditType, "edit");
-    input = XtCreateManagedWidget("input",
-                                  asciiTextWidgetClass, jump, Args, Argn);
+    mySetArg_1st( XtNeditType, "edit" );
+    input = XtCreateManagedWidget( "input",
+                                   asciiTextWidgetClass, jump, Args, Argn );
 
-    go = XtCreateManagedWidget("go", commandWidgetClass, jump, Args, 0);
-    Pixmap go_pixmap = XCreateBitmapFromData(XtDisplay(go), rootwin(go),
-                                             (const char*)go_bits, go_width, go_height);
-    mySetArg_1st(XtNbitmap, (XtArgVal)go_pixmap);
-    XtSetValues(go, Args, Argn);
-    XtAddCallback(go, XtNcallback,
-                  (XtCallbackProc)com_jump, (XtPointer)this);
+    go = XtCreateManagedWidget( "go", commandWidgetClass, jump, Args, 0 );
+    Pixmap go_pixmap = XCreateBitmapFromData( XtDisplay(go), rootwin(go),
+                                              (const char*)go_bits, go_width, go_height );
+    mySetArg_1st( XtNbitmap, (XtArgVal)go_pixmap );
+    XtSetValues( go, Args, Argn );
+    XtAddCallback( go, XtNcallback,
+                   (XtCallbackProc)com_jump, (XtPointer)this );
 
 #else
 
-    main = XtVaCreateManagedWidget("main", formWidgetClass, top, NULL);
+    main = XtVaCreateManagedWidget( "main", formWidgetClass, top, NULL );
 
-    time = XtVaCreateManagedWidget("time", labelWidgetClass, main, NULL);
+    time = XtVaCreateManagedWidget( "time", labelWidgetClass, main, NULL );
 
-    status = XtVaCreateManagedWidget("status", labelWidgetClass, main, NULL);
+    status = XtVaCreateManagedWidget( "status", labelWidgetClass, main, NULL );
 
-    quit = XtVaCreateManagedWidget("quit", toggleWidgetClass, main, NULL);
-    Pixmap quit_pixmap = XCreateBitmapFromData(XtDisplay(quit), rootwin(quit),
-                                               (const char*)quit_bits, quit_width, quit_height);
-    XtVaSetValues(quit, XtNbitmap, (XtArgVal)quit_pixmap, NULL);
-    XtAddCallback(quit, XtNcallback,
-                  (XtCallbackProc)com_quit, (XtPointer)this);
+    quit = XtVaCreateManagedWidget( "quit", toggleWidgetClass, main, NULL );
+    Pixmap quit_pixmap = XCreateBitmapFromData( XtDisplay( quit ), rootwin( quit ),
+                                                (const char*)quit_bits, quit_width, quit_height );
+    XtVaSetValues( quit, XtNbitmap, (XtArgVal)quit_pixmap, NULL );
+    XtAddCallback( quit, XtNcallback,
+                   (XtCallbackProc)com_quit, (XtPointer)this );
 
-    buttons = XtVaCreateManagedWidget("buttons", formWidgetClass, main, NULL);
+    buttons = XtVaCreateManagedWidget( "buttons", formWidgetClass, main, NULL );
 
-    rew = XtVaCreateManagedWidget("rew", toggleWidgetClass, buttons, NULL);
-    Pixmap rew_pixmap = XCreateBitmapFromData(XtDisplay(rew), rootwin(rew),
-                                              (const char*)rew_bits, rew_width, rew_height);
-    XtVaSetValues(rew, XtNbitmap, (XtArgVal)rew_pixmap, NULL);
-    XtAddCallback(rew, XtNcallback,
-                  (XtCallbackProc)com_rewind, (XtPointer)this);
+    rew = XtVaCreateManagedWidget( "rew", toggleWidgetClass, buttons, NULL );
+    Pixmap rew_pixmap = XCreateBitmapFromData( XtDisplay(rew), rootwin(rew),
+                                               (const char*)rew_bits, rew_width, rew_height );
+    XtVaSetValues( rew, XtNbitmap, (XtArgVal)rew_pixmap, NULL );
+    XtAddCallback( rew, XtNcallback,
+                   (XtCallbackProc)com_rewind, (XtPointer)this );
 
-    rev = XtVaCreateManagedWidget("rev", toggleWidgetClass, buttons, NULL);
-    Pixmap rev_pixmap = XCreateBitmapFromData(XtDisplay(rev), rootwin(rev),
-                                              (const char*)rev_bits, rev_width, rev_height);
-    XtVaSetValues(rev, XtNbitmap, (XtArgVal)rev_pixmap, NULL);
-    XtAddCallback(rev, XtNcallback,
-                  (XtCallbackProc)com_reverse, (XtPointer)this);
+    rev = XtVaCreateManagedWidget( "rev", toggleWidgetClass, buttons, NULL );
+    Pixmap rev_pixmap = XCreateBitmapFromData( XtDisplay(rev), rootwin(rev),
+                                               (const char*)rev_bits, rev_width, rev_height );
+    XtVaSetValues( rev, XtNbitmap, (XtArgVal)rev_pixmap, NULL );
+    XtAddCallback( rev, XtNcallback,
+                   (XtCallbackProc)com_reverse, (XtPointer)this );
 
-    minus = XtVaCreateManagedWidget("minus", toggleWidgetClass, buttons, NULL);
-    Pixmap minus_pixmap = XCreateBitmapFromData(XtDisplay(minus),rootwin(minus),
-                                                (const char*)minus_bits, minus_width, minus_height);
-    XtVaSetValues(minus, XtNbitmap, (XtArgVal)minus_pixmap, NULL);
-    XtAddCallback(minus, XtNcallback,
-                  (XtCallbackProc)com_minus, (XtPointer)this);
+    minus = XtVaCreateManagedWidget( "minus", toggleWidgetClass, buttons, NULL );
+    Pixmap minus_pixmap = XCreateBitmapFromData( XtDisplay( minus ),rootwin( minus ),
+                                                 (const char*)minus_bits, minus_width, minus_height );
+    XtVaSetValues( minus, XtNbitmap, (XtArgVal)minus_pixmap, NULL );
+    XtAddCallback( minus, XtNcallback,
+                   (XtCallbackProc)com_minus, (XtPointer)this );
 
-    stop = XtVaCreateManagedWidget("stop", toggleWidgetClass, buttons, NULL);
-    Pixmap stop_pixmap = XCreateBitmapFromData(XtDisplay(stop), rootwin(stop),
-                                               (const char*)stop_bits, stop_width, stop_height);
-    XtVaSetValues(stop, XtNbitmap, (XtArgVal)stop_pixmap, NULL);
-    XtAddCallback(stop, XtNcallback,
-                  (XtCallbackProc)com_stop, (XtPointer)this);
+    stop = XtVaCreateManagedWidget( "stop", toggleWidgetClass, buttons, NULL );
+    Pixmap stop_pixmap = XCreateBitmapFromData( XtDisplay( stop ), rootwin( stop ),
+                                                (const char*)stop_bits, stop_width, stop_height );
+    XtVaSetValues( stop, XtNbitmap, (XtArgVal)stop_pixmap, NULL );
+    XtAddCallback( stop, XtNcallback,
+                   (XtCallbackProc)com_stop, (XtPointer)this );
 
-    plus = XtVaCreateManagedWidget("plus", toggleWidgetClass, buttons, NULL);
-    Pixmap plus_pixmap = XCreateBitmapFromData(XtDisplay(plus), rootwin(plus),
-                                               (const char*)plus_bits, plus_width, plus_height);
-    XtVaSetValues(plus, XtNbitmap, (XtArgVal)plus_pixmap, NULL);
-    XtAddCallback(plus, XtNcallback,
-                  (XtCallbackProc)com_plus, (XtPointer)this);
+    plus = XtVaCreateManagedWidget( "plus", toggleWidgetClass, buttons, NULL );
+    Pixmap plus_pixmap = XCreateBitmapFromData( XtDisplay( plus ), rootwin( plus ),
+                                                (const char*)plus_bits, plus_width, plus_height );
+    XtVaSetValues( plus, XtNbitmap, (XtArgVal)plus_pixmap, NULL );
+    XtAddCallback( plus, XtNcallback,
+                   (XtCallbackProc)com_plus, (XtPointer)this );
 
-    play = XtVaCreateManagedWidget("play", toggleWidgetClass, buttons, NULL);
-    Pixmap play_pixmap = XCreateBitmapFromData(XtDisplay(play), rootwin(play),
-                                               (const char*)play_bits, play_width, play_height);
-    XtVaSetValues(play, XtNbitmap, (XtArgVal)play_pixmap, NULL);
-    XtAddCallback(play, XtNcallback,
-                  (XtCallbackProc)com_play, (XtPointer)this);
+    play = XtVaCreateManagedWidget( "play", toggleWidgetClass, buttons, NULL );
+    Pixmap play_pixmap = XCreateBitmapFromData( XtDisplay( play ), rootwin( play ),
+                                                (const char*)play_bits, play_width, play_height );
+    XtVaSetValues( play, XtNbitmap, (XtArgVal)play_pixmap, NULL );
+    XtAddCallback( play, XtNcallback,
+                   (XtCallbackProc)com_play, (XtPointer)this );
 
-    ff = XtVaCreateManagedWidget("ff", toggleWidgetClass, buttons, NULL);
-    Pixmap ff_pixmap = XCreateBitmapFromData(XtDisplay(ff), rootwin(ff),
-                                             (const char*)ff_bits, ff_width, ff_height);
-    XtVaSetValues(ff, XtNbitmap, (XtArgVal)ff_pixmap, NULL);
-    XtAddCallback(ff, XtNcallback,
-                  (XtCallbackProc)com_forward, (XtPointer)this);
+    ff = XtVaCreateManagedWidget( "ff", toggleWidgetClass, buttons, NULL );
+    Pixmap ff_pixmap = XCreateBitmapFromData( XtDisplay( ff ), rootwin( ff ),
+                                             (const char*)ff_bits, ff_width, ff_height );
+    XtVaSetValues( ff, XtNbitmap, (XtArgVal)ff_pixmap, NULL );
+    XtAddCallback( ff, XtNcallback,
+                   (XtCallbackProc)com_forward, (XtPointer)this );
 
     if ( player.hasOutputFile() )
     {
-        record_buttons = XtVaCreateManagedWidget("record", formWidgetClass,
-                                                 main, NULL);
-        blank = XtVaCreateManagedWidget("blank", toggleWidgetClass,
-                                        record_buttons, NULL);
-        Pixmap blank_pixmap =
-            XCreateBitmapFromData(XtDisplay(blank), rootwin(blank),
-                                  (const char*)blank_bits, blank_width, blank_height);
-        XtVaSetValues(blank, XtNbitmap, (XtArgVal)blank_pixmap, NULL);
-        XtAddCallback(blank, XtNcallback,
-                      (XtCallbackProc)com_blank, (XtPointer)this);
+        record_buttons = XtVaCreateManagedWidget( "record", formWidgetClass,
+                                                  main, NULL );
+        blank = XtVaCreateManagedWidget( "blank", toggleWidgetClass,
+                                         record_buttons, NULL );
+        Pixmap blank_pixmap
+            = XCreateBitmapFromData( XtDisplay( blank ), rootwin( blank ),
+                                     (const char*)blank_bits, blank_width, blank_height );
+        XtVaSetValues( blank, XtNbitmap, (XtArgVal)blank_pixmap, NULL );
+        XtAddCallback( blank, XtNcallback,
+                       (XtCallbackProc)com_blank, (XtPointer)this );
 
-        rec = XtVaCreateManagedWidget("rec", toggleWidgetClass,
-                                      record_buttons, NULL);
-        Pixmap rec_pixmap = XCreateBitmapFromData(XtDisplay(rec), rootwin(rec),
-                                                  (const char*)rec_bits, rec_width, rec_height);
-        XtVaSetValues(rec, XtNbitmap, (XtArgVal)rec_pixmap, NULL);
-        XtAddCallback(rec, XtNcallback,
-                      (XtCallbackProc)com_record, (XtPointer)this);
+        rec = XtVaCreateManagedWidget( "rec", toggleWidgetClass,
+                                       record_buttons, NULL );
+        Pixmap rec_pixmap = XCreateBitmapFromData( XtDisplay( rec ), rootwin( rec ),
+                                                   (const char*)rec_bits, rec_width, rec_height);
+        XtVaSetValues( rec, XtNbitmap, (XtArgVal)rec_pixmap, NULL );
+        XtAddCallback( rec, XtNcallback,
+                       (XtCallbackProc)com_record, (XtPointer)this );
 
     }
 
-    jump = XtVaCreateManagedWidget("jump", formWidgetClass, main, NULL);
+    jump = XtVaCreateManagedWidget( "jump", formWidgetClass, main, NULL );
 
     // TODO: cannot input the value on MacOS X
-    input = XtVaCreateManagedWidget("input", asciiTextWidgetClass, jump,
-                                    XtNeditType, "edit", NULL);
+    input = XtVaCreateManagedWidget( "input", asciiTextWidgetClass, jump,
+                                     XtNeditType, "edit", NULL );
 
-    go = XtVaCreateManagedWidget("go", commandWidgetClass, jump, NULL);
-    Pixmap go_pixmap = XCreateBitmapFromData(XtDisplay(go), rootwin(go),
-                                             (const char*)go_bits, go_width, go_height);
-    XtVaSetValues(go, XtNbitmap, (XtArgVal)go_pixmap, NULL);
+    go = XtVaCreateManagedWidget( "go", commandWidgetClass, jump, NULL );
+    Pixmap go_pixmap = XCreateBitmapFromData( XtDisplay( go ), rootwin( go ),
+                                              (const char*)go_bits, go_width, go_height );
+    XtVaSetValues( go, XtNbitmap, (XtArgVal)go_pixmap, NULL );
 
-    XtAddCallback(go, XtNcallback,
-                  (XtCallbackProc)com_jump, (XtPointer)this);
+    XtAddCallback( go, XtNcallback,
+                   (XtCallbackProc)com_jump, (XtPointer)this );
 #endif
-    XtAppAddActions(app_context, actions, XtNumber(actions));
+    XtAppAddActions( app_context, actions, XtNumber( actions ) );
 }
 
 void
@@ -416,15 +421,15 @@ Controler::display_time( int t )
 
     std::snprintf( buf, sizeof( buf ), "time: %5d", t );
 #ifndef X11R5
-    XtVaSetValues(time, XtNlabel, buf, NULL);
+    XtVaSetValues( time, XtNlabel, buf, NULL );
 #else
-    mySetArg_1st(XtNlabel, buf);
-    XtSetValues(time, Args, Argn);
+    mySetArg_1st( XtNlabel, buf );
+    XtSetValues( time, Args, Argn );
 #endif
 }
 
 void
-Controler::display_status(void)
+Controler::display_status()
 {
     std::string msg = player.statusString();
 #ifndef X11R5
@@ -436,7 +441,7 @@ Controler::display_status(void)
 }
 
 void
-Controler::buttons_reset(void)
+Controler::buttons_reset()
 {
     if ( player.state() == Player::STATE_REW )
     {
@@ -500,7 +505,7 @@ Controler::buttons_reset(void)
 }
 
 void
-Controler::rew_button_reset_true(void)
+Controler::rew_button_reset_true()
 {
 #ifdef X11R5
     mySetArg_1st(XtNstate, True);
@@ -511,7 +516,7 @@ Controler::rew_button_reset_true(void)
 }
 
 void
-Controler::rew_button_reset_false(void)
+Controler::rew_button_reset_false()
 {
 #ifdef X11R5
     mySetArg_1st(XtNstate, False);
@@ -522,7 +527,7 @@ Controler::rew_button_reset_false(void)
 }
 
 void
-Controler::rev_button_reset_true(void)
+Controler::rev_button_reset_true()
 {
 #ifdef X11R5
     mySetArg_1st(XtNstate, True);
@@ -533,7 +538,7 @@ Controler::rev_button_reset_true(void)
 }
 
 void
-Controler::rev_button_reset_false(void)
+Controler::rev_button_reset_false()
 {
 #ifdef X11R5
     mySetArg_1st(XtNstate, False);
@@ -544,7 +549,7 @@ Controler::rev_button_reset_false(void)
 }
 
 void
-Controler::minus_button_reset(void)
+Controler::minus_button_reset()
 {
 #ifdef X11R5
     mySetArg_1st(XtNstate, False);
@@ -554,7 +559,7 @@ Controler::minus_button_reset(void)
 #endif
 }
 
-void Controler::stop_button_reset_true(void)
+void Controler::stop_button_reset_true()
 {
 #ifdef X11R5
     mySetArg_1st(XtNstate, True);
@@ -565,7 +570,7 @@ void Controler::stop_button_reset_true(void)
 }
 
 void
-Controler::stop_button_reset_false(void)
+Controler::stop_button_reset_false()
 {
 #ifdef X11R5
     mySetArg_1st(XtNstate, False);
@@ -576,7 +581,7 @@ Controler::stop_button_reset_false(void)
 }
 
 void
-Controler::plus_button_reset(void)
+Controler::plus_button_reset()
 {
 #ifdef X11R5
     mySetArg_1st(XtNstate, False);
@@ -587,7 +592,7 @@ Controler::plus_button_reset(void)
 }
 
 void
-Controler::play_button_reset_true(void)
+Controler::play_button_reset_true()
 {
 #ifdef X11R5
     mySetArg_1st(XtNstate, True);
@@ -598,7 +603,7 @@ Controler::play_button_reset_true(void)
 }
 
 void
-Controler::play_button_reset_false(void)
+Controler::play_button_reset_false()
 {
 #ifdef X11R5
     mySetArg_1st(XtNstate, False);
@@ -609,7 +614,7 @@ Controler::play_button_reset_false(void)
 }
 
 void
-Controler::for_button_reset_true(void)
+Controler::for_button_reset_true()
 {
 #ifdef X11R5
     mySetArg_1st(XtNstate, True);
@@ -620,7 +625,7 @@ Controler::for_button_reset_true(void)
 }
 
 void
-Controler::for_button_reset_false(void)
+Controler::for_button_reset_false()
 {
 #ifdef X11R5
     mySetArg_1st(XtNstate, False);
@@ -631,7 +636,7 @@ Controler::for_button_reset_false(void)
 }
 
 void
-Controler::blank_button_reset(void)
+Controler::blank_button_reset()
 {
 #ifdef X11R5
     mySetArg_1st(XtNstate, False);
@@ -642,7 +647,7 @@ Controler::blank_button_reset(void)
 }
 
 void
-Controler::Loop(void)
+Controler::run()
 {
     XtAppMainLoop( app_context );
 }

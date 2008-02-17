@@ -84,9 +84,8 @@ Player::nwInit()
     read_fds_back = read_fds;
 
     std::cout << "Wait for monitor..." << std::endl;;
-    //std::cout << "\n"PROMPT << std::flush;
 
-    for ( ;; )
+    while ( 1 )
     {
         read_fds = read_fds_back;
         wait.tv_sec = interval_msec / 1000;

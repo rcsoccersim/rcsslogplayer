@@ -29,6 +29,10 @@
  *EndCopyright:
  */
 
+#if HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #include "logplayer.h"
 
 #include <rcssbase/version.hpp>
@@ -72,7 +76,7 @@ main( int argc, char ** argv )
         return 1;
     }
 
-    player.init( argc, argv );
+    player.run( argc, argv );
 
     return 0;
 }

@@ -33,7 +33,7 @@
 
  *EndCopyright:
  */
-
+
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"
@@ -45,6 +45,10 @@
 #include "param.h"
 #include "types.h"
 #include "utility.h"
+
+#ifdef HAVE_LIBZ
+#include <rcssbase/gzip/gzfstream.hpp>
+#endif
 
 #include <boost/program_options.hpp>
 
@@ -112,9 +116,7 @@ const int Player::MAX_SHOWINFO = 18000;
 
 
 Player::Player()
-    : M_show_index( 0 ),
-      m_parser( *this )
-
+    : M_show_index( 0 )
 {
 
 #if !X_DISPLAY_MISSING
@@ -124,8 +126,6 @@ Player::Player()
 
 Player::~Player()
 {
-    M_in_strm.close();
-
     M_out_strm.flush();
     M_out_strm.close();
 
@@ -137,7 +137,7 @@ Player::~Player()
 }
 
 void
-Player::init( int argc, char ** argv )
+Player::run( int argc, char ** argv )
 {
     if ( ! M_controler )
     {
@@ -149,11 +149,12 @@ Player::init( int argc, char ** argv )
         return;
     }
 
-    openGameLog();
+    if ( ! openGameLog() )
+    {
+        return;
+    }
 
-    openSavedLog();
-
-    if ( ! readLog() )
+    if ( ! openSavedLog() )
     {
         return;
     }
@@ -175,7 +176,7 @@ Player::init( int argc, char ** argv )
         M_controler->init( argc, argv );
         initTimer();
         M_controler->display_status();
-        M_controler->Loop();
+        M_controler->run();
     }
     else
 #endif //!X_DISPLAY_MISSING
@@ -190,10 +191,7 @@ Player::init( int argc, char ** argv )
                 std::cerr << __FILE__ << ": " << __LINE__
                           << ": Can't open command file " << M_command_file
                           << std::endl;
-
-                M_in_strm.close();
                 M_out_strm.close();
-                //std::exit( -1 );
                 return;
             }
         }
@@ -328,8 +326,6 @@ Player::parseCmdLine( int argc, char **argv )
 void
 Player::quit()
 {
-    M_in_strm.close();
-
     M_out_strm.flush();
     M_out_strm.close();
 
@@ -902,31 +898,6 @@ Player::doHandlePlayerType( std::streampos,
     }
 }
 
-bool
-Player::readLog()
-{
-    try
-    {
-        while ( m_parser.parse( M_in_strm ) )
-        {
-            // do nothing
-        }
-    }
-    catch ( const std::string & e )
-    {
-        std::cerr << "Error reading log: " << e << std::endl;
-        return false;
-    }
-
-    std::cout << "showinfo size = " << M_showinfo_cache.size()
-              << std::endl;
-    if ( ! M_showinfo_cache.empty() )
-    {
-        M_show_index = 1;
-    }
-    return true;
-}
-
 void
 Player::writeLog( const std::size_t index )
 {
@@ -1078,30 +1049,54 @@ Player::sendLog( const std::size_t index )
 }
 
 
-void
+bool
 Player::openGameLog()
 {
     // open the file
 #ifdef HAVE_LIBZ
-    M_in_strm.open( M_input_file.c_str() );
+    rcss::gz::gzifstream fin( M_input_file.c_str() );
 #else
-    M_in_strm.open( M_input_file.c_str(),
-                    std::ios_base::in | std::ios_base::binary );
+    std::ifstream fin( M_input_file.c_str(),
+                       std::ios_base::in
+                       | std::ios_base::binary );
 #endif
-    if ( ! M_in_strm.is_open() )
+    if ( ! fin.is_open() )
     {
         std::cerr << "Error: Can't open log file " << M_input_file
                   << std::endl;
-        std::exit( -1 );
+        return false;
     }
+
+    try
+    {
+        rcss::RCGParser parser( *this );
+
+        while ( parser.parse( fin ) )
+        {
+            // do nothing
+        }
+    }
+    catch ( const std::string & e )
+    {
+        std::cerr << "Error reading log: " << e << std::endl;
+        return false;
+    }
+
+    std::cout << "showinfo size = " << M_showinfo_cache.size()
+              << std::endl;
+    if ( ! M_showinfo_cache.empty() )
+    {
+        M_show_index = 1;
+    }
+    return true;
 }
 
-void
+bool
 Player::openSavedLog()
 {
     if ( M_output_file.empty() )
     {
-        return;
+        return true;
     }
 
     // open the file
@@ -1110,10 +1105,10 @@ Player::openSavedLog()
     if ( ! M_out_strm.is_open() )
     {
         std::cerr << "Can't open output file " << M_output_file << std::endl;
-        M_in_strm.close();
-        std::exit( -1 );
+        return false;
     }
 
+    return true;
 }
 
 

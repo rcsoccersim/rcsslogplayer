@@ -33,23 +33,14 @@
 
  *EndCopyright:
  */
-
 
 #ifndef RCSSLOGPLAYER_LOGPLAYER_H
 #define RCSSLOGPLAYER_LOGPLAYER_H
-
-#if HAVE_CONFIG_H
-#include "config.h"
-#endif
 
 #include "netif.h"
 
 #include "rcgparser.hpp"
 #include "rcgdatahandler.hpp"
-
-#ifdef HAVE_LIBZ
-#include <rcssbase/gzip/gzfstream.hpp>
-#endif
 
 #if !X_DISPLAY_MISSING
 #include <X11/Intrinsic.h>
@@ -110,11 +101,6 @@ private:
 		std::string M_output_file; /* output file name */
 		std::string M_command_file; /* command file name */
 
-#ifdef HAVE_LIBZ
-    rcss::gz::gzifstream M_in_strm;
-#else
-    std::ifstream M_in_strm;
-#endif
 		std::ofstream M_out_strm; /* output file */
 		std::ifstream M_com_strm; /* command file */
 
@@ -147,15 +133,12 @@ private:
     std::vector< boost::shared_ptr< showinfo_t2 > > M_showinfo2_cache;
     std::size_t M_show_index;
 
-    rcss::RCGParser m_parser;
-
 public:
 
 		Player();
 		~Player();
 
-		void init( int argc, char **argv );
-		bool readLog();
+		void run( int argc, char **argv );
 
     bool hasOutputFile()
       {
@@ -196,8 +179,8 @@ public:
 		void nwInitTimer();
 		void nwLoop();
 
-		void openGameLog();
-		void openSavedLog();
+		bool openGameLog();
+		bool openSavedLog();
 
     void sendParams();
 
@@ -217,43 +200,34 @@ private:
           return M_version;
       }
 
-    void
-    doHandleDispInfo( std::streampos,
-                      const dispinfo_t& );
+    void doHandleDispInfo( std::streampos,
+                           const dispinfo_t & );
 
-    void
-    doHandleShowInfo( std::streampos,
-                      const showinfo_t& );
+    void doHandleShowInfo( std::streampos,
+                           const showinfo_t & );
 
-    void
-    doHandleShowInfo( std::streampos,
-                      const short_showinfo_t2& );
+    void doHandleShowInfo( std::streampos,
+                           const short_showinfo_t2 & );
 
-    void
-    doHandleMsgInfo( std::streampos,
-                     short,
-                     const std::string& );
+    void doHandleMsgInfo( std::streampos,
+                          short,
+                          const std::string & );
 
-    void
-    doHandlePlayMode( std::streampos,
-                      char );
+    void doHandlePlayMode( std::streampos,
+                           char );
 
-    void
-    doHandleTeamInfo( std::streampos,
-                      const team_t&,
-                      const team_t& );
+    void doHandleTeamInfo( std::streampos,
+                           const team_t &,
+                           const team_t & );
 
-    void
-    doHandleServerParams( std::streampos,
-                          const server_params_t& );
+    void doHandleServerParams( std::streampos,
+                               const server_params_t & );
 
-    void
-    doHandlePlayerParams( std::streampos,
-                          const player_params_t& );
+    void doHandlePlayerParams( std::streampos,
+                               const player_params_t & );
 
-    void
-    doHandlePlayerType( std::streampos,
-                        const player_type_t& );
+    void doHandlePlayerType( std::streampos,
+                             const player_type_t & );
 
 };
 

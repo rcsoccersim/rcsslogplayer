@@ -75,26 +75,28 @@ public:
 		Widget			go;
 		Widget			speed;
 
+    ~Controler();
+
 		void			init(int argc, char **argv);
-		void			assign(void);
+		void			assign();
 		void			display_time(int);
-		void			display_status(void);
-		void			change_recmode(void);
-		void			buttons_reset(void);
-		void			rew_button_reset_true(void);
-		void			rew_button_reset_false(void);
-		void			rev_button_reset_true(void);
-		void			rev_button_reset_false(void);
-		void			minus_button_reset(void);
-		void			stop_button_reset_true(void);
-		void			stop_button_reset_false(void);
-		void			plus_button_reset(void);
-		void			play_button_reset_true(void);
-		void			play_button_reset_false(void);
-		void			for_button_reset_true(void);
-		void			for_button_reset_false(void);
-		void			blank_button_reset(void);
-		void			Loop(void);
+		void			display_status();
+		void			change_recmode();
+		void			buttons_reset();
+		void			rew_button_reset_true();
+		void			rew_button_reset_false();
+		void			rev_button_reset_true();
+		void			rev_button_reset_false();
+		void			minus_button_reset();
+		void			stop_button_reset_true();
+		void			stop_button_reset_false();
+		void			plus_button_reset();
+		void			play_button_reset_true();
+		void			play_button_reset_false();
+		void			for_button_reset_true();
+		void			for_button_reset_false();
+		void			blank_button_reset();
+		void run();
 };
 
 #endif //!X_DISPLAY_MISSING
