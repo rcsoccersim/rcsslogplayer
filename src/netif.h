@@ -42,6 +42,8 @@
 #include <rcssbase/net/addr.hpp>
 #include <rcssbase/net/udpsocket.hpp>
 
+#include <string>
+
 #include <vector>
 
 struct Monitor {
@@ -88,8 +90,12 @@ public:
           return M_monitors;
       }
 
-		void send_info( const dispinfo_t *, const rcss::net::Addr& dest );
-		void send_info( const dispinfo_t2 *, const rcss::net::Addr& dest );
+		void send_info( const dispinfo_t & msg,
+                    const rcss::net::Addr & dest );
+		void send_info( const dispinfo_t2 & msg,
+                    const rcss::net::Addr & dest );
+		void send_info( const std::string & msg,
+                    const rcss::net::Addr & dest );
 		int recv_info();
 		void monitor_init();
 

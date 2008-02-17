@@ -385,7 +385,6 @@ RCGParser::parseLines( std::istream & strm )
                       << std::endl;
         }
 
-        if ( n_line >= 50 ) break;
     }
 
     M_handler.handleEOF();

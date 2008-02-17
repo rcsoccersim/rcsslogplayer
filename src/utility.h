@@ -56,8 +56,6 @@
 #define Rad2IDegRound(a)	((int)rint(Rad2Deg(a)))
 #define Deg2Rad(a)	((double)(a) * DEG2RAD)
 
-#define Quantize(v,q)	((rint((v)/(q)))*(q))
-
 #define Pow(x)	((x)*(x))
 
 #define RANDOMBASE		1000

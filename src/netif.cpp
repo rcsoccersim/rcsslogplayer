@@ -85,22 +85,32 @@ Port::setListenPort( const int port )
 }
 
 void
-Port::send_info( const dispinfo_t * msg,
+Port::send_info( const dispinfo_t & msg,
                  const rcss::net::Addr & dest )
 {
-    M_socket.send( reinterpret_cast< const char * >( msg ),
+    M_socket.send( reinterpret_cast< const char * >( &msg ),
                    sizeof( dispinfo_t ),
                    dest );
 }
 
 void
-Port::send_info( const dispinfo_t2 * msg,
+Port::send_info( const dispinfo_t2 & msg,
                  const rcss::net::Addr & dest )
 {
-    M_socket.send( reinterpret_cast< const char * >( msg ),
+    M_socket.send( reinterpret_cast< const char * >( &msg ),
                    sizeof( dispinfo_t2 ),
                    dest );
 }
+
+void
+Port::send_info( const std::string & msg,
+                 const rcss::net::Addr & dest )
+{
+    M_socket.send( msg.c_str(),
+                   msg.length() + 1,
+                   dest );
+}
+
 
 int
 Port::recv_info()

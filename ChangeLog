@@ -1,5 +1,14 @@
 2008-02-18  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 
+	* src/logplayer.cpp:
+	* src/logplayer.h:
+	* src/netif.cpp:
+	* src/netif.h:
+	* src/rcgparser.cpp:
+	* src/utility.h:
+	- supported the log format version 4, but need to improve several
+	things.
+
 	* src/rcg2xml.cpp:
 	* src/rcgdatahandler.hpp:
 	* src/rcgparser.cpp:

@@ -62,10 +62,15 @@
 #include <cstdio>
 #include <cmath>
 #include <csignal>
-#include <sys/time.h>
-#include <sched.h>
-#include <netinet/in.h>
 
+#include <sys/time.h>
+
+#ifdef HAVE_NETINET_IN_H
+#include <netinet/in.h>
+#endif
+#ifdef HAVE_WINDOWS_H
+#include <windows.h>
+#endif
 
 extern Player player;
 
@@ -76,7 +81,38 @@ namespace {
 XtSignalId g_sig_id; /* signal handler id */
 #endif
 #endif //!X_DI
+
+inline
+Int16
+hdtons( const double & val )
+{
+    return htons( static_cast< Int16 >( rint( val * SHOWINFO_SCALE ) ) );
 }
+
+inline
+Int32
+hdtonl( const double & val )
+{
+    return htonl( static_cast< Int32 >( rint( val * SHOWINFO_SCALE2 ) ) );
+}
+
+inline
+double
+nltohd( const Int32 & val )
+{
+    return ( static_cast< double >( static_cast< Int32 >( ntohl( val ) ) )
+             / SHOWINFO_SCALE2 );
+}
+
+inline
+double
+Quantize( const double & v,
+          const double & q )
+{
+    return rint( v / q ) * q;
+}
+
+} // end noname namespace
 
 static
 void
@@ -720,191 +756,6 @@ Player::statusString() const
     return std::string( "error" );
 }
 
-void
-Player::doHandleLogVersion( int ver )
-{
-    M_version = ver;
-
-    if ( M_out_strm.is_open() )
-    {
-        char buf[5];
-        buf[0] = 'U';
-        buf[1] = 'L';
-        buf[2] = 'G';
-
-        if ( ver >= REC_VERSION_4 )
-        {
-            int record_version = ver - static_cast< int >( '0' );
-            buf[3] = static_cast< char >( record_version );
-        }
-        else if ( ver >= REC_VERSION_2 )
-        {
-            buf[3] = static_cast< char >( ver );
-        }
-
-
-        M_out_strm.write( buf, 4 );
-    }
-}
-
-void
-Player::doHandleDispInfo( std::streampos pos,
-                          const dispinfo_t & info )
-{
-    if ( ntohs( info.mode ) == SHOW_MODE )
-    {
-        doHandleShowInfo( pos, info.body.show );
-    }
-}
-
-void
-Player::doHandleShowInfo( std::streampos pos,
-                          const showinfo_t & info )
-{
-    if ( M_showinfo_cache.size() > MAX_SHOWINFO )
-    {
-        return;
-    }
-
-    M_showinfo_cache.push_back( boost::shared_ptr< showinfo_t >
-                                ( new showinfo_t( info ) ) );
-
-    boost::shared_ptr< showinfo_t2 > show2( new showinfo_t2 );
-
-    show2->pmode = info.pmode;
-    show2->team[0] = info.team[0];
-    show2->team[1] = info.team[1];
-    show2->ball.x = nstonl( info.pos[0].x );
-    show2->ball.y = nstonl( info.pos[0].y );
-
-    for ( int i = 0; i < MAX_PLAYER * 2; ++i )
-    {
-        show2->pos[i].mode = info.pos[i+1].enable;
-        show2->pos[i].body_angle = (Int32)htonl((Int32)(Deg2Rad( (double)(Int16)ntohs( info.pos[i+1].angle ) ) * SHOWINFO_SCALE2));
-        show2->pos[i].x = nstonl( info.pos[i+1].x );
-        show2->pos[i].y = nstonl( info.pos[i+1].y );
-    }
-    show2->time = info.time;
-
-    M_showinfo2_cache.push_back( show2 );
-}
-
-void
-Player::doHandleShowInfo( std::streampos pos,
-                          const short_showinfo_t2 & info )
-{
-    if ( M_showinfo_cache.size() > MAX_SHOWINFO )
-    {
-        return;
-    }
-
-    // create v1 data
-    boost::shared_ptr< showinfo_t > show( new showinfo_t );
-    show->pmode = M_playmode;
-    show->team[0] = M_teams[0];
-    show->team[1] = M_teams[1];
-    show->pos[0].x = nltons( info.ball.x );
-    show->pos[0].y = nltons( info.ball.y );
-    for ( int i = 0; i < MAX_PLAYER * 2; ++i )
-    {
-        show->pos[i+1].enable = info.pos[i].mode;
-        show->pos[i].angle = htons((Int16)(Rad2Deg( (double)(Int32)ntohl( info.pos [ i ].body_angle ) ) / SHOWINFO_SCALE2) );
-        show->pos[i+1].x = nltons( info.pos[i].x );
-        show->pos[i+1].y = nltons( info.pos[i].y );
-        show->pos[i+1].unum = htons((i % MAX_PLAYER) + 1);
-        show->pos[i+1].side = htons(((i < MAX_PLAYER) ? LEFT : RIGHT ));
-    }
-    show->time = info.time;
-
-    M_showinfo_cache.push_back( show );
-
-    // create v2 data
-    boost::shared_ptr< showinfo_t2 > show2( new showinfo_t2 );
-    show2->pmode = M_playmode;
-    show2->team[0] = M_teams[0];
-    show2->team[1] = M_teams[1];
-    show2->ball = info.ball;
-    for ( int i = 0; i < MAX_PLAYER * 2; ++i )
-    {
-        show2->pos[i] = info.pos[i];
-    }
-    show2->time = info.time;
-
-    M_showinfo2_cache.push_back( show2 );
-}
-
-void
-Player::doHandleMsgInfo( std::streampos ,
-                         Int16 ,
-                         const std::string &  )
-{
-
-}
-
-void
-Player::doHandlePlayMode( std::streampos,
-                          char pm )
-{
-    M_playmode = pm;
-}
-
-void
-Player::doHandleTeamInfo( std::streampos,
-                          const team_t & left,
-                          const team_t & right )
-{
-    M_teams[0] = left;
-    M_teams[1] = right;
-}
-
-void
-Player::doHandleServerParams( std::streampos,
-                              const server_params_t & params )
-{
-    M_server_param = params;
-
-    if ( M_out_strm.is_open() )
-    {
-        Int16 mode = htons( PARAM_MODE );
-        M_out_strm.write( reinterpret_cast< const char * >( &mode ),
-                          sizeof( mode ) );
-        M_out_strm.write( reinterpret_cast< const char * >( &params ),
-                          sizeof( server_params_t ) );
-    }
-}
-
-void
-Player::doHandlePlayerParams( std::streampos,
-                              const player_params_t & params )
-{
-    M_player_param = params;
-
-    if ( M_out_strm.is_open() )
-    {
-        Int16 mode = htons( PPARAM_MODE );
-        M_out_strm.write( reinterpret_cast< const char * >( &mode ),
-                          sizeof( mode ) );
-        M_out_strm.write( reinterpret_cast< const char * >( &params ),
-                          sizeof( player_params_t ) );
-    }
-}
-
-
-void
-Player::doHandlePlayerType( std::streampos,
-                            const player_type_t & info )
-{
-    M_player_types.push_back( info );
-
-    if ( M_out_strm.is_open() )
-    {
-        Int16 mode = htons( PT_MODE );
-        M_out_strm.write( reinterpret_cast< const char * >( &mode ),
-                          sizeof( mode ) );
-        M_out_strm.write( reinterpret_cast< const char * >( &info ),
-                          sizeof( player_type_t ) );
-    }
-}
 
 void
 Player::writeLog( const std::size_t index )
@@ -924,9 +775,13 @@ Player::writeLog( const std::size_t index )
         return;
     }
 
-    if ( M_version == REC_VERSION_3 )
+    if ( M_version == REC_VERSION_4 )
     {
-        static char pm = (char)0;
+
+    }
+    else if ( M_version == REC_VERSION_3 )
+    {
+        static char pm = static_cast< char >( 0 );
         static team_t teams[2] = { { "", 0 },
                                    { "", 0 } };
 
@@ -982,7 +837,7 @@ Player::writeLog( const std::size_t index )
         M_out_strm.write( reinterpret_cast< const char * >( &short_show2 ),
                           sizeof( short_showinfo_t2 ) );
     }
-    else
+    else if ( M_version == REC_VERSION_2 )
     {
         if ( M_showinfo_cache.size() < index )
         {
@@ -1034,14 +889,23 @@ Player::sendLog( const std::size_t index )
         {
             if ( index <= M_showinfo_cache.size() )
             {
-                M_port.send_info( &disp, p->addr_ );
+                M_port.send_info( disp, p->addr_ );
             }
         }
         else if ( p->version_ == 2 )
         {
             if ( index <= M_showinfo2_cache.size() )
             {
-                M_port.send_info( &disp2, p->addr_ );
+                M_port.send_info( disp2, p->addr_ );
+            }
+        }
+        else if ( p->version_ == 3 )
+        {
+            if ( index <= M_showinfo2_cache.size() )
+            {
+                std::string msg;
+                serializeShow( disp2.body.show, msg );
+                M_port.send_info( msg, p->addr_ );
             }
         }
     }
@@ -1141,11 +1005,11 @@ Player::sendParams()
 
                 disp2.mode = htons( PARAM_MODE );
                 disp2.body.sparams = M_server_param;
-                M_port.send_info( &disp2, p->addr_ );
+                M_port.send_info( disp2, p->addr_ );
 
                 disp2.mode = htons( PPARAM_MODE );
                 disp2.body.pparams = M_player_param;
-                M_port.send_info( &disp2, p->addr_ );
+                M_port.send_info( disp2, p->addr_ );
 
                 disp2.mode = htons( PT_MODE );
                 for ( std::vector< player_type_t >::iterator it = M_player_types.begin();
@@ -1153,12 +1017,650 @@ Player::sendParams()
                       ++it )
                 {
                     disp2.body.ptinfo = *it;
-                    M_port.send_info( &disp2, p->addr_ );
+                    M_port.send_info( disp2, p->addr_ );
+                }
+            }
+            else if ( p->version_ == 3 )
+            {
+                std::string msg;
+                serializeServerParam( msg );
+                M_port.send_info( msg, p->addr_ );
+
+                serializePlayerParam( msg );
+                M_port.send_info( msg, p->addr_ );
+
+                for ( std::vector< player_type_t >::iterator it = M_player_types.begin();
+                      it != M_player_types.end();
+                      ++it )
+                {
+                    serializePlayerType( *it, msg );
+                    M_port.send_info( msg, p->addr_ );
                 }
             }
 
             S_sent_set.insert( &(*p) );
         }
     }
+}
 
+
+void
+Player::serializeShow( const showinfo_t2 & show,
+                       std::string & msg )
+{
+    const double PREC = 0.0001;
+    const double DPREC = 0.001;
+
+    std::ostringstream ostr;
+
+    ostr << "(show " << htons( show.time );
+    ostr << " (pm " << static_cast< int >( show.pmode ) << ")";
+    ostr << " (tm"
+         << ' ' << M_teams_v4[0].name
+         << ' ' << M_teams_v4[1].name
+         << ' ' << M_teams_v4[0].score
+         << ' ' << M_teams_v4[1].score;
+    if ( M_teams_v4[0].pen_score + M_teams_v4[0].pen_miss > 0
+         || M_teams_v4[1].pen_score + M_teams_v4[1].pen_miss > 0 )
+    {
+        ostr << ' ' << M_teams_v4[0].pen_score
+             << ' ' << M_teams_v4[0].pen_miss
+             << ' ' << M_teams_v4[1].pen_score
+             << ' ' << M_teams_v4[1].pen_miss;
+    }
+    ostr << ')';
+
+    ostr << " ((b)"
+         << ' ' << Quantize( nltohd( show.ball.x ), PREC )
+         << ' ' << Quantize( nltohd( show.ball.y ), PREC )
+         << ' ' << Quantize( nltohd( show.ball.deltax ), PREC )
+         << ' ' << Quantize( nltohd( show.ball.deltax ), PREC )
+         << ')';
+
+    for ( int i = 0; i < MAX_PLAYER*2; ++i )
+    {
+        char side = ( i < MAX_PLAYER ? 'l' : 'r' );
+        int unum = ( i < MAX_PLAYER ? i + 1 : i + 1 - MAX_PLAYER );
+        ostr << " ("
+             << '(' << side << ' ' << unum << ')'
+             << ' ' << ntohs( show.pos[i].type )
+             << ' ' << std::hex << std::showbase
+             << static_cast< long >( ntohs( show.pos[i].mode ) )
+             << std::dec << std::noshowbase;
+        ostr << ' ' << Quantize( nltohd( show.pos[i].x ), PREC )
+             << ' ' << Quantize( nltohd( show.pos[i].y ), PREC )
+             << ' ' << Quantize( nltohd( show.pos[i].deltax ), PREC )
+             << ' ' << Quantize( nltohd( show.pos[i].deltay ), PREC )
+             << ' ' << Quantize( Rad2Deg( nltohd( show.pos[i].body_angle ) ), DPREC )
+             << ' ' << Quantize( Rad2Deg( nltohd( show.pos[i].head_angle ) ), DPREC );
+        ostr << " (v "
+             << ( ntohs( show.pos[i].view_quality ) ? "h " : "l " )
+             << Quantize( Rad2Deg( nltohd( show.pos[i].view_width ) ), DPREC ) << ')';
+        ostr << " (s "
+             << nltohd( show.pos[i].stamina ) << ' '
+             << nltohd( show.pos[i].effort ) << ' '
+             << nltohd( show.pos[i].recovery ) << ')';
+        ostr << " (c "
+             << ntohs( show.pos[i].kick_count ) << ' '
+             << ntohs( show.pos[i].dash_count ) << ' '
+             << ntohs( show.pos[i].turn_count ) << ' '
+             << ntohs( show.pos[i].catch_count ) << ' '
+             << ntohs( show.pos[i].move_count ) << ' '
+             << ntohs( show.pos[i].tneck_count ) << ' '
+             << ntohs( show.pos[i].chg_view_count ) << ' '
+             << ntohs( show.pos[i].say_count ) << ' '
+             << 0 << ' ' // tackle
+             << 0 << ' ' // pointto
+             << 0 << ')'; // attentionto
+        ostr << ')';
+    }
+
+    msg = ostr.str();
+}
+
+void
+Player::serializeServerParam( std::string & msg )
+{
+    std::ostringstream ostr;
+
+    ostr << "(server_param ";
+
+    for ( std::map< std::string, std::string >::const_iterator it = M_server_param_map.begin();
+          it != M_server_param_map.end();
+          ++it )
+    {
+        ostr << " (" << it->first << ' ' << it->second << ")";
+    }
+    ostr << ")";
+
+    msg = ostr.str();
+}
+
+void
+Player::serializePlayerParam( std::string & msg )
+{
+    std::ostringstream ostr;
+
+    ostr << "(player_param ";
+
+    for ( std::map< std::string, std::string >::const_iterator it = M_player_param_map.begin();
+          it != M_player_param_map.end();
+          ++it )
+    {
+        ostr << " (" << it->first << ' ' << it->second << ")";
+    }
+    ostr << ')';
+
+    msg = ostr.str();
+}
+
+void
+Player::serializePlayerType( const player_type_t & param,
+                             std::string & msg )
+{
+    std::ostringstream ostr;
+
+    ostr << "(player_type "
+         << "(id " << ntohs( param.id ) << ')'
+         << "(player_speed_max " << nltohd( param.player_speed_max )  << ')'
+         << "(stamina_inc_max " << nltohd( param.stamina_inc_max ) << ')'
+         << "(player_decay " << nltohd( param.player_decay ) << ')'
+         << "(inertia_moment " << nltohd( param.inertia_moment ) << ')'
+         << "(dash_power_rate " << nltohd( param.dash_power_rate ) << ')'
+         << "(player_size " << nltohd( param.player_size ) << ')'
+         << "(kickable_margin " << nltohd( param.kickable_margin ) << ')'
+         << "(kick_rand " << nltohd( param.kick_rand ) << ')'
+         << "(extra_stamina " << nltohd( param.extra_stamina ) << ')'
+         << "(effort_max " << nltohd( param.effort_max ) << ')'
+         << "(effort_min " << nltohd( param.effort_min ) << ')'
+         << ')';
+    msg = ostr.str();
+}
+
+
+void
+Player::doHandleLogVersion( int ver )
+{
+    M_version = ver;
+
+    if ( ver >= REC_VERSION_2
+         && M_out_strm.is_open() )
+    {
+        char buf[5];
+        buf[0] = 'U';
+        buf[1] = 'L';
+        buf[2] = 'G';
+
+        if ( ver >= REC_VERSION_4 )
+        {
+            int version_char = ver - static_cast< int >( '0' );
+            buf[3] = static_cast< char >( version_char );
+        }
+        else
+        {
+            buf[3] = static_cast< char >( ver );
+        }
+
+        M_out_strm.write( buf, 4 );
+    }
+}
+
+void
+Player::doHandleDispInfo( std::streampos pos,
+                          const dispinfo_t & info )
+{
+    if ( ntohs( info.mode ) == SHOW_MODE )
+    {
+        doHandleShowInfo( pos, info.body.show );
+    }
+}
+
+void
+Player::doHandleShowInfo( std::streampos pos,
+                          const showinfo_t & info )
+{
+    if ( M_showinfo_cache.size() > MAX_SHOWINFO )
+    {
+        return;
+    }
+
+    //
+    // update team
+    //
+
+    M_teams[0] = info.team[0];
+    M_teams[1] = info.team[1];
+
+    M_teams_v4[0].name = info.team[0].name;
+    M_teams_v4[0].score = ntohs( info.team[0].score );
+    M_teams_v4[1].name = info.team[1].name;
+    M_teams_v4[1].score = ntohs( info.team[1].score );
+
+    //
+    // register new show 1
+    //
+
+    M_showinfo_cache.push_back( boost::shared_ptr< showinfo_t >
+                                ( new showinfo_t( info ) ) );
+
+    //
+    // register new show 2
+    //
+
+    boost::shared_ptr< showinfo_t2 > show2( new showinfo_t2 );
+
+    show2->pmode = info.pmode;
+    show2->team[0] = info.team[0];
+    show2->team[1] = info.team[1];
+    show2->ball.x = nstonl( info.pos[0].x );
+    show2->ball.y = nstonl( info.pos[0].y );
+
+    for ( int i = 0; i < MAX_PLAYER * 2; ++i )
+    {
+        show2->pos[i].mode = info.pos[i+1].enable;
+        show2->pos[i].body_angle = (Int32)htonl((Int32)(Deg2Rad( (double)(Int16)ntohs( info.pos[i+1].angle ) ) * SHOWINFO_SCALE2));
+        show2->pos[i].x = nstonl( info.pos[i+1].x );
+        show2->pos[i].y = nstonl( info.pos[i+1].y );
+    }
+    show2->time = info.time;
+
+    M_showinfo2_cache.push_back( show2 );
+}
+
+void
+Player::doHandleShowInfo( std::streampos pos,
+                          const short_showinfo_t2 & info )
+{
+    if ( M_showinfo_cache.size() > MAX_SHOWINFO )
+    {
+        return;
+    }
+
+    //
+    // register new show 1
+    //
+
+    boost::shared_ptr< showinfo_t > show( new showinfo_t );
+    show->pmode = M_playmode;
+    show->team[0] = M_teams[0];
+    show->team[1] = M_teams[1];
+    show->pos[0].x = nltons( info.ball.x );
+    show->pos[0].y = nltons( info.ball.y );
+    for ( int i = 0; i < MAX_PLAYER * 2; ++i )
+    {
+        show->pos[i+1].enable = info.pos[i].mode;
+        show->pos[i+1].angle = htons((Int16)(Rad2Deg( (double)(Int32)ntohl( info.pos[i].body_angle ) ) / SHOWINFO_SCALE2) );
+        show->pos[i+1].x = nltons( info.pos[i].x );
+        show->pos[i+1].y = nltons( info.pos[i].y );
+        show->pos[i+1].unum = htons((i % MAX_PLAYER) + 1);
+        show->pos[i+1].side = htons(((i < MAX_PLAYER) ? LEFT : RIGHT ));
+    }
+    show->time = info.time;
+
+    M_showinfo_cache.push_back( show );
+
+    //
+    // register new show 2
+    //
+
+    boost::shared_ptr< showinfo_t2 > show2( new showinfo_t2 );
+    show2->pmode = M_playmode;
+    show2->team[0] = M_teams[0];
+    show2->team[1] = M_teams[1];
+    show2->ball = info.ball;
+    for ( int i = 0; i < MAX_PLAYER * 2; ++i )
+    {
+        show2->pos[i] = info.pos[i];
+    }
+    show2->time = info.time;
+
+    M_showinfo2_cache.push_back( show2 );
+}
+
+void
+Player::doHandleMsgInfo( std::streampos ,
+                         Int16 ,
+                         const std::string &  )
+{
+
+}
+
+void
+Player::doHandlePlayMode( std::streampos,
+                          char pm )
+{
+    M_playmode = pm;
+}
+
+void
+Player::doHandleTeamInfo( std::streampos,
+                          const team_t & team_l,
+                          const team_t & team_r )
+{
+    M_teams[0] = team_l;
+    M_teams[1] = team_r;
+
+    M_teams_v4[0].name = team_l.name;
+    M_teams_v4[0].score = ntohs( team_l.score );
+    M_teams_v4[1].name = team_r.name;
+    M_teams_v4[1].score = ntohs( team_r.score );
+}
+
+void
+Player::doHandleServerParams( std::streampos,
+                              const server_params_t & params )
+{
+    M_server_param = params;
+
+    if ( M_out_strm.is_open() )
+    {
+        Int16 mode = htons( PARAM_MODE );
+        M_out_strm.write( reinterpret_cast< const char * >( &mode ),
+                          sizeof( mode ) );
+        M_out_strm.write( reinterpret_cast< const char * >( &params ),
+                          sizeof( server_params_t ) );
+    }
+}
+
+void
+Player::doHandlePlayerParams( std::streampos,
+                              const player_params_t & params )
+{
+    M_player_param = params;
+
+    if ( M_out_strm.is_open() )
+    {
+        Int16 mode = htons( PPARAM_MODE );
+        M_out_strm.write( reinterpret_cast< const char * >( &mode ),
+                          sizeof( mode ) );
+        M_out_strm.write( reinterpret_cast< const char * >( &params ),
+                          sizeof( player_params_t ) );
+    }
+}
+
+
+void
+Player::doHandlePlayerType( std::streampos,
+                            const player_type_t & info )
+{
+    M_player_types.push_back( info );
+
+    if ( M_out_strm.is_open() )
+    {
+        Int16 mode = htons( PT_MODE );
+        M_out_strm.write( reinterpret_cast< const char * >( &mode ),
+                          sizeof( mode ) );
+        M_out_strm.write( reinterpret_cast< const char * >( &info ),
+                          sizeof( player_type_t ) );
+    }
+}
+
+
+
+void
+Player::doHandleShowBegin( const int time )
+{
+    if ( M_showinfo_cache.size() > MAX_SHOWINFO )
+    {
+        return;
+    }
+
+    // v1 data
+    boost::shared_ptr< showinfo_t > show( new showinfo_t );
+    show->pmode = M_playmode;
+    show->team[0] = M_teams[0];
+    show->team[1] = M_teams[1];
+    show->time = htons( time );
+
+    M_showinfo_cache.push_back( show );
+
+    // create v2 data
+    boost::shared_ptr< showinfo_t2 > show2( new showinfo_t2 );
+    show2->pmode = M_playmode;
+    show2->team[0] = M_teams[0];
+    show2->team[1] = M_teams[1];
+    show2->time = htons( time );
+
+    M_showinfo2_cache.push_back( show2 );
+
+}
+
+void
+Player::doHandleShowEnd()
+{
+
+}
+
+void
+Player::doHandleBall( const int time,
+                      const BallT & ball )
+{
+    if ( M_showinfo_cache.empty()
+         || M_showinfo2_cache.empty() )
+    {
+        return;
+    }
+
+    boost::shared_ptr< showinfo_t > show = M_showinfo_cache.back();
+    boost::shared_ptr< showinfo_t2 > show2 = M_showinfo2_cache.back();
+    if ( show->time != (Int16)htons( time )
+         || show2->time != (Int16)htons( time ) )
+    {
+        std::cerr << "doHandleBall " << time << " time mismatch" << std::endl;
+        return;
+    }
+
+    // v1 data
+    show->pos[0].x = hdtons( ball.x );
+    show->pos[0].y = hdtons( ball.y );
+
+    // v2 data
+    show2->ball.x = hdtonl( ball.x );
+    show2->ball.y = hdtonl( ball.y );
+    show2->ball.deltax = hdtonl( ball.vx );
+    show2->ball.deltay = hdtonl( ball.vy );
+}
+
+void
+Player::doHandlePlayer( const int time,
+                        const PlayerT & player )
+{
+    if ( M_showinfo_cache.empty()
+         || M_showinfo2_cache.empty() )
+    {
+        return;
+    }
+
+    boost::shared_ptr< showinfo_t > show = M_showinfo_cache.back();
+    boost::shared_ptr< showinfo_t2 > show2 = M_showinfo2_cache.back();
+    if ( show->time != (Int16)htons( time )
+         || show2->time != (Int16)htons( time ) )
+    {
+        return;
+    }
+
+    const int idx = ( player.side == 'l'
+                      ? player.unum - 1
+                      : MAX_PLAYER + player.unum - 1 );
+    if ( idx < 0 || MAX_PLAYER*2 <= idx )
+    {
+        return;
+    }
+
+    // v1 data
+    show->pos[idx+1].enable = htons( player.state );
+    show->pos[idx+1].side = htons( player.side == 'l' ? LEFT : RIGHT );
+    show->pos[idx+1].unum = htons( player.unum );
+    show->pos[idx+1].angle = htons( (Int16)player.body );
+    show->pos[idx+1].x = hdtons( player.x );
+    show->pos[idx+1].y = hdtons( player.y );
+
+    // v2 data
+    show2->pos[idx].mode = htons( player.state );
+    show2->pos[idx].type = htons( player.type );
+    show2->pos[idx].x = hdtonl( player.x );
+    show2->pos[idx].y = hdtonl( player.y );
+    show2->pos[idx].deltax = hdtonl( player.vx );
+    show2->pos[idx].deltay = hdtonl( player.vy );
+    show2->pos[idx].body_angle = hdtonl( Deg2Rad( player.body ) );
+    show2->pos[idx].head_angle = hdtonl( Deg2Rad( player.neck ) );
+    show2->pos[idx].view_width = hdtonl( Deg2Rad( player.view_width ) );
+    show2->pos[idx].view_quality = htons( player.view_quality ? 1 : 0 );
+    show2->pos[idx].stamina = hdtonl( player.stamina );
+    show2->pos[idx].effort = hdtonl( player.effort );
+    show2->pos[idx].recovery = hdtonl( player.recovery );
+    show2->pos[idx].kick_count = htons( player.n_kick );
+    show2->pos[idx].dash_count = htons( player.n_dash );
+    show2->pos[idx].turn_count = htons( player.n_turn );
+    show2->pos[idx].say_count = htons( player.n_say );
+    show2->pos[idx].tneck_count = htons( player.n_turn_neck );
+    show2->pos[idx].catch_count = htons( player.n_catch );
+    show2->pos[idx].move_count = htons( player.n_move );
+    show2->pos[idx].chg_view_count = htons( player.n_change_view );
+}
+
+void
+Player::doHandleMsg( const int time,
+                     const int board,
+                     const char * msg )
+{
+
+}
+
+void
+Player::doHandlePlayMode( const int time,
+                          const PlayMode pm )
+{
+    M_playmode = static_cast< char >( pm );
+}
+
+void
+Player::doHandleTeam( const int time,
+                      const TeamT & team_l,
+                      const TeamT & team_r )
+{
+    std::snprintf( M_teams[0].name, 16, "%s", team_l.name.c_str() );
+    M_teams[0].score = htons( team_l.score );
+    std::snprintf( M_teams[1].name, 16, "%s", team_r.name.c_str() );
+    M_teams[1].score = htons( team_r.score );
+
+    M_teams_v4[0] = team_l;
+    M_teams_v4[1] = team_r;
+}
+
+void
+Player::doHandleServerParams( const std::map< std::string, std::string > & param_map )
+{
+    M_server_param_map = param_map;
+
+    std::map< std::string, std::string >::const_iterator it;
+
+    if ( ( it = param_map.find( "goal_width" ) ) != param_map.end() )
+    {
+        M_server_param.gwidth = hdtonl( std::atof( it->second.c_str() ) );
+    }
+    if ( ( it = param_map.find( "ball_size" ) ) != param_map.end() )
+    {
+        M_server_param.bsize = hdtonl( std::atof( it->second.c_str() ) );
+    }
+    if ( ( it = param_map.find( "ball_decay" ) ) != param_map.end() )
+    {
+        M_server_param.bdecay = hdtonl( std::atof( it->second.c_str() ) );
+    }
+    if ( ( it = param_map.find( "player_size" ) ) != param_map.end() )
+    {
+        M_server_param.psize = hdtonl( std::atof( it->second.c_str() ) );
+    }
+    if ( ( it = param_map.find( "kickable_margin" ) ) != param_map.end() )
+    {
+        M_server_param.kmargin = hdtonl( std::atof( it->second.c_str() ) );
+    }
+
+    if ( M_out_strm.is_open() )
+    {
+        std::string msg;
+        serializeServerParam( msg );
+        M_out_strm << msg << '\n';
+    }
+}
+
+void
+Player::doHandlePlayerParams( const std::map< std::string, std::string > & param_map )
+{
+    M_player_param_map = param_map;
+
+    //M_player_param;
+
+    if ( M_out_strm.is_open() )
+    {
+        std::string msg;
+        serializePlayerParam( msg );
+        M_out_strm << msg << '\n';
+    }
+}
+
+void
+Player::doHandlePlayerType( const std::map< std::string, std::string > & param_map )
+{
+    player_type_t param;
+
+    std::map< std::string, std::string >::const_iterator it;
+
+    if ( ( it = param_map.find( "id" ) ) != param_map.end() )
+    {
+        param.id = htons( std::atoi( it->second.c_str() ) );
+    }
+    if ( ( it = param_map.find( "player_speed_max" ) ) != param_map.end() )
+    {
+        param.player_speed_max = hdtonl( std::atof( it->second.c_str() ) );
+    }
+    if ( ( it = param_map.find( "stamina_inc_max" ) ) != param_map.end() )
+    {
+        param.stamina_inc_max = hdtonl( std::atof( it->second.c_str() ) );
+    }
+    if ( ( it = param_map.find( "player_decay" ) ) != param_map.end() )
+    {
+        param.player_decay = hdtonl( std::atof( it->second.c_str() ) );
+    }
+    if ( ( it = param_map.find( "inertia_moment" ) ) != param_map.end() )
+    {
+        param.inertia_moment = hdtonl( std::atof( it->second.c_str() ) );
+    }
+    if ( ( it = param_map.find( "dash_power_rate" ) ) != param_map.end() )
+    {
+        param.dash_power_rate = hdtonl( std::atof( it->second.c_str() ) );
+    }
+    if ( ( it = param_map.find( "player_size" ) ) != param_map.end() )
+    {
+        param.player_size = hdtonl( std::atof( it->second.c_str() ) );
+    }
+    if ( ( it = param_map.find( "kickable_margin" ) ) != param_map.end() )
+    {
+        param.kickable_margin = hdtonl( std::atof( it->second.c_str() ) );
+    }
+    if ( ( it = param_map.find( "kick_rand" ) ) != param_map.end() )
+    {
+        param.kick_rand = hdtonl( std::atof( it->second.c_str() ) );
+    }
+    if ( ( it = param_map.find( "extra_stamina" ) ) != param_map.end() )
+    {
+        param.extra_stamina = hdtonl( std::atof( it->second.c_str() ) );
+    }
+    if ( ( it = param_map.find( "effort_max" ) ) != param_map.end() )
+    {
+        param.effort_max = hdtonl( std::atof( it->second.c_str() ) );
+    }
+    if ( ( it = param_map.find( "effort_min" ) ) != param_map.end() )
+    {
+        param.effort_min = hdtonl( std::atof( it->second.c_str() ) );
+    }
+
+    M_player_types.push_back( param );
+
+    if ( M_out_strm.is_open() )
+    {
+        std::string msg;
+        serializePlayerType( param, msg );
+        M_out_strm << msg << '\n';
+    }
 }

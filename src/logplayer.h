@@ -126,10 +126,14 @@ private:
 
 		char M_playmode;
 		team_t M_teams[2];
+    TeamT M_teams_v4[2];
 
     server_params_t M_server_param;
     player_params_t M_player_param;
     std::vector< player_type_t > M_player_types;
+
+    std::map< std::string, std::string > M_server_param_map;
+    std::map< std::string, std::string > M_player_param_map;
 
     std::vector< boost::shared_ptr< showinfo_t > > M_showinfo_cache;
     std::vector< boost::shared_ptr< showinfo_t2 > > M_showinfo2_cache;
@@ -195,6 +199,15 @@ private:
 		void sendLog( const std::size_t index );
 		void writeLog( const std::size_t index );
 
+
+    void serializeShow( const showinfo_t2 & show,
+                        std::string & msg );
+    void serializeServerParam( std::string & msg );
+    void serializePlayerParam( std::string & msg );
+    void serializePlayerType( const player_type_t & param,
+                              std::string & msg );
+
+
     void doHandleLogVersion( int ver );
 
     int doGetLogVersion() const
@@ -230,6 +243,27 @@ private:
 
     void doHandlePlayerType( std::streampos,
                              const player_type_t & );
+
+
+    // version 4
+
+    void doHandleShowBegin( const int time );
+    void doHandleShowEnd();
+    void doHandleBall( const int time,
+                       const BallT & ball );
+    void doHandlePlayer( const int time,
+                         const PlayerT & player );
+    void doHandleMsg( const int time,
+                      const int board,
+                      const char * msg );
+    void doHandlePlayMode( const int time,
+                           const PlayMode pm );
+    void doHandleTeam( const int time,
+                       const TeamT & team_l,
+                       const TeamT & team_r );
+    void doHandleServerParams( const std::map< std::string, std::string > & param_map );
+    void doHandlePlayerParams( const std::map< std::string, std::string > & param_map );
+    void doHandlePlayerType( const std::map< std::string, std::string > & param_map );
 
 };
 
