@@ -1,5 +1,6 @@
 2008-02-18  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 
+	* src/rcgsplit.cpp:
 	* src/logplayer.cpp:
 	* src/logplayer.h:
 	* src/netif.cpp:

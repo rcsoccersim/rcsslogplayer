@@ -240,6 +240,7 @@ protected:
     void doHandlePlayer( const int time,
                          const PlayerT & player )
       { }
+    virtual
     void doHandleMsg( const int time,
                       const int board,
                       const char * msg )

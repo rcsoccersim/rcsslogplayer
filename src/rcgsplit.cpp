@@ -35,10 +35,12 @@
 #include <string>
 #include <list>
 #include <fstream>
+#include <cmath>
 
 #ifdef HAVE_NETINET_IN_H
 #include <netinet/in.h>
 #endif
+
 
 class RCGSplitter
     : public rcss::RCGDataHandler {
@@ -56,6 +58,10 @@ private:
     server_params_t M_server_param;
     player_params_t M_player_param;
     std::list< player_type_t > M_player_types;
+
+    std::string M_server_param_string;
+    std::string M_player_param_string;
+    std::list< std::string > M_player_type_strings;
 
     char M_playmode;
     team_t M_team_l;
@@ -108,7 +114,7 @@ private:
 
     virtual
     void doHandleMsgInfo( std::streampos,
-                          short,
+                          Int16,
                           const std::string & );
 
     virtual
@@ -135,6 +141,39 @@ private:
     virtual
     void doHandleEOF();
 
+
+    // version 4
+    virtual
+    void doHandleShowBegin( const int time );
+    virtual
+    void doHandleShowEnd();
+
+    virtual
+    void doHandleBall( const int time,
+                       const BallT & ball );
+    virtual
+    void doHandlePlayer( const int time,
+                         const PlayerT & player );
+    virtual
+    void doHandleMsg( const int time,
+                      const int board,
+                      const char * msg );
+    virtual
+    void doHandlePlayMode( const int time,
+                           const PlayMode pm );
+    virtual
+    void doHandleTeam( const int time,
+                       const TeamT & team_l,
+                       const TeamT & team_r );
+    virtual
+    void doHandleServerParams( const std::map< std::string, std::string > & param_map );
+    virtual
+    void doHandlePlayerParams( const std::map< std::string, std::string > & param_map );
+    virtual
+    void doHandlePlayerType( const std::map< std::string, std::string > & param_map );
+
+
+    // utility
 
     bool createOutputFile( const int cycle );
     void writeHeader();
@@ -232,7 +271,7 @@ void
 RCGSplitter::doHandleDispInfo( std::streampos,
                                const dispinfo_t & disp )
 {
-    short mode = ntohs( disp.mode );
+    Int16 mode = ntohs( disp.mode );
 
     if ( mode == SHOW_MODE )
     {
@@ -265,7 +304,7 @@ RCGSplitter::doHandleShowInfo( std::streampos,
         return;
     }
 
-    short mode = htons( SHOW_MODE );
+    Int16 mode = htons( SHOW_MODE );
 
     M_fout.write( reinterpret_cast< const char * >( &mode ),
                   sizeof( mode ) );
@@ -287,11 +326,11 @@ RCGSplitter::doHandleShowInfo( std::streampos,
         return;
     }
 
-    static char s_playmode = (char)0;
+    static char s_playmode = static_cast< char >( 0 );
     static team_t s_teams[2] = { { "", 0 },
                                  { "", 0 } };
 
-    short mode;
+    Int16 mode;
 
     if ( new_file
          || s_playmode != M_playmode )
@@ -338,7 +377,7 @@ RCGSplitter::doHandleShowInfo( std::streampos,
 /*--------------------------------------------------------------------*/
 void
 RCGSplitter::doHandleMsgInfo( std::streampos,
-                              short board,
+                              Int16 board,
                               const std::string & msg )
 {
     if ( ! M_fout.is_open() )
@@ -346,7 +385,7 @@ RCGSplitter::doHandleMsgInfo( std::streampos,
         return;
     }
 
-    short mode = htons( MSG_MODE );
+    Int16 mode = htons( MSG_MODE );
 
     M_fout.write( reinterpret_cast< const char * >( &mode ),
                   sizeof( mode ) );
@@ -421,6 +460,220 @@ RCGSplitter::doHandleEOF()
 }
 
 /*--------------------------------------------------------------------*/
+void
+RCGSplitter::doHandleShowBegin( const int time )
+{
+    static const char * playmode_strings[] = PLAYMODE_STRINGS;
+
+    bool new_file = createOutputFile( time );
+
+    if ( ! M_fout.is_open() )
+    {
+        return;
+    }
+
+    static char s_playmode = static_cast< char >( 0 );
+    static team_t s_teams[2] = { { "", 0 },
+                                 { "", 0 } };
+
+    if ( new_file
+         || s_playmode != M_playmode )
+    {
+        s_playmode = M_playmode;
+
+        M_fout << "(playmode " << time << ' '
+               << playmode_strings[M_playmode] << ")\n";
+    }
+
+    if  ( new_file
+          || std::strlen( s_teams[0].name ) != std::strlen( M_team_l.name )
+          || std::strcmp( s_teams[0].name, M_team_l.name )
+          || s_teams[0].score != M_team_l.score
+          || std::strlen( s_teams[1].name ) != std::strlen( M_team_r.name )
+          || std::strcmp( s_teams[1].name, M_team_r.name )
+          || s_teams[1].score != M_team_r.score
+          )
+    {
+        std::snprintf( s_teams[0].name, 16, "%s", M_team_l.name );
+        s_teams[0].score = M_team_l.score;
+        std::snprintf( s_teams[1].name, 16, "%s", M_team_r.name );
+        s_teams[1].score = M_team_r.score;
+
+
+        M_fout << "(team "
+               << M_team_l.name << ' ' << M_team_r.name << ' '
+               << ntohs( M_team_l.score ) << ' ' << ntohs( M_team_r.score )
+               << ")\n";
+    }
+
+
+    M_fout << "(show " << time;
+}
+
+/*--------------------------------------------------------------------*/
+void
+RCGSplitter::doHandleShowEnd()
+{
+    if ( ! M_fout.is_open() )
+    {
+        return;
+    }
+
+    M_fout << ")\n";
+}
+
+/*--------------------------------------------------------------------*/
+void
+RCGSplitter::doHandleBall( const int time,
+                           const BallT & ball )
+{
+    if ( ! M_fout.is_open() )
+    {
+        return;
+    }
+
+    M_fout << " ((b) "
+           << ball.x << ' ' << ball.y << ' '
+           << ball.vx << ' ' << ball.vy << ')';
+}
+
+/*--------------------------------------------------------------------*/
+void
+RCGSplitter::doHandlePlayer( const int time,
+                             const PlayerT & player )
+{
+    if ( ! M_fout.is_open() )
+    {
+        return;
+    }
+
+    M_fout << " ((" << player.side << ' ' << player.unum << ')'
+           << player.type << ' '
+           << std::hex << std::showbase
+           << player.state
+           << std::dec << std::noshowbase;
+    M_fout << ' ' << player.x
+           << ' ' << player.y
+           << ' ' << player.vx
+           << ' ' << player.vy
+           << ' ' << player.body
+           << ' ' << player.neck;
+    M_fout << " (v "
+           << ( player.view_quality ? "h " : "l " )
+           << player.view_width << ')';
+    M_fout << " (s "
+           << player.stamina << ' '
+           << player.effort << ' '
+           << player.recovery << ')';
+    M_fout << " (c "
+           << player.n_kick << ' '
+           << player.n_dash << ' '
+           << player.n_turn << ' '
+           << player.n_catch << ' '
+           << player.n_move << ' '
+           << player.n_turn_neck << ' '
+           << player.n_change_view << ' '
+           << player.n_say << ' '
+           << 0 << ' ' // tackle
+           << 0 << ' ' // pointto
+           << 0 << ')'; // attentionto
+    M_fout << ')';
+}
+
+/*--------------------------------------------------------------------*/
+void
+RCGSplitter::doHandleMsg( const int time,
+                          const int board,
+                          const char * msg )
+{
+    if ( ! M_fout.is_open() )
+    {
+        return;
+    }
+
+    M_fout << "(msg " << time
+           << ' ' << board
+           << " \"" << msg << "\")\n" ;
+}
+
+/*--------------------------------------------------------------------*/
+void
+RCGSplitter::doHandlePlayMode( const int time,
+                               const PlayMode pm )
+{
+    M_playmode = static_cast< char >( pm );
+}
+
+/*--------------------------------------------------------------------*/
+void
+RCGSplitter::doHandleTeam( const int time,
+                           const TeamT & team_l,
+                           const TeamT & team_r )
+{
+    std::snprintf( M_team_l.name, 16, "%s", team_l.name.c_str() );
+    M_team_l.score = htons( team_l.score );
+
+    std::snprintf( M_team_r.name, 16, "%s", team_r.name.c_str() );
+    M_team_r.score = htons( team_r.score );
+}
+
+/*--------------------------------------------------------------------*/
+void
+RCGSplitter::doHandleServerParams( const std::map< std::string, std::string > & param_map )
+{
+    M_server_param_string = "(server_param ";
+    for ( std::map< std::string, std::string >::const_iterator it = param_map.begin();
+          it != param_map.end();
+          ++it )
+    {
+        M_server_param_string += '(';
+        M_server_param_string += it->first;
+        M_server_param_string += ' ';
+        M_server_param_string += it->second;
+        M_server_param_string += ')';
+    }
+    M_server_param_string += ')';
+}
+
+/*--------------------------------------------------------------------*/
+void
+RCGSplitter::doHandlePlayerParams( const std::map< std::string, std::string > & param_map )
+{
+    M_player_param_string = "(player_param ";
+    for ( std::map< std::string, std::string >::const_iterator it = param_map.begin();
+          it != param_map.end();
+          ++it )
+    {
+        M_player_param_string += '(';
+        M_player_param_string += it->first;
+        M_player_param_string += ' ';
+        M_player_param_string += it->second;
+        M_player_param_string += ')';
+    }
+    M_player_param_string += ')';
+}
+
+/*--------------------------------------------------------------------*/
+void
+RCGSplitter::doHandlePlayerType( const std::map< std::string, std::string > & param_map )
+{
+    std::string param_string = "(player_type ";
+    for ( std::map< std::string, std::string >::const_iterator it = param_map.begin();
+          it != param_map.end();
+          ++it )
+    {
+        param_string += '(';
+        param_string += it->first;
+        param_string += ' ';
+        param_string += it->second;
+        param_string += ')';
+    }
+    param_string += ')';
+
+    M_player_type_strings.push_back( param_string );
+}
+
+/*--------------------------------------------------------------------*/
 bool
 RCGSplitter::createOutputFile( const int cycle )
 {
@@ -481,13 +734,30 @@ RCGSplitter::writeHeader()
         header[0] = 'U';
         header[1] = 'L';
         header[2] = 'G';
-        header[3] = (char)M_version;
+        header[3] = static_cast< char >( M_version );
+
+        if ( M_version >= REC_VERSION_4 )
+        {
+            header[3] = static_cast< char >( static_cast< int >( '0' ) + M_version );
+        }
 
         M_fout.write( header, 4 );
 
-        if ( M_version >= REC_VERSION_3 )
+        if ( M_version == REC_VERSION_4 )
         {
-            short mode;
+            M_fout << '\n';
+            M_fout << M_server_param_string << '\n';
+            M_fout << M_player_param_string << '\n';
+            for ( std::list< std::string >::iterator it = M_player_type_strings.begin();
+                  it != M_player_type_strings.end();
+                  ++it )
+            {
+                M_fout << *it << '\n';
+            }
+        }
+        else if ( M_version == REC_VERSION_3 )
+        {
+            Int16 mode;
 
             mode = htons( PARAM_MODE );
             M_fout.write( reinterpret_cast< const char * >( &mode ),
