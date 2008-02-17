@@ -108,6 +108,38 @@ private:
           doHandleEOF();
       }
 
+
+    // version 4
+
+    void handleShowLine( const std::string & line )
+      {
+          doHandleShowLine( line );
+      }
+    void handleMsgLine( const std::string & line )
+      {
+          doHandleMsgLine( line );
+      }
+    void handlePlayModeLine( const std::string & line )
+      {
+          doHandlePlayModeLine( line );
+      }
+    void handleTeamLine( const std::string & line )
+      {
+          doHandleTeamLine( line );
+      }
+    void handleServerParamLine( const std::string & line )
+      {
+          doHandleServerParamLine( line );
+      }
+    void handlePlayerParamLine( const std::string & line )
+      {
+          doHandlePlayerParamLine( line );
+      }
+    void handlePlayerTypeLine( const std::string & line )
+      {
+          doHandlePlayerTypeLine( line );
+      }
+
 protected:
     virtual
     void doHandleLogVersion( int ver ) = 0;
@@ -164,6 +196,29 @@ protected:
 
     virtual
     void doHandleEOF()
+      { }
+
+
+    virtual
+    void doHandleShowLine( const std::string & line )
+      { }
+    virtual
+    void doHandleMsgLine( const std::string & line )
+      { }
+    virtual
+    void doHandlePlayModeLine( const std::string & line )
+      { }
+    virtual
+    void doHandleTeamLine( const std::string & line )
+      { }
+    virtual
+    void doHandleServerParamLine( const std::string & line )
+      { }
+    virtual
+    void doHandlePlayerParamLine( const std::string & line )
+      { }
+    virtual
+    void doHandlePlayerTypeLine( const std::string & line )
       { }
 };
 

@@ -26,6 +26,9 @@
 #include "rcgparser.hpp"
 #include "rcgdatahandler.hpp"
 
+#include <iostream>
+#include <string>
+
 #ifdef HAVE_NETINET_IN_H
 #include <netinet/in.h>
 #endif
@@ -43,38 +46,6 @@ RCGParser::RCGParser( RCGDataHandler & handler )
 
 
 bool
-RCGParser::parseBegin( std::istream & strm )
-{
-    char buf[4];
-    strm.read( buf, 4 );
-    if( strm.good() )
-    {
-        if( buf[ 0 ] == 'U'
-            && buf[ 1 ] == 'L'
-            && buf[ 2 ] == 'G' )
-        {
-            int ver = static_cast< int >( buf[3] );
-            if ( ver != 2 && ver != 3 )
-            {
-                ver -= static_cast< int >( '0' );
-            }
-
-            M_handler.handleLogVersion( ver );
-        }
-        else
-        {
-            strm.seekg( 0 );
-            M_handler.handleLogVersion( 1 );
-        }
-        return true;
-    }
-    else
-    {
-        return strmErr( strm );
-    }
-}
-
-bool
 RCGParser::doParse( std::istream & strm )
 {
     if ( strm.tellg() == std::streampos( 0 )
@@ -89,6 +60,43 @@ RCGParser::doParse( std::istream & strm )
     }
 
     return parseNext( strm );
+}
+
+bool
+RCGParser::parseBegin( std::istream & strm )
+{
+    char buf[4];
+    strm.read( buf, 4 );
+    if ( strm.good() )
+    {
+        if( buf[ 0 ] == 'U'
+            && buf[ 1 ] == 'L'
+            && buf[ 2 ] == 'G' )
+        {
+            int ver = static_cast< int >( buf[3] );
+            if ( ver != 2 && ver != 3 )
+            {
+                ver -= static_cast< int >( '0' );
+            }
+            std::cerr << "RCGParser::parseBegin version = " << ver
+                      << std::endl;
+
+            M_handler.handleLogVersion( ver );
+        }
+        else
+        {
+            std::cerr << "RCGParser::parseBegin version = " << 1
+                      << std::endl;
+
+            strm.seekg( 0 );
+            M_handler.handleLogVersion( 1 );
+        }
+        return true;
+    }
+    else
+    {
+        return strmErr( strm );
+    }
 }
 
 bool
@@ -331,10 +339,57 @@ RCGParser::strmErr( std::istream & strm )
 bool
 RCGParser::parseLines( std::istream & strm )
 {
+    int n_line = 0;
 
-    return true;
+    std::string line_buf;
+    line_buf.reserve( 8192 );
+
+    while ( std::getline( strm, line_buf ) )
+    {
+        ++n_line;
+        if ( line_buf.empty() ) continue;
+
+        if ( line_buf.compare( 0, 6, "(show " ) == 0 )
+        {
+            M_handler.handleShowLine( line_buf );
+        }
+        else if ( line_buf.compare( 0, 5, "(msg " ) == 0 )
+        {
+            M_handler.handleMsgLine( line_buf );
+        }
+        else if ( line_buf.compare( 0, 10, "(playmode " ) == 0 )
+        {
+            M_handler.handlePlayModeLine( line_buf );
+        }
+        else if ( line_buf.compare( 0, 6, "(team " ) == 0 )
+        {
+            M_handler.handleTeamLine( line_buf );
+        }
+        else if ( line_buf.compare( 0, 13, "(player_type " ) == 0 )
+        {
+            M_handler.handlePlayerTypeLine( line_buf );
+        }
+        else if ( line_buf.compare( 0, 14, "(server_param " ) == 0 )
+        {
+            M_handler.handleServerParamLine( line_buf );
+        }
+        else if ( line_buf.compare( 0, 14, "(player_param " ) == 0 )
+        {
+            M_handler.handlePlayerParamLine( line_buf );
+        }
+        else
+        {
+            //throw std::string( "Unknown info " ) + line_buf.substr( 0, 10 ) + "\n";
+            std::cerr << "RCGParser: Unknown info at line " << n_line
+                      << "\"" << line_buf << "\""
+                      << std::endl;
+        }
+    }
+
+    M_handler.handleEOF();
+
+    return false;
 
 }
-
 
 }

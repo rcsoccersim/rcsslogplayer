@@ -1,5 +1,11 @@
 2008-02-17  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 
+	* src/logplayer.cpp:
+	* src/rcg2xml.cpp:
+	* src/rcgdatahandler.hpp:
+	* src/rcgparser.cpp:
+	- simply implemented rcg2xml for version 4 game log.
+
 	* src/Makefile.am:
 	* src/param.h:
 	* src/controler.cpp:

@@ -731,12 +731,18 @@ Player::doHandleLogVersion( int ver )
         buf[0] = 'U';
         buf[1] = 'L';
         buf[2] = 'G';
-        int record_version = REC_VERSION_2;
-        if ( ver >= REC_VERSION_2 )
+
+        if ( ver >= REC_VERSION_4 )
         {
-            record_version = ver;
+            int record_version = ver - static_cast< int >( '0' );
+            buf[3] = static_cast< char >( record_version );
         }
-        buf[3] = static_cast< char >( record_version );
+        else if ( ver >= REC_VERSION_2 )
+        {
+            buf[3] = static_cast< char >( ver );
+        }
+
+
         M_out_strm.write( buf, 4 );
     }
 }
