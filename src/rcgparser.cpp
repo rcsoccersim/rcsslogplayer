@@ -341,49 +341,51 @@ RCGParser::parseLines( std::istream & strm )
 {
     int n_line = 0;
 
-    std::string line_buf;
-    line_buf.reserve( 8192 );
+    std::string line;
+    line.reserve( 8192 );
 
-    while ( std::getline( strm, line_buf ) )
+    while ( std::getline( strm, line ) )
     {
         ++n_line;
-        if ( line_buf.empty() ) continue;
+        if ( line.empty() ) continue;
 
-        if ( line_buf.compare( 0, 6, "(show " ) == 0 )
+        if ( line.compare( 0, 6, "(show " ) == 0 )
         {
-            M_handler.handleShowLine( line_buf );
+            parseShowLine( n_line, line );
         }
-        else if ( line_buf.compare( 0, 5, "(msg " ) == 0 )
+        else if ( line.compare( 0, 5, "(msg " ) == 0 )
         {
-            M_handler.handleMsgLine( line_buf );
+            parseMsgLine( n_line, line );
         }
-        else if ( line_buf.compare( 0, 10, "(playmode " ) == 0 )
+        else if ( line.compare( 0, 10, "(playmode " ) == 0 )
         {
-            M_handler.handlePlayModeLine( line_buf );
+            parsePlayModeLine( n_line, line );
         }
-        else if ( line_buf.compare( 0, 6, "(team " ) == 0 )
+        else if ( line.compare( 0, 6, "(team " ) == 0 )
         {
-            M_handler.handleTeamLine( line_buf );
+            parseTeamLine( n_line, line );
         }
-        else if ( line_buf.compare( 0, 13, "(player_type " ) == 0 )
+        else if ( line.compare( 0, 13, "(player_type " ) == 0 )
         {
-            M_handler.handlePlayerTypeLine( line_buf );
+            parsePlayerTypeLine( n_line, line );
         }
-        else if ( line_buf.compare( 0, 14, "(server_param " ) == 0 )
+        else if ( line.compare( 0, 14, "(server_param " ) == 0 )
         {
-            M_handler.handleServerParamLine( line_buf );
+            parseServerParamLine( n_line, line );
         }
-        else if ( line_buf.compare( 0, 14, "(player_param " ) == 0 )
+        else if ( line.compare( 0, 14, "(player_param " ) == 0 )
         {
-            M_handler.handlePlayerParamLine( line_buf );
+            parsePlayerParamLine( n_line, line );
         }
         else
         {
-            //throw std::string( "Unknown info " ) + line_buf.substr( 0, 10 ) + "\n";
-            std::cerr << "RCGParser: Unknown info at line " << n_line
-                      << "\"" << line_buf << "\""
+            std::cerr << __FILE__ << ':' << __LINE__ << ": error: "
+                      << "RCGParser: Unknown info at line " << n_line
+                      << "\"" << line << "\""
                       << std::endl;
         }
+
+        if ( n_line >= 50 ) break;
     }
 
     M_handler.handleEOF();
@@ -391,5 +393,347 @@ RCGParser::parseLines( std::istream & strm )
     return false;
 
 }
+
+bool
+RCGParser::parseShowLine( const int n_line,
+                          const std::string & line )
+{
+    const char * buf = line.c_str();
+
+    int n_read = 0;
+
+    // time
+    int time = 0;
+
+    if ( std::sscanf( buf, " ( show %d %n ",
+                      &time, &n_read ) != 1 )
+    {
+        std::cerr << n_line << ": error: "
+                  << "Illegal time info \"" << line << "\"" << std::endl;
+        return false;
+    }
+    buf += n_read;
+
+    M_handler.handleShowBegin( time );
+
+    // ball
+    {
+        BallT ball;
+        if ( std::sscanf( buf, " ( ( b ) %lf %lf %lf %lf ) %n ",
+                          &ball.x, &ball.y, &ball.vx, &ball.vy,
+                          &n_read ) != 4 )
+        {
+            std::cerr << n_line << ": error: "
+                      << "Illegal ball info \"" << line << "\"" << std::endl;
+            return false;
+        }
+        buf += n_read;
+
+        M_handler.handleBall( time, ball );
+    }
+
+    // players
+    for ( int i = 0; i < MAX_PLAYER * 2; ++i )
+    {
+        if ( *buf == ')' ) break;
+
+        PlayerT p;
+
+        if ( std::sscanf( buf,
+                          " ( ( %c %d ) %d %lx %lf %lf %lf %lf %lf %lf %n ",
+                          &p.side, &p.unum, &p.type, &p.state,
+                          &p.x, &p.y, &p.vx, &p.vy, &p.body, &p.neck,
+                          &n_read ) != 10 )
+        {
+            std::cerr << n_line << ": error: "
+                      << " Illegal player " << i << " \"" << line << "\""
+                      << std::endl;;
+            return false;
+        }
+        buf += n_read;
+
+        if ( std::sscanf( buf,
+                          " %lf %lf %n ",
+                          &p.arm_dist, &p.arm_head,
+                          &n_read ) == 2 )
+        {
+            buf += n_read;
+        }
+
+        char view_quality = 'h';
+        if ( std::sscanf( buf,
+                          " ( v %c %lf ) %n ",
+                          &view_quality, &p.view_width,
+                          &n_read ) != 2 )
+        {
+            std::cerr << n_line << ": error: "
+                      << "Illegal player " << i << " view \"" << line << "\"" << std::endl;;
+            return false;
+        }
+        buf += n_read;
+        p.view_quality = ( view_quality == 'h' ? true : false );
+
+        if ( std::sscanf( buf,
+                          " ( s %lf %lf %lf ) %n ",
+                          &p.stamina, &p.effort, &p.recovery,
+                          &n_read ) != 3 )
+        {
+            std::cerr << n_line << ": error: "
+                      << "Illegal player " << i << " stamina \"" << line << "\"" << std::endl;;
+            return false;
+        }
+        buf += n_read;
+
+        if ( std::sscanf( buf,
+                          " ( f %c %d ) %n ",
+                          &p.focus_side, &p.focus_unum,
+                          &n_read ) == 2 )
+        {
+            buf += n_read;
+        }
+
+        if ( std::sscanf( buf,
+                          " ( c %d %d %d %d %d %d %d %d %d %d %d ) ) %n ",
+                          &p.n_kick, &p.n_dash, &p.n_turn, &p.n_catch, &p.n_move,
+                          &p.n_turn_neck, &p.n_change_view, &p.n_say, &p.n_tackle,
+                          &p.n_pointto, &p.n_attentionto,
+                          &n_read ) != 11 )
+        {
+            std::cerr << n_line << ": error: "
+                      << "Illegal player " << i << " count \"" << line << "\"" << std::endl;;
+            return false;
+        }
+        buf += n_read;
+
+        M_handler.handlePlayer( time, p );
+    }
+
+    M_handler.handleShowEnd();
+
+    return true;
+}
+
+bool
+RCGParser::parseMsgLine( const int n_line,
+                         const std::string & line )
+{
+    int time = 0;
+    int board = 0;
+    char msg[8192];
+
+    if ( std::sscanf( line.c_str(),
+                      " ( msg %d %d \"%8191[^\"]\" ) ",
+                      &time, &board, msg ) != 3 )
+    {
+        std::cerr << n_line << ": error: "
+                  << "Illegal msg line. \"" << line << "\"" << std::endl;;
+        return false;
+    }
+
+    M_handler.handleMsg( time, board, msg );
+
+    return true;
+}
+
+bool
+RCGParser::parsePlayModeLine( const int n_line,
+                              const std::string & line )
+{
+    static const char * playmode_strings[] = PLAYMODE_STRINGS;
+
+    int time = 0;
+    char pm_string[32];
+
+    if ( std::sscanf( line.c_str(),
+                      " ( playmode %d %31[^)] ) ",
+                      &time, pm_string ) != 2 )
+    {
+        std::cerr << n_line << ": error: "
+                  << "Illegal playmode line. \"" << line << "\"" << std::endl;;
+        return false;
+    }
+
+    PlayMode pm = PM_Null;
+    for ( int n = 0; n < PM_MAX; ++n )
+    {
+        if ( ! std::strcmp( playmode_strings[n], pm_string ) )
+        {
+            pm = static_cast< PlayMode >( n );
+            break;
+        }
+    }
+
+    M_handler.handlePlayMode( time, pm );
+
+    return true;
+}
+
+bool
+RCGParser::parseTeamLine( const int n_line,
+                          const std::string & line )
+{
+    int time = 0;
+    char name_l[32], name_r[32];
+    int score_l = 0, score_r = 0;
+    int pen_score_l = 0, pen_miss_l = 0, pen_score_r = 0, pen_miss_r = 0;
+
+
+    int n = std::sscanf( line.c_str(),
+                         " ( team %d %31s %31s %d %d %d %d %d %d ",
+                         &time,
+                         name_l, name_r,
+                         &score_l, &score_r,
+                         &pen_score_l, &pen_miss_l,
+                         &pen_score_r, &pen_miss_r );
+    if ( n != 5 && n != 9 )
+    {
+        std::cerr << n_line << ": error: "
+                  << "Illegal team line. \"" << line << "\"" << std::endl;;
+        return false;
+    }
+
+    TeamT team_l( name_l, score_l, pen_score_l, pen_miss_l );
+    TeamT team_r( name_r, score_r, pen_score_r, pen_miss_r );
+
+    M_handler.handleTeam( time, team_l, team_r );
+
+    return true;
+}
+
+
+bool
+RCGParser::parseServerParamLine( const int n_line,
+                                 const std::string & line )
+{
+    std::string name;
+    ParamMap param_map;
+
+    if ( ! parseParamLine( line, name, param_map )
+         || name != "server_param" )
+    {
+        std::cerr << n_line << ": error: "
+                  << "Illegal server_param line. \"" << line << "\"" << std::endl;;
+        return false;
+    }
+
+    M_handler.handleServerParams( param_map );
+
+    return true;
+}
+
+bool
+RCGParser::parsePlayerParamLine( const int n_line,
+                                 const std::string & line )
+{
+    std::string name;
+    ParamMap param_map;
+
+    if ( ! parseParamLine( line, name, param_map )
+         || name != "player_param" )
+    {
+        std::cerr << n_line << ": error: "
+                  << "Illegal player_param line. \"" << line << "\"" << std::endl;;
+        return false;
+    }
+
+    M_handler.handlePlayerParams( param_map );
+
+    return true;
+}
+
+bool
+RCGParser::parsePlayerTypeLine( const int n_line,
+                                const std::string & line )
+{
+    std::string name;
+    ParamMap param_map;
+
+    if ( ! parseParamLine( line, name, param_map )
+         || name != "player_type" )
+    {
+        std::cerr << n_line << ": error: "
+                  << "Illegal player_type line. \"" << line << "\"" << std::endl;;
+        return false;
+    }
+
+    M_handler.handlePlayerType( param_map );
+
+    return true;
+}
+
+
+bool
+RCGParser::parseParamLine( const std::string & line,
+                           std::string & param_name,
+                           ParamMap & param_map )
+{
+    int n_read = 0;
+    {
+
+        char buf[32];
+        if ( std::sscanf( line.c_str(), " ( %31s %n ", buf, &n_read ) != 1 )
+        {
+            std::cerr << "Failed to the parse message id."
+                      << std::endl;
+            return false;
+        }
+
+        param_name = buf;
+    }
+
+    for ( std::string::size_type pos = line.find_first_of( '(', n_read );
+          pos != std::string::npos;
+          pos = line.find_first_of( '(', pos ) )
+    {
+        std::string::size_type end_pos = line.find_first_of( ' ', pos );
+        if ( end_pos == std::string::npos )
+        {
+            std::cerr << "Failed to find parameter name."
+                      << std::endl;
+            return false;
+        }
+
+        pos += 1;
+        const std::string name_str( line, pos, end_pos - pos );
+
+        pos = end_pos;
+        // search end paren or double quatation
+        end_pos = line.find_first_of( ")\"", end_pos ); //"
+        if ( end_pos == std::string::npos )
+        {
+            std::cerr << "Failed to parse parameter value for [" << name_str << "] "
+                      << std::endl;
+            return false;
+        }
+
+        // found quated value
+        if ( line[end_pos] == '\"' )
+        {
+            pos = end_pos;
+            end_pos = line.find_first_of( '\"', end_pos + 1 ); //"
+            if ( end_pos == std::string::npos )
+            {
+                std::cerr << "Failed to parse the quated value for [" << name_str << "] "
+                          << std::endl;
+                return false;
+            }
+            end_pos += 1; // skip double quatation
+        }
+        else
+        {
+            pos += 1; // skip white space
+        }
+
+        std::string value_str( line, pos, end_pos - pos );
+        //value_str = cleanString( value_str );
+
+        param_map.insert( ParamMap::value_type( name_str, value_str ) );
+
+        pos = end_pos;
+    }
+
+    return true;
+}
+
 
 }

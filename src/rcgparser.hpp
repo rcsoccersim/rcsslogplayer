@@ -25,6 +25,9 @@
 
 #include <rcssbase/parser.h>
 
+#include <string>
+#include <map>
+
 namespace rcss {
 
 class RCGDataHandler;
@@ -40,6 +43,9 @@ private:
     RCGParser & operator=( const RCGParser & );
 
 public:
+
+    typedef std::map< std::string, std::string > ParamMap;
+
     explicit
     RCGParser( RCGDataHandler & handler );
 
@@ -87,6 +93,25 @@ private:
 
     // version 4
     bool parseLines( std::istream & strm );
+
+    bool parseShowLine( const int n_line,
+                        const std::string & line );
+    bool parseMsgLine( const int n_line,
+                       const std::string & line );
+    bool parsePlayModeLine( const int n_line,
+                            const std::string & line );
+    bool parseTeamLine( const int n_line,
+                        const std::string & line );
+    bool parseServerParamLine( const int n_line,
+                               const std::string & line );
+    bool parsePlayerParamLine( const int n_line,
+                               const std::string & line );
+    bool parsePlayerTypeLine( const int n_line,
+                              const std::string & line );
+
+    bool parseParamLine( const std::string & line,
+                         std::string & param_name,
+                         ParamMap & param_map );
 
 };
 

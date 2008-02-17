@@ -130,9 +130,9 @@ private:
       }
 
     void printParam( const char * name,
-                     const char* value )
+                     const char * value )
       {
-          std::string name_str( value );
+          std::string name_str( name );
           std::string value_str( value );
           XMLEscape( name_str );
           XMLEscape( value_str );
@@ -568,207 +568,89 @@ private:
       }
 
 
+    // version 4
 
-    void doHandleShowLine( const std::string & line )
+    void doHandleShowBegin( const int time )
       {
-          int n_read = 0;
-
-          // time
-          int time = 0;
-          const char * buf = line.c_str();
-
-          if ( std::sscanf( buf, " ( show %d %n ",
-                            &time, &n_read ) != 1 )
-          {
-              std::cerr << "Illegal time info \"" << line << "\"" << std::endl;
-              return;
-          }
-          buf += n_read;
-
-          M_time = time;
           std::cout << "<ShowInfo time=\"" << time << "\">\n";
+          M_time = time;
+      }
 
-          // ball
-          {
-              double x, y, vx, vy;
-              if ( std::sscanf( buf, " ( ( b ) %lf %lf %lf %lf ) %n ",
-                                &x, &y, &vx, &vy, &n_read ) != 4 )
-              {
-                  std::cerr << "Illegal ball info \"" << line << "\"" << std::endl;
-                  return;
-              }
-              buf += n_read;
-              std::cout << "<Ball>\n";
-              printPos( x, y );
-              printVel( vx, vy );
-              std::cout << "</Ball>\n";
-          }
-
-          // players
-          for( int i = 0; i < MAX_PLAYER * 2; ++i )
-          {
-              if ( *buf == ')' ) break;
-
-              char side;
-              int unum, type;
-              long state;
-              double x, y, vx, vy, body, neck;
-
-              if ( std::sscanf( buf,
-                                " ( ( %c %d ) %d %lx %lf %lf %lf %lf %lf %lf %n ",
-                                &side, &unum, &type, &state,
-                                &x, &y, &vx, &vy, &body, &neck,
-                                &n_read ) != 10 )
-              {
-                  std::cerr << "Illegal player " << i << " \"" << line << "\"" << std::endl;;
-                  break;
-              }
-              buf += n_read;
-
-              double arm_dist = -1.0, arm_head = 0.0;
-              if ( std::sscanf( buf,
-                                " %lf %lf %n ",
-                                &arm_dist, &arm_head,
-                                &n_read ) == 2 )
-              {
-                  buf += n_read;
-              }
-
-              char view_quality = 'h';
-              double view_width = 0.0;
-              if ( std::sscanf( buf,
-                                " ( v %c %lf ) %n ",
-                                &view_quality, &view_width,
-                                &n_read ) != 2 )
-              {
-                  std::cerr << "Illegal player " << i << " view \"" << line << "\"" << std::endl;;
-                  break;
-              }
-              buf += n_read;
-
-              double stamina, effort, recovery;
-              if ( std::sscanf( buf,
-                                " ( s %lf %lf %lf ) %n ",
-                                &stamina, &effort, &recovery,
-                                &n_read ) != 3 )
-              {
-                  std::cerr << "Illegal player " << i << " stamina \"" << line << "\"" << std::endl;;
-                  break;
-              }
-              buf += n_read;
-
-              char focus_side = 'n';
-              int focus_unum = 0;
-              if ( std::sscanf( buf,
-                                " ( f %c %d ) %n ",
-                                &focus_side, &focus_unum,
-                                &n_read ) == 2 )
-              {
-                  buf += n_read;
-              }
-
-              int n_kick, n_dash, n_turn, n_catch, n_move,
-                  n_turn_neck, n_change_view, n_say, n_tackle,
-                  n_pointto, n_attentionto;
-              if ( std::sscanf( buf,
-                                " ( c %d %d %d %d %d %d %d %d %d %d %d ) ) %n ",
-                                &n_kick, &n_dash, &n_turn, &n_catch, &n_move,
-                                &n_turn_neck, &n_change_view, &n_say, &n_tackle,
-                                &n_pointto, &n_attentionto,
-                                &n_read ) != 11 )
-              {
-                  std::cerr << "Illegal player " << i << " count \"" << line << "\"" << std::endl;;
-                  break;
-              }
-              buf += n_read;
-
-              if ( state != 0 )
-              {
-                  std::cout << "<Player side=\"" << side << "\"";
-                  std::cout << " unum=\"" << unum << "\"";
-                  if ( type != 0 ) std::cout << " type=\"" << type << "\"";
-                  if ( state != 1 ) std::cout << " mode=\"" << state << "\"";
-                  std::cout << ">\n";
-                  printPos( x, y );
-                  printVel( vx, vy );
-                  printAngles( body, neck );
-                  printView( view_width, ( view_quality == 'h' ? 1 : 0 ) );
-                  printStamina( stamina, effort, recovery );
-                  printCounts( n_kick, n_dash, n_turn, n_say,
-                               n_turn_neck, n_catch, n_move, n_change_view );
-                  std::cout << "</Player>\n";
-              }
-          }
-
+    void doHandleShowEnd()
+      {
           std::cout << "</ShowInfo>\n";
       }
 
-    void doHandleMsgLine( const std::string & line )
+    void doHandleBall( const int,
+                       const BallT & ball )
       {
-          int time = 0;
-          int board = 0;
-          char msg[8192];
+          std::cout << "<Ball>\n";
+          printPos( ball.x, ball.y );
+          printVel( ball.vx, ball.vy );
+          std::cout << "</Ball>\n";
+      }
 
-          if ( std::sscanf( line.c_str(),
-                            " ( msg %d %d \"%8191[^\"]\" ) ",
-                            &time, &board, msg ) != 3 )
+    void doHandlePlayer( const int,
+                         const PlayerT & player )
+      {
+          if ( player.state != 0 )
           {
-              std::cerr << "Illegal msg line. \"" << line << "\"" << std::endl;;
-              return;
+              std::cout << "<Player side=\"" << player.side << "\"";
+              std::cout << " unum=\"" << player.unum << "\"";
+              std::cout << " type=\"" << player.type << "\"";
+              if ( player.state != 1 ) std::cout << " mode=\"" << player.state << "\"";
+              std::cout << ">\n";
+              printPos( player.x, player.y );
+              printVel( player.vx, player.vy );
+              printAngles( player.body, player.neck );
+              printView( player.view_width, player.view_quality );
+              printStamina( player.stamina, player.effort, player.recovery );
+              printCounts( player.n_kick,
+                           player.n_dash,
+                           player.n_turn,
+                           player.n_say,
+                           player.n_turn_neck,
+                           player.n_catch,
+                           player.n_move,
+                           player.n_change_view );
+              std::cout << "</Player>\n";
           }
+      }
 
+    void doHandleMsg( const int, // time
+                      const int board,
+                      const char * msg )
+      {
           std::string msgcopy( msg );
           XMLEscape( msgcopy );
           std::cout << "<MsgInfo";
-          board = ntohs( board );
           if( board != 1 ) std::cout << " board=\"" << board << "\"";
           std::cout << ">" << msgcopy << "</MsgInfo>\n";
       }
 
-    void doHandlePlayModeLine( const std::string & line )
+    void doHandlePlayMode( const int, // time
+                           const PlayMode pm )
       {
-          int time = 0;
-          char pmode[32];
-          if ( std::sscanf( line.c_str(), " ( playmode %d %31[^)] ) ",
-                            &time, pmode ) != 2 )
-          {
-              std::cerr << "Illegal playmode line. \"" << line << "\"" << std::endl;;
-              return;
-          }
-
-          PlayMode pm = play_mode_id( pmode );
           printPlayMode( static_cast< char >( pm ) );
       }
 
-    void doHandleTeamLine( const std::string & line )
+    void doHandleTeam( const int, // time
+                       const TeamT & team_l,
+                       const TeamT & team_r )
       {
-          int time = 0;
-          char name_l[32], name_r[32];
-          int score_l = 0, score_r = 0;
-          //int pen_score_l = 0, pen_miss_l = 0;
-          //int pen_score_l = 0, pen_miss_r = 0;
-
-          if ( std::sscanf( line.c_str(),
-                            " ( team %d %31s %31s %d %d ",
-                            &time, name_l, name_r, &score_l, &score_r ) != 5 )
-          {
-              std::cerr << "Illegal team line. \"" << line << "\"" << std::endl;;
-              return;
-          }
-
           std::string name;
           std::cout << "<Team side=\"l\">";
-          name = name_l;
+          name = team_l.name;
           XMLEscape( name );
           std::cout << "<Name>" << name << "</Name>";
-          std::cout << "<Score>" << score_l << "</Score>";
+          std::cout << "<Score>" << team_l.score << "</Score>";
           std::cout << "</Team>\n";
 
           std::cout << "<Team side=\"r\">";
-          name = name_r;
+          name = team_r.name;
           XMLEscape( name );
           std::cout << "<Name>" << name << "</Name>";
-          std::cout << "<Score>" << score_r << "</Score>";
+          std::cout << "<Score>" << team_r.score << "</Score>";
           std::cout << "</Team>\n";
       }
 
@@ -792,52 +674,39 @@ private:
           }
       }
 
-    // TODO: parsing a strict string value
-    void doHandleServerParamLine( const std::string & line )
+    void doHandleServerParams( const std::map< std::string, std::string > & param_map )
       {
-          const char * buf = line.c_str();
-          int n_read = 0;
-          char name[128];
-          if ( std::sscanf( line.c_str(), " ( %s %n ", name, &n_read ) != 1 )
-          {
-              std::cerr << "Illegal server_param line. \"" << line << "\"" << std::endl;;
-              return;
-          }
-
           std::cout << "<ServerParam>\n";
-          parseParams( line.c_str() + n_read );
+          for ( std::map< std::string, std::string >::const_iterator it = param_map.begin();
+                it != param_map.end();
+                ++it )
+          {
+              printParam( it->first.c_str(), it->second.c_str() );
+          }
           std::cout << "</ServerParam>\n";
       }
 
-    void doHandlePlayerParamLine( const std::string & line )
+    void doHandlePlayerParams( const std::map< std::string, std::string > & param_map )
       {
-          const char * buf = line.c_str();
-          int n_read = 0;
-          char name[128];
-          if ( std::sscanf( line.c_str(), " ( %s %n ", name, &n_read ) != 1 )
-          {
-              std::cerr << "Illegal server_param line. \"" << line << "\"" << std::endl;;
-              return;
-          }
-
           std::cout << "<PlayerParam>\n";
-          parseParams( line.c_str() + n_read );
+          for ( std::map< std::string, std::string >::const_iterator it = param_map.begin();
+                it != param_map.end();
+                ++it )
+          {
+              printParam( it->first.c_str(), it->second );
+          }
           std::cout << "</PlayerParam>\n";
       }
 
-    void doHandlePlayerTypeLine( const std::string & line )
+    void doHandlePlayerTypes( const std::map< std::string, std::string > & param_map )
       {
-          const char * buf = line.c_str();
-          int n_read = 0;
-          char name[128];
-          if ( std::sscanf( line.c_str(), " ( %s %n ", name, &n_read ) != 1 )
-          {
-              std::cerr << "Illegal server_param line. \"" << line << "\"" << std::endl;;
-              return;
-          }
-
           std::cout << "<PlayerType>\n";
-          parseParams( line.c_str() + n_read );
+          for ( std::map< std::string, std::string >::const_iterator it = param_map.begin();
+                it != param_map.end();
+                ++it )
+          {
+              printParam( it->first.c_str(), it->second );
+          }
           std::cout << "</PlayerType>\n";
       }
 

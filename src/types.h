@@ -606,7 +606,7 @@ struct player_params_t {
 
 };
 
-typedef struct {
+struct dispinfo_t2 {
     Int16 mode;
     union {
         showinfo_t2 		show;
@@ -615,7 +615,110 @@ typedef struct {
         server_params_t		sparams;
         player_params_t		pparams;
     } body;
-} dispinfo_t2;
+};
 
+struct BallT {
+    double x;
+    double y;
+    double vx;
+    double vy;
+
+    BallT()
+        : x( 0.0 )
+        , y( 0.0 )
+        , vx( 0.0 )
+        , vy( 0.0 )
+      { }
+};
+
+struct PlayerT {
+    char side;
+    int unum;
+    int type;
+    long state;
+    double x;
+    double y;
+    double vx;
+    double vy;
+    double body;
+    double neck;
+    double arm_dist;
+    double arm_head;
+    bool view_quality;
+    double view_width;
+    double stamina;
+    double effort;
+    double recovery;
+    char focus_side;
+    int focus_unum;
+    int n_kick;
+    int n_dash;
+    int n_turn;
+    int n_catch;
+    int n_move;
+    int n_turn_neck;
+    int n_change_view;
+    int n_say;
+    int n_tackle;
+    int n_pointto;
+    int n_attentionto;
+
+    PlayerT()
+        : side( 'n' )
+        , unum( 0 )
+        , type( 0 )
+        , state( 0 )
+        , x( 0.0 )
+        , y( 0.0 )
+        , vx( 0.0 )
+        , vy( 0.0 )
+        , body( 0.0 )
+        , neck( 0.0 )
+        , arm_dist( -1.0 )
+        , arm_head( 0.0 )
+        , view_quality( true )
+        , view_width( 0.0 )
+        , stamina( 0.0 )
+        , effort( 0.0 )
+        , recovery( 0.0 )
+        , focus_side( 'n' )
+        , focus_unum( 0 )
+        , n_kick( 0 )
+        , n_dash( 0 )
+        , n_turn( 0 )
+        , n_catch( 0 )
+        , n_move( 0 )
+        , n_turn_neck( 0 )
+        , n_change_view( 0 )
+        , n_say( 0 )
+        , n_tackle( 0 )
+        , n_pointto( 0 )
+        , n_attentionto( 0 )
+      { }
+};
+
+struct TeamT {
+    std::string name;
+    int score;
+    int pen_score;
+    int pen_miss;
+
+    TeamT()
+        : score( 0 )
+        , pen_score( 0 )
+        , pen_miss( 0 )
+      { }
+
+    TeamT( const char * n,
+           const int s,
+           const int p,
+           const int m )
+        : name( n )
+        , score( s )
+        , pen_score( p )
+        , pen_miss( m )
+      { }
+
+};
 
 #endif

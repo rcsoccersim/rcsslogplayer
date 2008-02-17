@@ -24,6 +24,8 @@
 
 #include "types.h"
 
+#include <string>
+#include <map>
 
 namespace rcss {
 
@@ -111,33 +113,55 @@ private:
 
     // version 4
 
-    void handleShowLine( const std::string & line )
+    virtual
+    void handleShowBegin( const int time )
       {
-          doHandleShowLine( line );
+          doHandleShowBegin( time );
       }
-    void handleMsgLine( const std::string & line )
+    virtual
+    void handleShowEnd()
       {
-          doHandleMsgLine( line );
+          doHandleShowEnd();
       }
-    void handlePlayModeLine( const std::string & line )
+
+    void handleBall( const int time,
+                     const BallT & ball )
       {
-          doHandlePlayModeLine( line );
+          doHandleBall( time, ball );
       }
-    void handleTeamLine( const std::string & line )
+    void handlePlayer( const int time,
+                       const PlayerT & player )
       {
-          doHandleTeamLine( line );
+          doHandlePlayer( time, player );
       }
-    void handleServerParamLine( const std::string & line )
+    void handleMsg( const int time,
+                    const int board,
+                    const char * msg )
       {
-          doHandleServerParamLine( line );
+          doHandleMsg( time, board, msg );
       }
-    void handlePlayerParamLine( const std::string & line )
+    void handlePlayMode( const int time,
+                         const PlayMode pm )
       {
-          doHandlePlayerParamLine( line );
+          doHandlePlayMode( time, pm );
       }
-    void handlePlayerTypeLine( const std::string & line )
+    void handleTeam( const int time,
+                     const TeamT & team_l,
+                     const TeamT & team_r )
       {
-          doHandlePlayerTypeLine( line );
+          doHandleTeam( time, team_l, team_r );
+      }
+    void handleServerParams( const std::map< std::string, std::string > & param_map )
+      {
+          doHandleServerParams( param_map );
+      }
+    void handlePlayerParams( const std::map< std::string, std::string > & param_map )
+      {
+          doHandlePlayerParams( param_map );
+      }
+    void handlePlayerType( const std::map< std::string, std::string > & param_map )
+      {
+          doHandlePlayerType( param_map );
       }
 
 protected:
@@ -199,27 +223,46 @@ protected:
       { }
 
 
+    // version 4
+
     virtual
-    void doHandleShowLine( const std::string & line )
+    void doHandleShowBegin( const int time )
       { }
     virtual
-    void doHandleMsgLine( const std::string & line )
+    void doHandleShowEnd()
+      { }
+
+    virtual
+    void doHandleBall( const int time,
+                       const BallT & ball )
       { }
     virtual
-    void doHandlePlayModeLine( const std::string & line )
+    void doHandlePlayer( const int time,
+                         const PlayerT & player )
+      { }
+    void doHandleMsg( const int time,
+                      const int board,
+                      const char * msg )
       { }
     virtual
-    void doHandleTeamLine( const std::string & line )
+    void doHandlePlayMode( const int time,
+                           const PlayMode pm )
       { }
     virtual
-    void doHandleServerParamLine( const std::string & line )
+    void doHandleTeam( const int time,
+                       const TeamT & team_l,
+                       const TeamT & team_r )
       { }
     virtual
-    void doHandlePlayerParamLine( const std::string & line )
+    void doHandleServerParams( const std::map< std::string, std::string > & param_map )
       { }
     virtual
-    void doHandlePlayerTypeLine( const std::string & line )
+    void doHandlePlayerParams( const std::map< std::string, std::string > & param_map )
       { }
+    virtual
+    void doHandlePlayerType( const std::map< std::string, std::string > & param_map )
+      { }
+
 };
 
 }

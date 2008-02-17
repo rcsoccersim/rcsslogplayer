@@ -1,3 +1,13 @@
+2008-02-18  Hidehisa Akiyama  <akky@users.sourceforge.jp>
+
+	* src/rcg2xml.cpp:
+	* src/rcgdatahandler.hpp:
+	* src/rcgparser.cpp:
+	* src/rcgparser.hpp:
+	* src/types.h:
+	- reimplemented rcgparser and rcgdatahander for the version 4 game
+	log format.
+
 2008-02-17  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 
 	* src/logplayer.cpp:
