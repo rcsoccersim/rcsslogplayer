@@ -506,10 +506,10 @@ void
 Controler::rew_button_reset_true()
 {
 #ifdef X11R5
-    mySetArg_1st(XtNstate, True);
-    XtSetValues(rew, Args, Argn);
+    mySetArg_1st( XtNstate, True );
+    XtSetValues( rew, Args, Argn );
 #else
-    XtVaSetValues(rew, XtNstate, True, NULL);
+    XtVaSetValues( rew, XtNstate, True, NULL );
 #endif
 }
 
@@ -517,10 +517,10 @@ void
 Controler::rew_button_reset_false()
 {
 #ifdef X11R5
-    mySetArg_1st(XtNstate, False);
-    XtSetValues(rew, Args, Argn);
+    mySetArg_1st( XtNstate, False );
+    XtSetValues( rew, Args, Argn );
 #else
-    XtVaSetValues(rew, XtNstate, False, NULL);
+    XtVaSetValues( rew, XtNstate, False, NULL );
 #endif
 }
 
@@ -528,10 +528,10 @@ void
 Controler::rev_button_reset_true()
 {
 #ifdef X11R5
-    mySetArg_1st(XtNstate, True);
-    XtSetValues(rev, Args, Argn);
+    mySetArg_1st( XtNstate, True );
+    XtSetValues( rev, Args, Argn );
 #else
-    XtVaSetValues(rev, XtNstate, True, NULL);
+    XtVaSetValues( rev, XtNstate, True, NULL );
 #endif
 }
 
@@ -539,10 +539,10 @@ void
 Controler::rev_button_reset_false()
 {
 #ifdef X11R5
-    mySetArg_1st(XtNstate, False);
-    XtSetValues(rev, Args, Argn);
+    mySetArg_1st( XtNstate, False );
+    XtSetValues( rev, Args, Argn );
 #else
-    XtVaSetValues(rev, XtNstate, False, NULL);
+    XtVaSetValues( rev, XtNstate, False, NULL );
 #endif
 }
 
@@ -550,20 +550,20 @@ void
 Controler::minus_button_reset()
 {
 #ifdef X11R5
-    mySetArg_1st(XtNstate, False);
-    XtSetValues(minus, Args, Argn);
+    mySetArg_1st( XtNstate, False );
+    XtSetValues( minus, Args, Argn );
 #else
-    XtVaSetValues(minus, XtNstate, False, NULL);
+    XtVaSetValues( minus, XtNstate, False, NULL );
 #endif
 }
 
 void Controler::stop_button_reset_true()
 {
 #ifdef X11R5
-    mySetArg_1st(XtNstate, True);
-    XtSetValues(stop, Args, Argn);
+    mySetArg_1st( XtNstate, True );
+    XtSetValues( stop, Args, Argn );
 #else
-    XtVaSetValues(stop, XtNstate, True, NULL);
+    XtVaSetValues( stop, XtNstate, True, NULL );
 #endif
 }
 
@@ -571,10 +571,10 @@ void
 Controler::stop_button_reset_false()
 {
 #ifdef X11R5
-    mySetArg_1st(XtNstate, False);
-    XtSetValues(stop, Args, Argn);
+    mySetArg_1st( XtNstate, False );
+    XtSetValues( stop, Args, Argn );
 #else
-    XtVaSetValues(stop, XtNstate, False, NULL);
+    XtVaSetValues( stop, XtNstate, False, NULL );
 #endif
 }
 
@@ -582,10 +582,10 @@ void
 Controler::plus_button_reset()
 {
 #ifdef X11R5
-    mySetArg_1st(XtNstate, False);
-    XtSetValues(plus, Args, Argn);
+    mySetArg_1st( XtNstate, False );
+    XtSetValues( plus, Args, Argn );
 #else
-    XtVaSetValues(plus, XtNstate, False, NULL);
+    XtVaSetValues( plus, XtNstate, False, NULL );
 #endif
 }
 
@@ -593,10 +593,10 @@ void
 Controler::play_button_reset_true()
 {
 #ifdef X11R5
-    mySetArg_1st(XtNstate, True);
-    XtSetValues(play, Args, Argn);
+    mySetArg_1st( XtNstate, True );
+    XtSetValues( play, Args, Argn );
 #else
-    XtVaSetValues(play, XtNstate, True, NULL);
+    XtVaSetValues( play, XtNstate, True, NULL );
 #endif
 }
 
@@ -604,10 +604,10 @@ void
 Controler::play_button_reset_false()
 {
 #ifdef X11R5
-    mySetArg_1st(XtNstate, False);
-    XtSetValues(play, Args, Argn);
+    mySetArg_1st( XtNstate, False );
+    XtSetValues( play, Args, Argn );
 #else
-    XtVaSetValues(play, XtNstate, False, NULL);
+    XtVaSetValues( play, XtNstate, False, NULL );
 #endif
 }
 
@@ -615,10 +615,10 @@ void
 Controler::for_button_reset_true()
 {
 #ifdef X11R5
-    mySetArg_1st(XtNstate, True);
-    XtSetValues(ff, Args, Argn);
+    mySetArg_1st( XtNstate, True );
+    XtSetValues( ff, Args, Argn );
 #else
-    XtVaSetValues(ff, XtNstate, True, NULL);
+    XtVaSetValues( ff, XtNstate, True, NULL );
 #endif
 }
 
@@ -626,10 +626,10 @@ void
 Controler::for_button_reset_false()
 {
 #ifdef X11R5
-    mySetArg_1st(XtNstate, False);
-    XtSetValues(ff, Args, Argn);
+    mySetArg_1st( XtNstate, False );
+    XtSetValues( ff, Args, Argn );
 #else
-    XtVaSetValues(ff, XtNstate, False, NULL);
+    XtVaSetValues( ff, XtNstate, False, NULL );
 #endif
 }
 
@@ -637,10 +637,10 @@ void
 Controler::blank_button_reset()
 {
 #ifdef X11R5
-    mySetArg_1st(XtNstate, False);
-    XtSetValues(blank, Args, Argn);
+    mySetArg_1st( XtNstate, False );
+    XtSetValues( blank, Args, Argn );
 #else
-    XtVaSetValues(blank, XtNstate, False, NULL);
+    XtVaSetValues( blank, XtNstate, False, NULL );
 #endif
 }
 
@@ -649,6 +649,9 @@ Controler::run()
 {
     XtAppMainLoop( app_context );
 }
+
+
+//////////////////////////////////////////////////////////
 
 
 

@@ -67,8 +67,6 @@
 #include <netinet/in.h>
 
 
-const int Player::TIMEDELTA = 10;
-
 extern Player player;
 
 namespace {
@@ -110,6 +108,8 @@ sigalarm_handler( int )
 #endif
 #endif //!X_DISPLAY_MISSING
 
+
+const int Player::TIMEDELTA = 10;
 
 const int Player::PLAY_CYCLE = 100;
 const int Player::FEED_CYCLE = 50;
@@ -549,7 +549,7 @@ void
 Player::sendBlank()
 {
 #if !X_DISPLAY_MISSING
-    M_controler->display_time(ntohs((unsigned short)-1));
+    M_controler->display_time( ntohs( (unsigned short)-1 ) );
 #endif //!X_DISPLAY_MISSING
 
     sendLog( M_show_index );
