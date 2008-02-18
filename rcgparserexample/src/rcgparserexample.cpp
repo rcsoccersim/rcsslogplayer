@@ -1,14 +1,14 @@
 // -*-c++-*-
 
 /***************************************************************************
-                             rcgparserexample.cpp 
+                             rcgparserexample.cpp
                               Example rcgparser
                              -------------------
     begin                : 24-MAR-2003
-    copyright            : (C) 2003 by The RoboCup Soccer Server 
+    copyright            : (C) 2003 by The RoboCup Soccer Server
                            Maintenance Group.
     email                : sserver-admin@lists.sourceforge.net
- ***************************************************************************/
+***************************************************************************/
 
 /***************************************************************************
  *                                                                         *
@@ -24,45 +24,52 @@
 
 
 class TimeWriter
-    : public rcss::RCGDataHandler
-{
+    : public rcss::RCGDataHandler {
 public:
     TimeWriter()
-    {}
-
+      { }
 
 private:
     void
     doHandleLogVersion( int ver )
-    { m_ver = ver; }
-    
+      {
+          m_ver = ver;
+      }
+
     int
     doGetLogVersion() const
-    { return m_ver;}
-    
+      {
+          return m_ver;
+      }
+
     void
-    doHandleShowInfo( std::streampos, 
-                      const short_showinfo_t2& info )
-    {
-        std::cout << "time=\"" << ntohs( info.time ) << "\">\n";
-    }
-    
+    doHandleShowInfo( std::streampos,
+                      const short_showinfo_t2 & info )
+      {
+          std::cout << "time=\"" << ntohs( info.time ) << "\">\n";
+      }
+
     void
-    doHandleShowInfo( std::streampos, 
-                      const showinfo_t& info )
-    {
-        std::cout << "time=\"" << ntohs( info.time ) << "\">\n";  
-    }
-    
+    doHandleShowInfo( std::streampos,
+                      const showinfo_t & info )
+      {
+          std::cout << "time=\"" << ntohs( info.time ) << "\">\n";
+      }
+
     void
-    doHandleDispInfo( std::streampos, 
-                      const dispinfo_t& info )
-    {
-        if( ntohs( info.mode ) == SHOW_MODE )
-        {
-            std::cout << "time=\"" << ntohs( info.body.show.time ) << "\">\n";  
-        }
-    }
+    doHandleDispInfo( std::streampos,
+                      const dispinfo_t & info )
+      {
+          if ( ntohs( info.mode ) == SHOW_MODE )
+          {
+              std::cout << "time=\"" << ntohs( info.body.show.time ) << "\">\n";
+          }
+      }
+
+    void doHandleShowBegin( const int time )
+      {
+          std::cout << "time=\"" << time << "\">\n";
+      }
 
     int m_ver;
 };
@@ -73,12 +80,12 @@ int main()
     rcss::RCGParser parser( writer );
     try
     {
-        while( parser.parse( std::cin ) )
+        while ( parser.parse( std::cin ) )
         {
             // do nothing
         }
     }
-    catch( const std::string& e )
+    catch( const std::string & e )
     {
         std::cerr << e << std::endl;
     }

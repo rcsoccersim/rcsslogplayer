@@ -1,6 +1,6 @@
 dnl Process this file with autoconf to produce a configure script.
 
-AC_PREREQ(2.59)
+AC_PREREQ(2.61)
 
 AC_INIT([RCSSLogPlayer], 12.0.0, sserver-admin@users.sf.net, rcsslogplayer)
 AC_CONFIG_SRCDIR([src/types.h])

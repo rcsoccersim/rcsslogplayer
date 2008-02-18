@@ -1,3 +1,8 @@
+2008-02-18  Hidehisa Akiyama  <akky@users.sourceforge.jp>
+
+	* src/rcgparserexample.cpp:
+	- added example code for the version 4 log format.
+
 2007-05-23  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 
 	* acinclude.m4:

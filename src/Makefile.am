@@ -19,7 +19,7 @@ librcssrcgparserinclude_HEADERS = \
 	rcgdatahandler.hpp \
 	types.h
 
-librcssrcgparser_la_LDFLAGS = -version-info 0:0:0
+librcssrcgparser_la_LDFLAGS = -version-info 1:0:1
 
 rcsslogplayer_SOURCES = \
 	netif.cpp \

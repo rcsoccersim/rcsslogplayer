@@ -177,10 +177,12 @@ Player::~Player()
 void
 Player::run( int argc, char ** argv )
 {
+#if !X_DISPLAY_MISSING
     if ( ! M_controler )
     {
         return;
     }
+#endif
 
     if ( ! parseCmdLine( argc, argv ) )
     {

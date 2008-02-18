@@ -78,16 +78,11 @@ RCGParser::parseBegin( std::istream & strm )
             {
                 ver -= static_cast< int >( '0' );
             }
-            std::cerr << "RCGParser::parseBegin version = " << ver
-                      << std::endl;
 
             M_handler.handleLogVersion( ver );
         }
         else
         {
-            std::cerr << "RCGParser::parseBegin version = " << 1
-                      << std::endl;
-
             strm.seekg( 0 );
             M_handler.handleLogVersion( 1 );
         }
@@ -379,9 +374,8 @@ RCGParser::parseLines( std::istream & strm )
         }
         else
         {
-            std::cerr << __FILE__ << ':' << __LINE__ << ": error: "
-                      << "RCGParser: Unknown info at line " << n_line
-                      << "\"" << line << "\""
+            std::cerr << n_line << ": error: "
+                      << "Unknown info. " << "\"" << line << "\""
                       << std::endl;
         }
 
@@ -672,7 +666,7 @@ RCGParser::parseParamLine( const std::string & line,
         char buf[32];
         if ( std::sscanf( line.c_str(), " ( %31s %n ", buf, &n_read ) != 1 )
         {
-            std::cerr << "Failed to the parse message id."
+            std::cerr << ":error: failed to the parse message id."
                       << std::endl;
             return false;
         }
@@ -687,7 +681,7 @@ RCGParser::parseParamLine( const std::string & line,
         std::string::size_type end_pos = line.find_first_of( ' ', pos );
         if ( end_pos == std::string::npos )
         {
-            std::cerr << "Failed to find parameter name."
+            std::cerr << "error: failed to find parameter name."
                       << std::endl;
             return false;
         }
@@ -712,7 +706,8 @@ RCGParser::parseParamLine( const std::string & line,
             end_pos = line.find_first_of( '\"', end_pos + 1 ); //"
             if ( end_pos == std::string::npos )
             {
-                std::cerr << "Failed to parse the quated value for [" << name_str << "] "
+                std::cerr << "error: ailed to parse the quated value for ["
+                          << name_str << "] "
                           << std::endl;
                 return false;
             }
@@ -733,6 +728,5 @@ RCGParser::parseParamLine( const std::string & line,
 
     return true;
 }
-
 
 }

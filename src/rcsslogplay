@@ -11,35 +11,9 @@ if test $? -eq 1; then
     exit 1
 fi
 
+LOG=$1
 
-X=0
-for PARAM in "$@"; do
-    case "$PARAM" in
-        -frameview)
-        MON=`which rcssmonitor 2> /dev/null`
-
-        if test $? -eq 1; then
-            echo "Error: rcssmonitor found in your PATH"
-            echo ""
-            exit 1
-        fi
-        ;;
-        -classic)
-        MON=`which rcssmonitor_classic 2> /dev/null`
-        if test $? -eq 1; then
-            echo "Error: rcssmonitor_classic found in your PATH"
-            echo ""
-            exit 1
-        fi
-        ;;
-        *)
-        PARAMS[$X]=$PARAM
-        X=$X+1
-        ;;
-    esac
-done
-
-if test -z "$MON"; then
+if test $# -eq 1; then
     if test "$RCSSMONITOR"; then
         MON=`which "$RCSSMONITOR" 2> /dev/null`
         if test $? -eq 1; then
@@ -62,11 +36,39 @@ if test -z "$MON"; then
             fi
         fi
     fi
+elif test $# -eq 2; then
+    case "$1" in
+        -frameview)
+        MON=`which rcssmonitor 2> /dev/null`
+        if test $? -eq 1; then
+            echo "Error: rcssmonitor found in your PATH"
+            echo ""
+            exit 1
+        fi
+        ;;
+        -classic)
+        MON=`which rcssmonitor_classic 2> /dev/null`
+        if test $? -eq 1; then
+            echo "Error: rcssmonitor_classic found in your PATH"
+            echo ""
+            exit 1
+        fi
+        ;;
+    esac
+    LOG=$2
+elif test $# -eq 0; then
+    PROG=`basename $0`
+    echo "Error: no log file"
+    echo "Usage: $PROG [(-frameview)|(-classic)] <logfile>"
+    echo ""
+    exit 1
+else
+    PROG=`basename $0`
+    echo "Error: too many options"
+    echo "Usage: $ $PROG [(-frameview)|(-classic)] <logfile>"
+    echo ""
+    exit 1
 fi
-
-
-
-
 
 
 #--------------------------------------------------
@@ -78,10 +80,10 @@ trap kill_player INT
 #--------------------------------------------------
 # start server
 #
-
+11
 echo "Starting logplayer..."
 
-$PLAYER "${PARAMS[@]}" &
+$PLAYER "$LOG" &
 PID=$!
 
 #--------------------------------------------------
