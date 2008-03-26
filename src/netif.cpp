@@ -51,7 +51,7 @@
 #include <cmath>
 
 
-const int Port::DEFAULT_PORT_NUMBER = 6000;
+const rcss::net::Addr::PortType Port::DEFAULT_PORT_NUMBER = 6000;
 
 
 Port::~Port()
