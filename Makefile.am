@@ -4,7 +4,7 @@ LIBTOOL_DEPS = @LIBTOOL_DEPS@
 libtool:	$(LIBTOOL_DEPS)
 	$(SHELL) ./config.status --recheck
 
-SUBDIRS = src .
+SUBDIRS = rcsslogplayer src .
 
 EXTRA_DIST = \
 BUGS \

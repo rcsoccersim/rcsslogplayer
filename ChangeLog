@@ -1,3 +1,17 @@
+2008-03-31  Hidehisa Akiyama  <akky@users.sourceforge.jp>
+
+	* rcsslogplayer:
+	* rcsslogplayer/Makefile.am:
+	* rcsslogplayer/handler.h:
+	* rcsslogplayer/parser.cpp:
+	* rcsslogplayer/parser.h:
+	* rcsslogplayer/types.h:
+	* rcsslogplayer/util.cpp:
+	* rcsslogplayer/util.h:
+	* Makefile.am:
+	* configure.ac:
+	- added new library directory and new rcg parser.
+
 2008-02-18  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 
 	* NEWS:

@@ -195,6 +195,7 @@ AX_CVS([:pserver:anonymous@cvs.sourceforge.:net:/cvsroot/sserver])
 
 
 AC_CONFIG_FILES([Makefile
+                 rcsslogplayer/Makefile
                  src/Makefile])
 #AC_CONFIG_SUBDIRS([rcgparserexample])
 AC_OUTPUT
