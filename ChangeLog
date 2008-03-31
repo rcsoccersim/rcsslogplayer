@@ -1,5 +1,11 @@
 2008-03-31  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 
+	* classic:
+	* src:
+	* Makefile.am:
+	* configure.ac:
+	- renamed directory src to classic.
+
 	* tool/rcg-0.1.xsd:
 	* tool/rcg.xsd:
 	* tool/rcg2xml.cpp:
