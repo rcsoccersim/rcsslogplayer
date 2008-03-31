@@ -1,25 +1,11 @@
 
-lib_LTLIBRARIES = librcssrcgparser.la
-
 bin_PROGRAMS = \
-	rcsslogplayer
+	rcsslogplayer_classic
 
 bin_SCRIPTS = rcsslogplay
 
-
-librcssrcgparser_la_SOURCES = \
-	rcgparser.cpp
-
-librcssrcgparserincludedir = $(includedir)/rcsslogplayer
-
-librcssrcgparserinclude_HEADERS = \
-	rcgparser.hpp \
-	rcgdatahandler.hpp \
-	types.h
-
-librcssrcgparser_la_LDFLAGS = -version-info 1:0:1
-
-rcsslogplayer_SOURCES = \
+rcsslogplayer_classic_SOURCES = \
+	rcgparser.cpp \
 	netif.cpp \
 	controler.cpp \
 	logplayer.cpp \
@@ -27,16 +13,18 @@ rcsslogplayer_SOURCES = \
 	main.cpp
 
 noinst_HEADERS = \
-	netif.h \
+	rcgparser.hpp \
+	rcgdatahandler.hpp \
+	types.h	netif.h \
 	controler.h \
 	logplayer.h \
 	fallback.h \
 	utility.h
 
-rcsslogplayer_CPPFLAGS = $(RCL_CPPFLAGS)
-rcsslogplayer_CXXFLAGS = $(RCL_CXXFLAGS)
-rcsslogplayer_LDFLAGS = $(RCL_LDFLAGS)
-rcsslogplayer_LDADD = $(RCL_LIBS) librcssrcgparser.la $(BOOST_PROGRAM_OPTIONS_LIB)
+rcsslogplayer_classic_CPPFLAGS = $(RCL_CPPFLAGS)
+rcsslogplayer_classic_CXXFLAGS = $(RCL_CXXFLAGS)
+rcsslogplayer_classic_LDFLAGS = $(RCL_LDFLAGS)
+rcsslogplayer_classic_LDADD = $(RCL_LIBS) $(BOOST_PROGRAM_OPTIONS_LIB)
 
 pkgdata_DATA =
 
