@@ -60,6 +60,7 @@ private:
     Parser( const Parser & );
     Parser & operator=( const Parser & );
 
+public:
     /*!
       \brief construct parser object with data handler class
       \param handler reference to the handler class instance

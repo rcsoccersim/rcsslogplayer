@@ -69,17 +69,12 @@ private:
           return doGetLogVersion();
       }
 
-    void handleDispInfo( const DispInfoT & info )
-      {
-          doHandleDispInfo( info );
-      }
-
     void handleShowInfo( const ShowInfoT & info )
       {
           doHandleShowInfo( info );
       }
 
-    void handleMsgInfo( const Int16 board,
+    void handleMsgInfo( const int board,
                         const std::string & msg )
       {
           doHandleMsgInfo( board, msg );
@@ -124,15 +119,11 @@ protected:
     int doGetLogVersion() const = 0;
 
     virtual
-    void doHandleDispInfo( const DispInfoT & )
-      { }
-
-    virtual
     void doHandleShowInfo( const ShowInfoT & )
       { }
 
     virtual
-    void doHandleMsgInfo( const Int16,
+    void doHandleMsgInfo( const int,
                           const std::string & )
       { }
 

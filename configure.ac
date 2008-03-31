@@ -180,22 +180,23 @@ fi
 
 #AC_CHECK_LIB([posix4], [sched_yield], [RCL_LIBS="$RCL_LIBS -lposix4"])
 
-AX_EXTRA_DIST
-AX_UPLOAD([ncftpput -v upload.sourceforge.net /incoming %%s])
-AX_RPM_GEN_SPEC([spec.tmpl],
-            [The RoboCup Soccer Simulator LogPlayer],
-            [GPL],
-            [Applications/Engineering],
-            [http://sserver.sf.net],
-            [http://prdownloads.sourceforge.net/sserver/],
-[The RoboCup Soccer Simulator LogPlaeyr (rcsslogplayer) is a logplayer program for the RCSSServer.])
-AX_DIST_RPM([spec.tmpl])
+#AX_EXTRA_DIST
+#AX_UPLOAD([ncftpput -v upload.sourceforge.net /incoming %%s])
+#AX_RPM_GEN_SPEC([spec.tmpl],
+#            [The RoboCup Soccer Simulator LogPlayer],
+#            [GPL],
+#            [Applications/Engineering],
+#            [http://sserver.sf.net],
+#            [http://prdownloads.sourceforge.net/sserver/],
+#[The RoboCup Soccer Simulator LogPlaeyr (rcsslogplayer) is a logplayer program for the RCSSServer.])
+#AX_DIST_RPM([spec.tmpl])
 #AX_DIST_MSI([Setup/Release/${PACKAGE_NAME}Setup.msi])
-AX_CVS([:pserver:anonymous@cvs.sourceforge.:net:/cvsroot/sserver])
+#AX_CVS([:pserver:anonymous@cvs.sourceforge.:net:/cvsroot/sserver])
 
 
 AC_CONFIG_FILES([Makefile
                  rcsslogplayer/Makefile
+                 tool/Makefile
                  src/Makefile])
 #AC_CONFIG_SUBDIRS([rcgparserexample])
 AC_OUTPUT

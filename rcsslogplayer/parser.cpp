@@ -479,7 +479,7 @@ Parser::parseMsgInfo( std::istream & is )
     std::string str( msg );
     delete [] msg;
 
-    M_handler.handleMsgInfo( board, str );
+    M_handler.handleMsgInfo( ntohs( board ), str );
     return true;
 }
 
@@ -778,6 +778,15 @@ Parser::parseShowLine( const int n_line,
     }
 
     M_handler.handleShowInfo( show );
+
+    return true;
+}
+
+
+bool
+Parser::parseDrawLine( const int n_line,
+                       const std::string & line )
+{
 
     return true;
 }
@@ -1092,7 +1101,7 @@ Parser::parseServerParamLine( const int n_line,
     bool_map.insert( BoolMap::value_type( "coach_w_referee", &param.coach_with_referee_mode_ ) );
     bool_map.insert( BoolMap::value_type( "old_coach_hear", &param.old_coach_hear_ ) );
     int_map.insert( IntMap::value_type( "send_vi_step", &param.send_vi_step_ ) );
-    bool_map.insert( BoolMap::value_type( "use_offside", &param.offside_ ) );
+    bool_map.insert( BoolMap::value_type( "use_offside", &param.use_offside_ ) );
     double_map.insert( DoubleMap::value_type( "offside_kick_margin", &param.offside_kick_margin_ ) );
     bool_map.insert( BoolMap::value_type( "forbid_kick_off_offside", &param.forbid_kick_off_offside_ ) );
     bool_map.insert( BoolMap::value_type( "verbose", &param.verbose_ ) );

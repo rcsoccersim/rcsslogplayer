@@ -2,9 +2,7 @@
 lib_LTLIBRARIES = librcssrcgparser.la
 
 bin_PROGRAMS = \
-	rcsslogplayer \
-	rcg2xml \
-	rcgsplit
+	rcsslogplayer
 
 bin_SCRIPTS = rcsslogplay
 
@@ -40,26 +38,7 @@ rcsslogplayer_CXXFLAGS = $(RCL_CXXFLAGS)
 rcsslogplayer_LDFLAGS = $(RCL_LDFLAGS)
 rcsslogplayer_LDADD = $(RCL_LIBS) librcssrcgparser.la $(BOOST_PROGRAM_OPTIONS_LIB)
 
-rcg2xml_SOURCES = rcg2xml.cpp
-
-rcg2xml_CPPFLAGS =
-rcg2xml_CXXFLAGS =
-rcg2xml_LDFLAGS =
-rcg2xml_LDADD = $(LIBS) librcssrcgparser.la
-
-
-rcgsplit_SOURCES = rcgsplit.cpp
-
-rcgsplit_CPPFLAGS =
-rcgsplit_CXXFLAGS =
-rcgsplit_LDFLAGS =
-rcgsplit_LDADD = $(LIBS) librcssrcgparser.la $(BOOST_PROGRAM_OPTIONS_LIB)
-
-
-pkgdata_DATA = rcg.xsd \
-	rcg-0.1.xsd \
-	ac_lib_rcgparser.m4
-
+pkgdata_DATA =
 
 AM_CPPFLAGS = -I$(top_srcdir)
 AM_CFLAGS = -Wall
@@ -84,14 +63,4 @@ EXTRA_DIST = \
 	rcsslogplay \
 	ac_lib_rcgparser.m4
 
-CLEANFILES = \
-	*~ \
-	core \
-	*.tar.gz \
-	install_files
-
-##pkginclude_HEADERS =
-
-#DISTCLEANFILES = @INCLUDE_MK_FILE@
-
-#@INCLUDE_MK@
+CLEANFILES = *~

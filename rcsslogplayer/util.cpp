@@ -782,7 +782,7 @@ convert( const server_params_t & from,
 
     to.slow_down_factor_ = nstohi( from.slow_down_factor );
 
-    to.offside_ = nstohb( from.offside);
+    to.use_offside_ = nstohb( from.use_offside );
     to.forbid_kick_off_offside_ = nstohb( from.forbid_kick_off_offside );
     to.offside_kick_margin_ = nltohd( from.offside_kick_margin );
 
@@ -966,7 +966,7 @@ convert( const ServerParamT & from,
 
     to.slow_down_factor = hitons( from.slow_down_factor_ );
 
-    to.offside = hbtons( from.offside_ );
+    to.use_offside = hbtons( from.use_offside_ );
     to.forbid_kick_off_offside = hbtons( from.forbid_kick_off_offside_ );
     to.offside_kick_margin = hdtonl( from.offside_kick_margin_ );
 

@@ -1,5 +1,24 @@
 2008-03-31  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 
+	* tool/rcg-0.1.xsd:
+	* tool/rcg.xsd:
+	* tool/rcg2xml.cpp:
+	* tool/rcgsplit.cpp:
+	* src/rcg-0.1.xsd:
+	* src/rcg.xsd:
+	* src/rcg2xml.cpp:
+	* src/rcgsplit.cpp:
+	* Makefile.am:
+	* configure.ac:
+	* rcsslogplayer/handler.h:
+	* rcsslogplayer/parser.cpp:
+	* rcsslogplayer/parser.h:
+	* rcsslogplayer/types.h:
+	* rcsslogplayer/util.cpp:
+	* src/Makefile.am:
+	- separated directory for tool programs.
+	- reimplemented tool programs.
+
 	* rcsslogplayer/parser.cpp:
 	* rcsslogplayer/parser.h:
 	* rcsslogplayer/types.h:
