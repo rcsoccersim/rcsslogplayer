@@ -144,277 +144,6 @@ private:
 };
 
 /*--------------------------------------------------------------------*/
-template < typename P >
-void
-print_param( std::ostream & os,
-             const char * name,
-             const P & value )
-{
-    os << '(' << name << ' ' << value << ')';
-}
-
-/*--------------------------------------------------------------------*/
-template <>
-void
-print_param< std::string >( std::ostream & os,
-                            const char * name,
-                            const std::string & value )
-{
-    os << '(' << name << " \"" << value << "\")";
-}
-
-/*--------------------------------------------------------------------*/
-void
-print( std::ostream & os,
-       const PlayerTypeT & param )
-{
-    os << "(player_type ";
-    print_param( os, "id", &param.id_ );
-    print_param( os, "player_speed_max", param.player_speed_max_ );
-    print_param( os, "stamina_inc_max", param.stamina_inc_max_ );
-    print_param( os, "player_decay", param.player_decay_ );
-    print_param( os, "inertia_moment", param.inertia_moment_ );
-    print_param( os, "dash_power_rate", param.dash_power_rate_ );
-    print_param( os, "player_size", param.player_size_ );
-    print_param( os, "kickable_margin", param.kickable_margin_ );
-    print_param( os, "kick_rand", param.kick_rand_ );
-    print_param( os, "extra_stamina", param.extra_stamina_ );
-    print_param( os, "effort_max", param.effort_max_ );
-    print_param( os, "effort_min", param.effort_min_ );
-    os << ")\n";
-}
-
-/*--------------------------------------------------------------------*/
-void
-print( std::ostream & os,
-       const PlayerParamT & param )
-{
-    os << "(player_param ";
-    print_param( os, "player_types", param.player_types_ );
-    print_param( os, "subs_max", param.subs_max_ );
-    print_param( os, "pt_max", param.pt_max_ );
-    print_param( os, "allow_mult_default_type", param.allow_mult_default_type_ );
-    print_param( os, "player_speed_max_delta_min", param.player_speed_max_delta_min_ );
-    print_param( os, "player_speed_max_delta_max", param.player_speed_max_delta_max_ );
-    print_param( os, "stamina_inc_max_delta_factor", param.stamina_inc_max_delta_factor_ );
-    print_param( os, "player_decay_delta_min", param.player_decay_delta_min_ );
-    print_param( os, "player_decay_delta_max", param.player_decay_delta_max_ );
-    print_param( os, "inertia_moment_delta_factor", param.inertia_moment_delta_factor_ );
-    print_param( os, "dash_power_rate_delta_min", param.dash_power_rate_delta_min_ );
-    print_param( os, "dash_power_rate_delta_max", param.dash_power_rate_delta_max_ );
-    print_param( os, "player_size_delta_factor", param.player_size_delta_factor_ );
-    print_param( os, "kickable_margin_delta_min", param.kickable_margin_delta_min_ );
-    print_param( os, "kickable_margin_delta_max", param.kickable_margin_delta_max_ );
-    print_param( os, "kick_rand_delta_factor", param.kick_rand_delta_factor_ );
-    print_param( os, "extra_stamina_delta_min", param.extra_stamina_delta_min_ );
-    print_param( os, "extra_stamina_delta_max", param.extra_stamina_delta_max_ );
-    print_param( os, "effort_max_delta_factor", param.effort_max_delta_factor_ );
-    print_param( os, "effort_min_delta_factor", param.effort_min_delta_factor_ );
-    print_param( os, "random_seed", param.random_seed_ );
-    print_param( os, "new_dash_power_rate_delta_min", param.new_dash_power_rate_delta_min_ );
-    print_param( os, "new_dash_power_rate_delta_max", param.new_dash_power_rate_delta_max_ );
-    print_param( os, "new_stamina_inc_max_delta_factor", param.new_stamina_inc_max_delta_factor_ );
-    os << ")\n";
-
-}
-
-/*--------------------------------------------------------------------*/
-void
-print( std::ostream & os,
-       const ServerParamT & param )
-{
-    os << "(server_param ";
-    print_param( os, "goal_width", param.goal_width_ );
-    print_param( os, "inertia_moment", param.inertia_moment_ );
-    print_param( os, "player_size", param.player_size_ );
-    print_param( os, "player_decay", param.player_decay_ );
-    print_param( os, "player_rand", param.player_rand_ );
-    print_param( os, "player_weight", param.player_weight_ );
-    print_param( os, "player_speed_max", param.player_speed_max_ );
-    print_param( os, "player_accel_max", param.player_accel_max_ );
-    print_param( os, "stamina_max", param.stamina_max_ );
-    print_param( os, "stamina_inc_max", param.stamina_inc_max_ );
-    print_param( os, "recover_init", param.recover_init_ );
-    print_param( os, "recover_dec_thr", param.recover_dec_thr_ );
-    print_param( os, "recover_min", param.recover_min_ );
-    print_param( os, "recover_dec", param.recover_dec_ );
-    print_param( os, "effort_init", param.effort_init_ );
-    print_param( os, "effort_dec_thr", param.effort_dec_thr_ );
-    print_param( os, "effort_min", param.effort_min_ );
-    print_param( os, "effort_dec", param.effort_dec_ );
-    print_param( os, "effort_inc_thr", param.effort_inc_thr_ );
-    print_param( os, "effort_inc", param.effort_inc_ );
-    print_param( os, "kick_rand", param.kick_rand_ );
-    print_param( os, "team_actuator_noise", param.team_actuator_noise_ );
-    print_param( os, "prand_factor_l", param.player_rand_factor_l_ );
-    print_param( os, "prand_factor_r", param.player_rand_factor_r_ );
-    print_param( os, "kick_rand_factor_l", param.kick_rand_factor_l_ );
-    print_param( os, "kick_rand_factor_r", param.kick_rand_factor_r_ );
-    print_param( os, "ball_size", param.ball_size_ );
-    print_param( os, "ball_decay", param.ball_decay_ );
-    print_param( os, "ball_rand", param.ball_rand_ );
-    print_param( os, "ball_weight", param.ball_weight_ );
-    print_param( os, "ball_speed_max", param.ball_speed_max_ );
-    print_param( os, "ball_accel_max", param.ball_accel_max_ );
-    print_param( os, "dash_power_rate", param.dash_power_rate_ );
-    print_param( os, "kick_power_rate", param.kick_power_rate_ );
-    print_param( os, "kickable_margin", param.kickable_margin_ );
-    print_param( os, "control_radius", param.control_radius_ );
-    //( "control_radius_width", param.control_radius_width_ );
-    //( "kickable_area", param.kickable_area_ );
-    print_param( os, "catch_probability", param.catch_probability_ );
-    print_param( os, "catchable_area_l", param.catchable_area_l_ );
-    print_param( os, "catchable_area_w", param.catchable_area_w_ );
-    print_param( os, "goalie_max_moves", param.goalie_max_moves_ );
-    print_param( os, "maxpower", param.max_power_ );
-    print_param( os, "minpower", param.min_power_ );
-    print_param( os, "maxmoment", param.max_moment_ );
-    print_param( os, "minmoment", param.min_moment_ );
-    print_param( os, "maxneckmoment", param.max_neck_moment_ );
-    print_param( os, "minneckmoment", param.min_neck_moment_ );
-    print_param( os, "maxneckang", param.max_neck_angle_ );
-    print_param( os, "minneckang", param.min_neck_angle_ );
-    print_param( os, "visible_angle", param.visible_angle_ );
-    print_param( os, "visible_distance", param.visible_distance_ );
-    print_param( os, "audio_cut_dist", param.audio_cut_dist_ );
-    print_param( os, "quantize_step", param.quantize_step_ );
-    print_param( os, "quantize_step_l", param.landmark_quantize_step_ );
-    //( "quantize_step_dir", param.dir_quantize_step_ );
-    //( "quantize_step_dist_team_l", param.dist_quantize_step_l_ );
-    //( "quantize_step_dist_team_r", param.dist_quantize_step_r_ );
-    //( "quantize_step_dist_l_team_l", param.landmark_dist_quantize_step_l_ );
-    //( "quantize_step_dist_l_team_r", param.landmark_dist_quantize_step_r_ );
-    //( "quantize_step_dir_team_l", param.dir_quantize_step_l_ );
-    //( "quantize_step_dir_team_r", param.dir_quantize_step_r_ );
-    print_param( os, "ckick_margin", param.corner_kick_margin_ );
-    print_param( os, "wind_dir", param.wind_dir_ );
-    print_param( os, "wind_force", param.wind_force_ );
-    print_param( os, "wind_ang", param.wind_angle_ );
-    print_param( os, "wind_rand", param.wind_rand_ );
-    print_param( os, "wind_none", param.wind_none_ );
-    print_param( os, "wind_random", param.wind_random_ );
-    print_param( os, "half_time", param.half_time_ );
-    print_param( os, "drop_ball_time", param.drop_ball_time_ );
-    print_param( os, "port", param.port_ );
-    print_param( os, "coach_port", param.coach_port_ );
-    print_param( os, "olcoach_port", param.online_coach_port_ );
-    print_param( os, "say_coach_cnt_max", param.say_coach_count_max_ );
-    print_param( os, "say_coach_msg_size", param.say_coach_msg_size_ );
-    print_param( os, "simulator_step", param.simulator_step_ );
-    print_param( os, "send_step", param.send_step_ );
-    print_param( os, "recv_step", param.recv_step_ );
-    print_param( os, "sense_body_step", param.sense_body_step_ );
-    //( "lcm_step", param.lcm_step_ ); // not needed
-    print_param( os, "say_msg_size", param.say_msg_size_ );
-    print_param( os, "clang_win_size", param.clang_win_size_ );
-    print_param( os, "clang_define_win", param.clang_define_win_ );
-    print_param( os, "clang_meta_win", param.clang_meta_win_ );
-    print_param( os, "clang_advice_win", param.clang_advice_win_ );
-    print_param( os, "clang_info_win", param.clang_info_win_ );
-    print_param( os, "clang_del_win", param.clang_del_win_ );
-    print_param( os, "clang_rule_win", param.clang_rule_win_ );
-    print_param( os, "clang_mess_delay", param.clang_mess_delay_ );
-    print_param( os, "clang_mess_per_cycle", param.clang_mess_per_cycle_ );
-    print_param( os, "hear_max", param.hear_max_ );
-    print_param( os, "hear_inc", param.hear_inc_ );
-    print_param( os, "hear_decay", param.hear_decay_ );
-    print_param( os, "catch_ban_cycle", param.catch_ban_cycle_ );
-    print_param( os, "coach", param.coach_mode_ );
-    print_param( os, "coach_w_referee", param.coach_with_referee_mode_ );
-    print_param( os, "old_coach_hear", param.old_coach_hear_ );
-    print_param( os, "send_vi_step", param.send_vi_step_ );
-    print_param( os, "use_offside", param.use_offside_ );
-    print_param( os, "offside_kick_margin", param.offside_kick_margin_ );
-    print_param( os, "forbid_kick_off_offside", param.forbid_kick_off_offside_ );
-    print_param( os, "verbose", param.verbose_ );
-    print_param( os, "offside_active_area_size", param.offside_active_area_size_ );
-    print_param( os, "slow_down_factor", param.slow_down_factor_ );
-    print_param( os, "synch_mode", param.synch_mode_ );
-    print_param( os, "synch_offset", param.synch_offset_ );
-    print_param( os, "synch_micro_sleep", param.synch_micro_sleep_ );
-    print_param( os, "start_goal_l", param.start_goal_l_ );
-    print_param( os, "start_goal_r", param.start_goal_r_ );
-    print_param( os, "fullstate_l", param.fullstate_l_ );
-    print_param( os, "fullstate_r", param.fullstate_r_ );
-    print_param( os, "slowness_on_top_for_left_team", param.slowness_on_top_for_left_team_ );
-    print_param( os, "slowness_on_top_for_right_team", param.slowness_on_top_for_right_team_ );
-    print_param( os, "landmark_file", param.landmark_file_ );
-    print_param( os, "send_comms", param.send_comms_ );
-    print_param( os, "text_logging", param.text_logging_ );
-    print_param( os, "game_logging", param.game_logging_ );
-    print_param( os, "game_log_version", param.game_log_version_ );
-    print_param( os, "text_log_dir", param.text_log_dir_ );
-    print_param( os, "game_log_dir", param.game_log_dir_ );
-    print_param( os, "text_log_fixed_name", param.text_log_fixed_name_ );
-    print_param( os, "game_log_fixed_name", param.game_log_fixed_name_ );
-    print_param( os, "text_log_fixed", param.text_log_fixed_ );
-    print_param( os, "game_log_fixed", param.game_log_fixed_ );
-    print_param( os, "text_log_dated", param.text_log_dated_ );
-    print_param( os, "game_log_dated", param.game_log_dated_ );
-    print_param( os, "log_date_format", param.log_date_format_ );
-    print_param( os, "log_times", param.log_times_ );
-    print_param( os, "record_messages", param.record_messages_ );
-    print_param( os, "text_log_compression", param.text_log_compression_ );
-    print_param( os, "game_log_compression", param.game_log_compression_ );
-    print_param( os, "profile", param.profile_ );
-    print_param( os, "point_to_ban", param.point_to_ban_ );
-    print_param( os, "point_to_duration", param.point_to_duration_ );
-    print_param( os, "tackle_dist", param.tackle_dist_ );
-    print_param( os, "tackle_back_dist", param.tackle_back_dist_ );
-    print_param( os, "tackle_width", param.tackle_width_ );
-    print_param( os, "tackle_exponent", param.tackle_exponent_ );
-    print_param( os, "tackle_cycles", param.tackle_cycles_ );
-    print_param( os, "tackle_power_rate", param.tackle_power_rate_ );
-    print_param( os, "freeform_wait_period", param.freeform_wait_period_ );
-    print_param( os, "freeform_send_period", param.freeform_send_period_ );
-    print_param( os, "free_kick_faults", param.free_kick_faults_ );
-    print_param( os, "back_passes", param.back_passes_ );
-    print_param( os, "proper_goal_kicks", param.proper_goal_kicks_ );
-    print_param( os, "stopped_ball_vel", param.stopped_ball_vel_ );
-    print_param( os, "max_goal_kicks", param.max_goal_kicks_ );
-    print_param( os, "auto_mode", param.auto_mode_ );
-    print_param( os, "kick_off_wait", param.kick_off_wait_ );
-    print_param( os, "connect_wait", param.connect_wait_ );
-    print_param( os, "game_over_wait", param.game_over_wait_ );
-    print_param( os, "team_l_start", param.team_l_start_ );
-    print_param( os, "team_r_start", param.team_r_start_ );
-    print_param( os, "keepaway", param.keepaway_mode_ );
-    print_param( os, "keepaway_length", param.keepaway_length_ );
-    print_param( os, "keepaway_width", param.keepaway_width_ );
-    print_param( os, "keepaway_logging", param.keepaway_logging_ );
-    print_param( os, "keepaway_log_dir", param.keepaway_log_dir_ );
-    print_param( os, "keepaway_log_fixed_name", param.keepaway_log_fixed_name_ );
-    print_param( os, "keepaway_log_fixed", param.keepaway_log_fixed_ );
-    print_param( os, "keepaway_log_dated", param.keepaway_log_dated_ );
-    print_param( os, "keepaway_start", param.keepaway_start_ );
-    print_param( os, "nr_normal_halfs", param.nr_normal_halfs_ );
-    print_param( os, "nr_extra_halfs", param.nr_extra_halfs_ );
-    print_param( os, "penalty_shoot_outs", param.penalty_shoot_outs_ );
-    print_param( os, "pen_before_setup_wait", param.pen_before_setup_wait_ );
-    print_param( os, "pen_setup_wait", param.pen_setup_wait_ );
-    print_param( os, "pen_ready_wait", param.pen_ready_wait_ );
-    print_param( os, "pen_taken_wait", param.pen_taken_wait_ );
-    print_param( os, "pen_nr_kicks", param.pen_nr_kicks_ );
-    print_param( os, "pen_max_extra_kicks", param.pen_max_extra_kicks_ );
-    print_param( os, "pen_dist_x", param.pen_dist_x_ );
-    print_param( os, "pen_random_winner", param.pen_random_winner_ );
-    print_param( os, "pen_max_goalie_dist_x", param.pen_max_goalie_dist_x_ );
-    print_param( os, "pen_allow_mult_kicks", param.pen_allow_mult_kicks_ );
-    print_param( os, "pen_coach_moves_players", param.pen_coach_moves_players_ );
-    print_param( os, "ball_stuck_area", param.ball_stuck_area_ );
-    print_param( os, "coach_msg_file", param.coach_msg_file_ );
-    print_param( os, "max_tackle_power", param.max_tackle_power_ );
-    print_param( os, "max_back_tackle_power", param.max_back_tackle_power_ );
-    print_param( os, "player_speed_max_min", param.player_speed_max_min_ );
-    print_param( os, "extra_stamina", param.extra_stamina_ );
-    print_param( os, "synch_see_offset", param.synch_see_offset_ );
-    print_param( os, "max_monitors", param.max_monitors_ );
-    print_param( os, "min_catch_probability", param.min_catch_probability_ );
-    print_param( os, "reliable_catch_area_l", param.reliable_catch_area_l_ );
-    os << ")\n";
-}
-
-/*--------------------------------------------------------------------*/
 bool
 RCGSplitter::parseCmdLine( int argc,
                            char ** argv )
@@ -506,11 +235,6 @@ RCGSplitter::doHandleShowInfo( const ShowInfoT & show )
 {
     M_time = show.time_;
 
-    if ( ! M_fout.is_open() )
-    {
-        return;
-    }
-
     if ( M_version == rcss::rcg::REC_VERSION_4 )
     {
         printShowV4( M_fout, show );
@@ -540,6 +264,11 @@ RCGSplitter::printShowV4( std::ostream & os,
     static TeamT s_teams[2];
 
     bool new_file = createOutputFile( show.time_ );
+
+    if ( ! M_fout.is_open() )
+    {
+        return;
+    }
 
     if ( new_file
          || s_playmode != M_playmode )
@@ -636,6 +365,11 @@ RCGSplitter::printShowV3( std::ostream & os,
 
     bool new_file = createOutputFile( show.time_ );
 
+    if ( ! M_fout.is_open() )
+    {
+        return;
+    }
+
     Int16 mode;
 
     if ( new_file
@@ -685,6 +419,13 @@ void
 RCGSplitter::printShowV2( std::ostream & os,
                           const ShowInfoT & show )
 {
+    bool new_file = createOutputFile( show.time_ );
+
+    if ( ! M_fout.is_open() )
+    {
+        return;
+    }
+
     showinfo_t new_show;
 
     convert( static_cast< char >( M_playmode ),
@@ -705,6 +446,13 @@ void
 RCGSplitter::printShowOld( std::ostream & os,
                            const ShowInfoT & show )
 {
+    bool new_file = createOutputFile( show.time_ );
+
+    if ( ! M_fout.is_open() )
+    {
+        return;
+    }
+
     dispinfo_t disp;
 
     disp.mode = htons( SHOW_MODE );
@@ -724,6 +472,13 @@ void
 RCGSplitter::doHandleMsgInfo( const int board,
                               const std::string & msg )
 {
+    bool new_file = createOutputFile( M_time );
+
+    if ( ! M_fout.is_open() )
+    {
+        return;
+    }
+
     if ( ! M_fout.is_open() )
     {
         return;
@@ -898,13 +653,13 @@ RCGSplitter::writeHeader()
 
     if ( M_version == REC_VERSION_4 )
     {
-        print( M_fout, M_server_param );
-        print( M_fout, M_player_param );
+        M_server_param.print( M_fout  ) << '\n';
+        M_player_param.print( M_fout ) << '\n';
         for ( std::vector< PlayerTypeT >::iterator it = M_player_types.begin();
               it != M_player_types.end();
               ++it )
         {
-            print( M_fout, *it );
+            it->print( M_fout ) << '\n';
         }
     }
     else if ( M_version == REC_VERSION_3 )

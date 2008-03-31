@@ -21,6 +21,8 @@ AC_PROG_MAKE_SET
 AC_PROG_AWK
 AC_LANG(C++)
 
+AC_DISABLE_STATIC
+
 dnl Checks for libraries.
 
 AC_CHECK_LIB([m], [cos])

@@ -39,8 +39,8 @@
 
 #include "netif.h"
 
-#include "rcgparser.hpp"
-#include "rcgdatahandler.hpp"
+#include <rcsslogplayer/handler.h>
+#include <rcsslogplayer/types.h>
 
 #if !X_DISPLAY_MISSING
 #include <X11/Intrinsic.h>
@@ -62,8 +62,7 @@ class Controler;
  *===================================================================
  */
 class Player
-    : public rcss::RCGDataHandler
-{
+    : public rcss::rcg::Handler {
 public:
 
     static const int TIMEDELTA;
@@ -124,19 +123,14 @@ private:
 
     int M_version; /* version of the file format */
 
-		char M_playmode;
-		team_t M_teams[2];
-    TeamT M_teams_v4[2];
+    rcss::rcg::PlayMode M_playmode;
+    rcss::rcg::TeamT M_teams[2];
 
-    server_params_t M_server_param;
-    player_params_t M_player_param;
-    std::vector< player_type_t > M_player_types;
+    rcss::rcg::ServerParamT M_server_param;
+    rcss::rcg::PlayerParamT M_player_param;
+    std::vector< rcss::rcg::PlayerTypeT > M_player_types;
 
-    std::map< std::string, std::string > M_server_param_map;
-    std::map< std::string, std::string > M_player_param_map;
-
-    std::vector< boost::shared_ptr< showinfo_t > > M_showinfo_cache;
-    std::vector< boost::shared_ptr< showinfo_t2 > > M_showinfo2_cache;
+    std::vector< boost::shared_ptr< rcss::rcg::DispInfoT > > M_dispinfo_cache;
     std::size_t M_show_index;
 
 public:
@@ -194,17 +188,19 @@ public:
 
     std::string statusString() const;
 private:
-		bool parseCmdLine( int argc, char ** argv );
+		bool parseCmdLine( int argc,
+                       char ** argv );
 
 		void sendLog( const std::size_t index );
 		void writeLog( const std::size_t index );
 
 
-    void serializeShow( const showinfo_t2 & show,
+    void serializeDisp( const rcss::rcg::DispInfoT & disp,
+                        const bool disp_mode,
                         std::string & msg );
     void serializeServerParam( std::string & msg );
     void serializePlayerParam( std::string & msg );
-    void serializePlayerType( const player_type_t & param,
+    void serializePlayerType( const rcss::rcg::PlayerTypeT & param,
                               std::string & msg );
 
 
@@ -215,55 +211,15 @@ private:
           return M_version;
       }
 
-    void doHandleDispInfo( std::streampos,
-                           const dispinfo_t & );
-
-    void doHandleShowInfo( std::streampos,
-                           const showinfo_t & );
-
-    void doHandleShowInfo( std::streampos,
-                           const short_showinfo_t2 & );
-
-    void doHandleMsgInfo( std::streampos,
-                          short,
+    void doHandleShowInfo( const rcss::rcg::ShowInfoT & );
+    void doHandleMsgInfo( const int,
                           const std::string & );
-
-    void doHandlePlayMode( std::streampos,
-                           char );
-
-    void doHandleTeamInfo( std::streampos,
-                           const team_t &,
-                           const team_t & );
-
-    void doHandleServerParams( std::streampos,
-                               const server_params_t & );
-
-    void doHandlePlayerParams( std::streampos,
-                               const player_params_t & );
-
-    void doHandlePlayerType( std::streampos,
-                             const player_type_t & );
-
-
-    // version 4
-
-    void doHandleShowBegin( const int time );
-    void doHandleShowEnd();
-    void doHandleBall( const int time,
-                       const BallT & ball );
-    void doHandlePlayer( const int time,
-                         const PlayerT & player );
-    void doHandleMsg( const int time,
-                      const int board,
-                      const char * msg );
-    void doHandlePlayMode( const int time,
-                           const PlayMode pm );
-    void doHandleTeam( const int time,
-                       const TeamT & team_l,
-                       const TeamT & team_r );
-    void doHandleServerParams( const std::map< std::string, std::string > & param_map );
-    void doHandlePlayerParams( const std::map< std::string, std::string > & param_map );
-    void doHandlePlayerType( const std::map< std::string, std::string > & param_map );
+    void doHandlePlayMode( const rcss::rcg::PlayMode );
+    void doHandleTeamInfo( const rcss::rcg::TeamT &,
+                           const rcss::rcg::TeamT & );
+    void doHandlePlayerType( const rcss::rcg::PlayerTypeT & );
+    void doHandlePlayerParam( const rcss::rcg::PlayerParamT & );
+    void doHandleServerParam( const rcss::rcg::ServerParamT & );
 
 };
 

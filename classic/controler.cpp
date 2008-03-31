@@ -57,7 +57,6 @@
 #include <X11/Xaw/Scrollbar.h>
 #include <X11/Shell.h>
 
-#include "types.h"
 #include "logplayer.h"
 #include "fallback.h"
 
@@ -76,7 +75,7 @@
 extern Player player;
 
 #ifdef X11R5
-# include "utility.h"
+//# include "utility.h"
 static Arg Args[16];
 static int Argn;
 #endif

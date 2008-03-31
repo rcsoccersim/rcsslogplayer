@@ -1,3 +1,31 @@
+2008-04-01  Hidehisa Akiyama  <akky@users.sourceforge.jp>
+
+	* rcsslogplayer/types.cpp:
+	* classic/file.cpp:
+	* classic/file.h:
+	* classic/rcgdatahandler.hpp:
+	* classic/rcgparser.cpp:
+	* classic/rcgparser.hpp:
+	* classic/types.h:
+	* classic/utility.h:
+	* classic/Makefile.am:
+	* classic/controler.cpp:
+	* classic/logplayer.cpp:
+	* classic/logplayer.h:
+	* classic/main.cpp:
+	* classic/netif.cpp:
+	* classic/netif.h:
+	* classic/nowindow.cpp:
+	* classic/rcsslogplay:
+	* configure.ac:
+	* rcsslogplayer/Makefile.am:
+	* rcsslogplayer/handler.h:
+	* rcsslogplayer/parser.cpp:
+	* rcsslogplayer/types.h:
+	* tool/rcgsplit.cpp:
+	- reimplemente rcsslogplayer as rcsslogplayer_classic using new
+	rcg parser library.
+
 2008-03-31  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 
 	* classic:

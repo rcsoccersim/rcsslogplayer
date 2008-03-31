@@ -3,6 +3,7 @@ lib_LTLIBRARIES = librcssrcgparser.la
 
 librcssrcgparser_la_SOURCES = \
 	parser.cpp \
+	types.cpp \
 	util.cpp
 
 librcssrcgparserincludedir = $(includedir)/rcg

@@ -1,7 +1,7 @@
 // -*-c++-*-
 
 /*!
-  \file parser.h
+  \file parser.cpp
   \brief Class for parsing rcg files
 */
 
@@ -577,6 +577,7 @@ Parser::strmErr( std::istream & is )
     if ( is.eof() )
     {
         M_handler.handleEOF();
+        return true;
     }
 
     return false;
@@ -634,12 +635,11 @@ Parser::parseLines( std::istream & is )
                       << "Unknown info. " << "\"" << line << "\""
                       << std::endl;
         }
-
     }
 
     M_handler.handleEOF();
 
-    return false;
+    return true;
 
 }
 

@@ -35,6 +35,7 @@
 
 #include <boost/cstdint.hpp>
 
+#include <iosfwd>
 #include <string>
 
 namespace rcss {
@@ -836,7 +837,6 @@ struct ShowInfoT {
     PlayerT player_[MAX_PLAYER * 2];
 };
 
-
 /*!
   \struct DispInfoT
   \brief display information
@@ -879,6 +879,11 @@ struct PlayerTypeT {
         , effort_max_( 1.0 )
         , effort_min_( 0.6 )
       { }
+
+    /*!
+      \brief print s-exp message
+     */
+    std::ostream & print( std::ostream & os ) const;
 };
 
 /*!
@@ -945,6 +950,11 @@ struct PlayerParamT {
         , new_stamina_inc_max_delta_factor_( -6000.0 )
         , random_seed_( -1 )
       { }
+
+   /*!
+      \brief print s-exp message
+     */
+    std::ostream & print( std::ostream & os ) const;
 };
 
 /*!
@@ -1313,8 +1323,12 @@ struct ServerParamT {
         , reliable_catch_area_l_( 1.2 )
         , min_catch_probability_( 1.0 )
       { }
-};
 
+   /*!
+      \brief print s-exp message
+     */
+    std::ostream & print( std::ostream & os ) const;
+};
 
 }
 }

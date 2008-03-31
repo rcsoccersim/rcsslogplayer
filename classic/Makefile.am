@@ -5,7 +5,6 @@ bin_PROGRAMS = \
 bin_SCRIPTS = rcsslogplay
 
 rcsslogplayer_classic_SOURCES = \
-	rcgparser.cpp \
 	netif.cpp \
 	controler.cpp \
 	logplayer.cpp \
@@ -13,18 +12,15 @@ rcsslogplayer_classic_SOURCES = \
 	main.cpp
 
 noinst_HEADERS = \
-	rcgparser.hpp \
-	rcgdatahandler.hpp \
-	types.h	netif.h \
+	netif.h \
 	controler.h \
 	logplayer.h \
-	fallback.h \
-	utility.h
+	fallback.h
 
 rcsslogplayer_classic_CPPFLAGS = $(RCL_CPPFLAGS)
 rcsslogplayer_classic_CXXFLAGS = $(RCL_CXXFLAGS)
-rcsslogplayer_classic_LDFLAGS = $(RCL_LDFLAGS)
-rcsslogplayer_classic_LDADD = $(RCL_LIBS) $(BOOST_PROGRAM_OPTIONS_LIB)
+rcsslogplayer_classic_LDFLAGS = $(RCL_LDFLAGS) -L$(top_builddir)/rcsslogplayer
+rcsslogplayer_classic_LDADD = $(RCL_LIBS) -lrcssrcgparser $(BOOST_PROGRAM_OPTIONS_LIB)
 
 pkgdata_DATA =
 
@@ -46,9 +42,6 @@ EXTRA_DIST = \
 	blank.xbm \
 	quit.xbm \
 	go.xbm \
-	rcg.xsd \
-	rcg-0.1.xsd \
-	rcsslogplay \
-	ac_lib_rcgparser.m4
+	rcsslogplay
 
 CLEANFILES = *~

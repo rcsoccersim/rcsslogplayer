@@ -40,7 +40,6 @@
 
 #include "netif.h"
 
-#include "types.h"
 #include "logplayer.h"
 
 #include <iostream>
@@ -85,26 +84,26 @@ Port::setListenPort( const int port )
 }
 
 void
-Port::send_info( const dispinfo_t & msg,
-                 const rcss::net::Addr & dest )
+Port::send( const rcss::rcg::dispinfo_t & msg,
+            const rcss::net::Addr & dest )
 {
     M_socket.send( reinterpret_cast< const char * >( &msg ),
-                   sizeof( dispinfo_t ),
+                   sizeof( rcss::rcg::dispinfo_t ),
                    dest );
 }
 
 void
-Port::send_info( const dispinfo_t2 & msg,
-                 const rcss::net::Addr & dest )
+Port::send( const rcss::rcg::dispinfo_t2 & msg,
+            const rcss::net::Addr & dest )
 {
     M_socket.send( reinterpret_cast< const char * >( &msg ),
-                   sizeof( dispinfo_t2 ),
+                   sizeof( rcss::rcg::dispinfo_t2 ),
                    dest );
 }
 
 void
-Port::send_info( const std::string & msg,
-                 const rcss::net::Addr & dest )
+Port::send( const std::string & msg,
+            const rcss::net::Addr & dest )
 {
     M_socket.send( msg.c_str(),
                    msg.length() + 1,
@@ -113,7 +112,7 @@ Port::send_info( const std::string & msg,
 
 
 int
-Port::recv_info()
+Port::recv()
 {
     char buf[8192];
 

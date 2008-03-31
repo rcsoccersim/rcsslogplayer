@@ -42,7 +42,7 @@
 
 #include "logplayer.h"
 
-#include "types.h"
+#include <iostream>
 
 #include <cstdlib>
 #include <cstdio>
@@ -118,8 +118,7 @@ Player::nwInit()
             if ( FD_ISSET( M_port.socket().getFD(), &read_fds ) )
             {
                 std::size_t monitor_size = M_port.monitors().size();
-                if ( M_port.recv_info() > 0
-                    //&& ! std::strncmp( M_port.rbuf, "(dispinit", 9 ) )
+                if ( M_port.recv() > 0
                      && monitor_size != M_port.monitors().size() )
                 {
                     M_state = STATE_STOP;

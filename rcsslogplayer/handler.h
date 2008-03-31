@@ -30,13 +30,12 @@
 
 /////////////////////////////////////////////////////////////////////
 
-#ifndef RCG_HANDLER_H
-#define RCG_HANDLER_H
+#ifndef RCSSLOGPLAYER_HANDLER_H
+#define RCSSLOGPLAYER_HANDLER_H
 
 #include <rcsslogplayer/types.h>
 
 #include <string>
-#include <map>
 
 namespace rcss {
 namespace rcg {

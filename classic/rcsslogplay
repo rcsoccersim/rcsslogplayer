@@ -4,7 +4,7 @@
 # option
 #
 
-PLAYER=`which rcsslogplayer 2> /dev/null`
+PLAYER=`which rcsslogplayer_classic 2> /dev/null`
 if test $? -eq 1; then
     echo "Error: rcsslogplayer can not be found in your PATH"
     echo ""
@@ -80,7 +80,7 @@ trap kill_player INT
 #--------------------------------------------------
 # start server
 #
-11
+
 echo "Starting logplayer..."
 
 $PLAYER "$LOG" &

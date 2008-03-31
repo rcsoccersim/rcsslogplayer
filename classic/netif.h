@@ -37,13 +37,12 @@
 #ifndef RCSSLOGPLAYER_NETIF_H
 #define RCSSLOGPLAYER_NETIF_H
 
-#include "types.h"
+#include <rcsslogplayer/types.h>
 
 #include <rcssbase/net/addr.hpp>
 #include <rcssbase/net/udpsocket.hpp>
 
 #include <string>
-
 #include <vector>
 
 struct Monitor {
@@ -90,14 +89,13 @@ public:
           return M_monitors;
       }
 
-		void send_info( const dispinfo_t & msg,
-                    const rcss::net::Addr & dest );
-		void send_info( const dispinfo_t2 & msg,
-                    const rcss::net::Addr & dest );
-		void send_info( const std::string & msg,
-                    const rcss::net::Addr & dest );
-		int recv_info();
-		void monitor_init();
+		void send( const rcss::rcg::dispinfo_t & msg,
+               const rcss::net::Addr & dest );
+		void send( const rcss::rcg::dispinfo_t2 & msg,
+               const rcss::net::Addr & dest );
+		void send( const std::string & msg,
+               const rcss::net::Addr & dest );
+		int recv();
 
 };
 

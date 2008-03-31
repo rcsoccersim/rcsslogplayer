@@ -37,6 +37,7 @@
 
 #include <rcssbase/version.hpp>
 
+#include <iostream>
 #include <csignal>
 #include <cstring>
 #include <cerrno>
@@ -57,7 +58,7 @@ char Copyright[] = "Copyright (C) 1995 - 1999 Electrotechnical Laboratory.\n\
 int
 main( int argc, char ** argv )
 {
-    std::cout << PACKAGE << "-" << VERSION << "\n\n"
+    std::cout << "rcsslogplayer_classic-" << VERSION << "\n\n"
               << Copyright << std::endl;
     std::cout << "Using rcssbase-" << rcss::base::version()
               << std::endl << std::endl;
