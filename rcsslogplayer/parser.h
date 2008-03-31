@@ -132,31 +132,6 @@ private:
 
     bool strmErr( std::istream & is );
 
-
-public:
-
-    static
-    void convert( const dispinfo_t & from,
-                  DispInfoT & to );
-    static
-    void convert( const showinfo_t & from,
-                  ShowInfoT & to );
-    static
-    void convert( const short_showinfo_t2 & from,
-                  ShowInfoT & to );
-    static
-    void convert( const team_t & from,
-                  TeamT & to );
-    static
-    void convert( const player_type_t & from,
-                  PlayerTypeT & to );
-    static
-    void convert( const server_params_t & from,
-                  ServerParamT & to );
-    static
-    void convert( const player_params_t & from,
-                  PlayerParamT & to );
-
 };
 
 }

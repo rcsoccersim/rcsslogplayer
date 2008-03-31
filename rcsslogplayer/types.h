@@ -371,10 +371,10 @@ struct player_t {
     Int16 dash_count;
     Int16 turn_count;
     Int16 say_count;
-    Int16 tneck_count;
+    Int16 turn_neck_count;
     Int16 catch_count;
     Int16 move_count;
-    Int16 chg_view_count;
+    Int16 change_view_count;
 };
 
 /*!
@@ -532,18 +532,18 @@ struct server_params_t {
     Int32 visible_distance; //!< visible distance
     Int32 wind_dir; //!< wind direction
     Int32 wind_force; //!< wind force
-    Int32 wind_ang; //!< wind angle for rand
+    Int32 wind_angle; //!< wind angle for rand
     Int32 wind_rand; //!< wind noise for force
     Int32 kickable_area; //!< kickable_area
-    Int32 catch_area_l; //!< goalie catchable area length
-    Int32 catch_area_w; //!< goalie catchable area width
+    Int32 catchable_area_l; //!< goalie catchable area length
+    Int32 catchable_area_w; //!< goalie catchable area width
     Int32 catch_probability; //!< goalie catchable possibility
     Int16 goalie_max_moves; //!< goalie max moves after a catch
     Int32 corner_kick_margin; //!< corner kick margin
-    Int32 offside_active_area; //!< offside active area size
+    Int32 offside_active_area_size; //!< offside active area size
     Int16 wind_none; //!< wind factor is none
-    Int16 use_wind_random; //!< wind factor is random
-    Int16 say_coach_count_max; //!< max count of coach's freeform say
+    Int16 wind_random; //!< wind factor is random
+    Int16 say_coach_count_max; //!< max count of coach's freeform say message
     Int16 say_coach_msg_size; //!< max length of coach's freeform say message
     Int16 clang_win_size; //!< window of coach language window
     Int16 clang_define_win; //!< window of coach language define message
@@ -584,8 +584,8 @@ struct server_params_t {
     Int32 slowness_on_top_for_left_team;  //!< flag for left team dash power rate reduction on field top area
     Int32 slowness_on_top_for_right_team; //!< flag for right team dash power rate reduction on field top area
 
-    Int32 ka_length; //!< keep away region length
-    Int32 ka_width;  //!< keep away region width
+    Int32 keepaway_length; //!< keep away region length
+    Int32 keepaway_width;  //!< keep away region width
 
     Int32 ball_stuck_area; //!< automatic drop ball threshold while play_on
 

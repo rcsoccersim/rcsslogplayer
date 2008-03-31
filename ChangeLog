@@ -1,5 +1,12 @@
 2008-03-31  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 
+	* rcsslogplayer/parser.cpp:
+	* rcsslogplayer/parser.h:
+	* rcsslogplayer/types.h:
+	* rcsslogplayer/util.cpp:
+	* rcsslogplayer/util.h:
+	- added data convert utilities.
+
 	* rcsslogplayer:
 	* rcsslogplayer/Makefile.am:
 	* rcsslogplayer/handler.h:
