@@ -44,15 +44,18 @@
 
 Player player;
 
+namespace {
+
+char Copyright[] = "Copyright (C) 1995 - 1999 Electrotechnical Laboratory.\n\
+2000 - 2008 RoboCup Soccer Simulator Maintenance Group.\n";
+
+
 void
 sig_handle( int )
 {
     player.quit();
 }
 
-namespace {
-char Copyright[] = "Copyright (C) 1995 - 1999 Electrotechnical Laboratory.\n\
-2000 - 2008 RoboCup Soccer Simulator Maintenance Group.\n";
 }
 
 int

@@ -8,8 +8,4 @@ SUBDIRS = rcsslogplayer tool classic .
 
 EXTRA_DIST =
 
-CLEANFILES = \
-*~ \
-core \
-*.tar.gz \
-libtool.tmp
+CLEANFILES = *~

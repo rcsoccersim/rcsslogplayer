@@ -72,38 +72,9 @@ fi
 
 
 #--------------------------------------------------
-# set handler
-#
-
-trap kill_player INT
-
-#--------------------------------------------------
-# start server
+# start logplayer with monitor
 #
 
 echo "Starting logplayer..."
 
-$PLAYER "$LOG" &
-PID=$!
-
-#--------------------------------------------------
-# kill player
-#
-kill_player()
-{
-    kill -s INT $PID
-    echo ""
-    exit 0
-}
-
-#--------------------------------------------------
-# start monitor
-#
-
-sleep 1
-
-echo "Starting monitor..."
-
-$MON
-
-kill_player
+$PLAYER -m $MON $LOG

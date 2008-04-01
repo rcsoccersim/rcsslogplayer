@@ -1,8 +1,12 @@
 
-bin_PROGRAMS = \
-	rcsslogplayer_classic
+if BUILD_CLASSIC
+BUILD_PROGS = rcsslogplayer_classic
+BUILD_SCRPTS = rcsslogplay_classic
+endif
 
-bin_SCRIPTS = rcsslogplay
+bin_PROGRAMS = $(BUILD_PROGS)
+
+bin_SCRIPTS = $(BUILD_SCRPTS)
 
 rcsslogplayer_classic_SOURCES = \
 	netif.cpp \
@@ -17,10 +21,10 @@ noinst_HEADERS = \
 	logplayer.h \
 	fallback.h
 
-rcsslogplayer_classic_CPPFLAGS = $(RCL_CPPFLAGS)
-rcsslogplayer_classic_CXXFLAGS = $(RCL_CXXFLAGS)
-rcsslogplayer_classic_LDFLAGS = $(RCL_LDFLAGS) -L$(top_builddir)/rcsslogplayer
-rcsslogplayer_classic_LDADD = $(RCL_LIBS) -lrcssrcgparser $(BOOST_PROGRAM_OPTIONS_LIB)
+rcsslogplayer_classic_CPPFLAGS = $(CLASSIC_CPPFLAGS)
+rcsslogplayer_classic_CXXFLAGS = $(CLASSIC_CXXFLAGS)
+rcsslogplayer_classic_LDFLAGS = $(CLASSIC_LDFLAGS) -L$(top_builddir)/rcsslogplayer
+rcsslogplayer_classic_LDADD = $(CLASSIC_LIBS) -lrcssrcgparser $(BOOST_PROGRAM_OPTIONS_LIB)
 
 pkgdata_DATA =
 
@@ -41,7 +45,6 @@ EXTRA_DIST = \
 	rec.xbm \
 	blank.xbm \
 	quit.xbm \
-	go.xbm \
-	rcsslogplay
+	go.xbm
 
 CLEANFILES = *~

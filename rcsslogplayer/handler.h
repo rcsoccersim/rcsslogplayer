@@ -1,15 +1,15 @@
 // -*-c++-*-
 
 /*!
-  \file parser.h
-  \brief Class for parsing rcg files
+  \file handler.h
+  \brief Class for handring rcg data
 */
 
 /*
  *Copyright:
 
  Copyright (C) The RoboCup Soccer Server Maintenance Group.
-               Hidehisa AKIYAMA
+ Hidehisa AKIYAMA
 
  This code is free software; you can redistribute it and/or
  modify it under the terms of the GNU Lesser General Public

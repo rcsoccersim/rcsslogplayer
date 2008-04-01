@@ -11,9 +11,9 @@
 
  Copyright (C) 1996-2000 Electrotechnical Laboratory.
  Itsuki Noda, Yasuo Kuniyoshi and Hitoshi Matsubara.
- Copyright (C) 2000, 2001 RoboCup Soccer Server Maintainance Group.
+ Copyright (C) 2000- RoboCup Soccer Server Maintainance Group.
  Patrick Riley, Tom Howard, Daniel Polani, Itsuki Noda,
- Mikhail Prokopenko, Jan Wendler
+ Mikhail Prokopenko, Jan Wendler, Hidehisa Akiyama
 
  This file is a part of SoccerServer.
 
@@ -33,7 +33,6 @@
 
  *EndCopyright:
  */
-
 
 #ifdef HAVE_CONFIG_H
 #include <config.h>
@@ -63,8 +62,10 @@
 #include <cstdio>
 #include <cmath>
 #include <csignal>
+#include <cerrno> // errno
 
-#include <sys/time.h>
+#include <unistd.h> // fork, execlp
+#include <sys/time.h> // itimerval, setitimer
 
 #ifdef HAVE_NETINET_IN_H
 #include <netinet/in.h>
@@ -89,6 +90,15 @@ quantize( const float & val,
           const float & prec )
 {
     return rintf( val / prec ) * prec;
+}
+
+void
+sig_handle( int )
+{
+    if ( player.monitorCount() <= 1 )
+    {
+        player.quit();
+    }
 }
 
 } // end noname namespace
@@ -133,7 +143,18 @@ const int Player::MAX_SHOWINFO = 18000;
 
 
 Player::Player()
-    : M_show_index( 0 )
+    : M_state( STATE_WAIT )
+    , M_limit( 10000 )
+    , M_sent( 0 )
+    , M_rect( 0 )
+    , M_to_time( NONE )
+    , M_rec_state( REC_OFF )
+    , M_current( 1 )
+    , M_monitor_child( 0 )
+    , M_no_window( false )
+    , M_version( 0 )
+    , M_playmode( rcss::rcg::PM_Null )
+    , M_show_index( 0 )
 {
 
 #if !X_DISPLAY_MISSING
@@ -188,6 +209,8 @@ Player::run( int argc, char ** argv )
 
     M_port.init();
 
+    M_monitor_child = startMonitor( M_monitor_command );
+
 #if !X_DISPLAY_MISSING
     /* X logplayer */
     if ( ! M_no_window )
@@ -234,12 +257,15 @@ Player::parseCmdLine( int argc, char **argv )
     visibles.add_options()
         ( "help,h",
           "generates this message" )
-        ( "file",
+        ( "file,f",
           po::value< std::string >(),
           "configuration file" )
         ( "port,p",
           po::value< int >( &port_number )->default_value( 6000, "6000" ),
           "connection port number" )
+        ( "monitor,m",
+          po::value< std::string >( &M_monitor_command )->default_value( "" ),
+          "monitor command path" )
         ( "nowindow,n",
           po::bool_switch( &M_no_window )->default_value( false ),
           "no window mode" )
@@ -340,6 +366,43 @@ Player::parseCmdLine( int argc, char **argv )
     M_port.setListenPort( port_number );
 
     return true;
+}
+
+int
+Player::startMonitor( const std::string & command )
+{
+    if ( command.empty() )
+    {
+        return 0;
+    }
+
+    std::cout << "Starting monitor"
+              << " \"/bin/sh -c " << command << "\" ..." << std::endl;
+
+    int pid = ::fork();
+    if ( pid == -1 )
+    {
+        std::cerr << PACKAGE << "-" << VERSION
+                  << ": Error: Could not fork to start monitor: "
+                  << std::strerror( errno ) << std::endl;
+        return 0;
+    }
+
+    if ( pid == 0 )
+    {
+        //::sleep( 1 );
+        ::execlp( "/bin/sh", "sh", "-c", command.c_str(), (char *)NULL );
+        std::cerr << PACKAGE << "-" << VERSION
+                  << ": Error: Could not execute \"/bin/sh -c "
+                  << command << "\": "
+                  << std::strerror( errno ) << std::endl;
+        return 0;
+    }
+
+    // watch the status of child process
+    std::signal( SIGCLD, sig_handle );
+
+    return pid;
 }
 
 void

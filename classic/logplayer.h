@@ -113,6 +113,8 @@ private:
 		int M_to_time; /* jump to [to_time] */
 		int	M_rec_state; /* recording state */
 
+    int M_monitor_child; // child process id
+    std::string M_monitor_command; // monitor client command path
 		bool M_no_window; /* no window? */
 
 		Port M_port; /* communication port */
@@ -150,6 +152,10 @@ public:
           return M_state;
       }
 
+    std::size_t monitorCount() const
+      {
+          return M_port.monitors().size();
+      }
 
 #if !X_DISPLAY_MISSING
 		void initTimer();
@@ -190,7 +196,7 @@ public:
 private:
 		bool parseCmdLine( int argc,
                        char ** argv );
-
+    int startMonitor( const std::string & command );
 		void sendLog( const std::size_t index );
 		void writeLog( const std::size_t index );
 

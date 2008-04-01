@@ -1,23 +1,35 @@
 // -*-c++-*-
 
-/***************************************************************************
-                                rcgsplit.cpp
-                         rcg splitter source file
-                             -------------------
-    begin                : 2007-05-11
-    copyright            : (C) 2007 by The RoboCup Soccer Server
-                           Maintenance Group.
-    email                : sserver-admin@lists.sourceforge.net
-***************************************************************************/
+/*!
+  \file rcgsplit.cpp
+  \date 2007-05-11
+  \brief rcg splitter source file
+*/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU LGPL as published by the Free Software  *
- *   Foundation; either version 2 of the License, or (at your option) any  *
- *   later version.                                                        *
- *                                                                         *
- ***************************************************************************/
+/*
+ *Copyright:
+
+ Copyright (C) The RoboCup Soccer Server Maintenance Group.
+ Hidehisa AKIYAMA
+
+ This code is free software; you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation; either version 2, or (at your option)
+ any later version.
+
+ This code is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+
+ You should have received a copy of the GNU General Public License
+ along with this code; see the file COPYING.  If not, write to
+ the Free Software Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
+
+ *EndCopyright:
+ */
+
+/////////////////////////////////////////////////////////////////////
 
 #ifdef HAVE_CONFIG_H
 #include <config.h>
@@ -131,16 +143,12 @@ private:
     // utility
 
     bool createOutputFile( const int cycle );
-    void writeHeader();
+    void printHeader();
 
-    void printShowV4( std::ostream & os,
-                      const ShowInfoT & show );
-    void printShowV3( std::ostream & os,
-                      const ShowInfoT & show );
-    void printShowV2( std::ostream & os,
-                      const ShowInfoT & show );
-    void printShowOld( std::ostream & os,
-                       const ShowInfoT & show );
+    void printShowV4( const ShowInfoT & show );
+    void printShowV3( const ShowInfoT & show );
+    void printShowV2( const ShowInfoT & show );
+    void printShowOld( const ShowInfoT & show );
 };
 
 /*--------------------------------------------------------------------*/
@@ -237,26 +245,25 @@ RCGSplitter::doHandleShowInfo( const ShowInfoT & show )
 
     if ( M_version == rcss::rcg::REC_VERSION_4 )
     {
-        printShowV4( M_fout, show );
+        printShowV4( show );
     }
     else if ( M_version == rcss::rcg::REC_VERSION_3 )
     {
-        printShowV3( M_fout, show );
+        printShowV3( show );
     }
     else if ( M_version == rcss::rcg::REC_VERSION_2 )
     {
-        printShowV2( M_fout, show );
+        printShowV2( show );
     }
     else
     {
-        printShowOld( M_fout, show );
+        printShowOld( show );
     }
 }
 
 /*--------------------------------------------------------------------*/
 void
-RCGSplitter::printShowV4( std::ostream & os,
-                          const ShowInfoT & show )
+RCGSplitter::printShowV4( const ShowInfoT & show )
 {
     static const char * s_playmode_strings[] = PLAYMODE_STRINGS;
 
@@ -270,9 +277,13 @@ RCGSplitter::printShowV4( std::ostream & os,
         return;
     }
 
+    std::ostream & os = M_fout;
+
     if ( new_file
          || s_playmode != M_playmode )
     {
+        s_playmode = M_playmode;
+
         os << "(playmode " << M_time
            << " " << s_playmode_strings[s_playmode]
            << ")\n";
@@ -357,8 +368,7 @@ RCGSplitter::printShowV4( std::ostream & os,
 
 /*--------------------------------------------------------------------*/
 void
-RCGSplitter::printShowV3( std::ostream & os,
-                          const ShowInfoT & show )
+RCGSplitter::printShowV3( const ShowInfoT & show )
 {
     static PlayMode s_playmode = PM_Null;
     static TeamT s_teams[2];
@@ -369,6 +379,8 @@ RCGSplitter::printShowV3( std::ostream & os,
     {
         return;
     }
+
+    std::ostream & os = M_fout;
 
     Int16 mode;
 
@@ -416,8 +428,7 @@ RCGSplitter::printShowV3( std::ostream & os,
 
 /*--------------------------------------------------------------------*/
 void
-RCGSplitter::printShowV2( std::ostream & os,
-                          const ShowInfoT & show )
+RCGSplitter::printShowV2( const ShowInfoT & show )
 {
     bool new_file = createOutputFile( show.time_ );
 
@@ -425,6 +436,8 @@ RCGSplitter::printShowV2( std::ostream & os,
     {
         return;
     }
+
+    std::ostream & os = M_fout;
 
     showinfo_t new_show;
 
@@ -443,8 +456,7 @@ RCGSplitter::printShowV2( std::ostream & os,
 
 /*--------------------------------------------------------------------*/
 void
-RCGSplitter::printShowOld( std::ostream & os,
-                           const ShowInfoT & show )
+RCGSplitter::printShowOld( const ShowInfoT & show )
 {
     bool new_file = createOutputFile( show.time_ );
 
@@ -452,6 +464,8 @@ RCGSplitter::printShowOld( std::ostream & os,
     {
         return;
     }
+
+    std::ostream & os = M_fout;
 
     dispinfo_t disp;
 
@@ -472,12 +486,7 @@ void
 RCGSplitter::doHandleMsgInfo( const int board,
                               const std::string & msg )
 {
-    bool new_file = createOutputFile( M_time );
-
-    if ( ! M_fout.is_open() )
-    {
-        return;
-    }
+    createOutputFile( M_time );
 
     if ( ! M_fout.is_open() )
     {
@@ -614,7 +623,7 @@ RCGSplitter::createOutputFile( const int cycle )
             std::cout << "new file [" << filename << "]" << std::endl;
         }
 
-        writeHeader();
+        printHeader();
 
         return true;
     }
@@ -624,7 +633,7 @@ RCGSplitter::createOutputFile( const int cycle )
 
 /*--------------------------------------------------------------------*/
 void
-RCGSplitter::writeHeader()
+RCGSplitter::printHeader()
 {
     if ( ! M_fout.is_open() )
     {

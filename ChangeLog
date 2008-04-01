@@ -1,3 +1,41 @@
+2008-04-02  Hidehisa Akiyama  <akky@users.sourceforge.jp>
+
+	* classic/rcsslogplay_classic:
+	* classic/logplayer.cpp:
+	* classic/logplayer.h:
+	* classic/main.cpp:
+	- changed the policy of rcsslogplay_classic. Now,
+	rcsslogplayer_classc invokes the monitor client by itself.
+
+	* qt4:
+	* qt4/Makefile.am:
+	* qt4/main.cpp:
+	* qt4/main_window.cpp:
+	* qt4/main_window.h:
+	- added new directory.
+
+	* Makefile.am:
+	* configure.ac:
+	- cleaned up.
+	- addec qt4 checking.
+
+	* tool/Makefile.am:
+	* tool/rcg3to4.cpp:
+	* tool/rcg4to3.cpp:
+	- added new tool programs.
+
+	* rcsslogplayer/handler.h:
+	* rcsslogplayer/parser.cpp:
+	* rcsslogplayer/types.cpp:
+	* tool/rcgsplit.cpp:
+	- fixed a parser bug.
+	- fixed a printed value precision.
+
+	* classic/Makefile.am:
+	* classic/rcsslogplay_classic:
+	* classic/rcsslogplay:
+	- renamed rcsslogplay to rcsslogplay_classic
+
 2008-04-01  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 
 	* rcsslogplayer/types.cpp:

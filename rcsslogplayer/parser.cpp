@@ -186,37 +186,42 @@ parse_param_line( const int n_line,
         //
         try
         {
-            IntMap::iterator int_it;
-            DoubleMap::iterator double_it;
-            BoolMap::iterator bool_it;
-            StringMap::iterator string_it;
-
-            if ( ( int_it = int_map.find( name_str ) ) != int_map.end() )
+            IntMap::iterator int_it = int_map.find( name_str );
+            if ( int_it != int_map.end() )
             {
                 *(int_it->second) = boost::lexical_cast< int >( value_str );
+                continue;
             }
-//             else ( ( double_it = double_map.find( name_str ) ) != double_map.end() )
-//             {
-//                 *(double_it->second) = boost::lexical_cast< double >( value_str );
-//             }
-//             else if ( ( bool_it = bool_map.find( name_str ) ) != bool_map.end() )
-//             {
-//                 *(bool_it->second) = !( value_str == "0"
-//                                         || value_str == "false"
-//                                         || value_str == "off" );
-//             }
-//             else if ( ( string_it = string_map.find( name_str ) ) != string_map.end() )
-//             {
-//                 *(string_it->second) = clean_string( value_str );
-//             }
-            else
+
+            DoubleMap::iterator double_it = double_map.find( name_str );
+            if ( double_it != double_map.end() )
             {
-                std::cerr << n_line << ": waring: cannot fine any parameter in "
-                          << message_name
-                          << ". param_name=" << name_str
-                          << " value=" << value_str
-                          << std::endl;
+                *(double_it->second) = boost::lexical_cast< double >( value_str );
+                continue;
             }
+
+            BoolMap::iterator bool_it = bool_map.find( name_str );
+            if ( bool_it != bool_map.end() )
+            {
+                *(bool_it->second) = !( value_str == "0"
+                                        || value_str == "false"
+                                        || value_str == "off" );
+                continue;
+            }
+
+            StringMap::iterator string_it = string_map.find( name_str );
+            if ( string_it != string_map.end() )
+            {
+                *(string_it->second) = clean_string( value_str );
+                continue;
+            }
+
+
+            std::cerr << n_line << ": waring: cannot find any parameter in "
+                      << message_name
+                      << ". param_name=" << name_str
+                      << " value=" << value_str
+                      << std::endl;
         }
         catch ( boost::bad_lexical_cast & e )
         {
@@ -660,7 +665,8 @@ Parser::parseShowLine( const int n_line,
                       &time, &n_read ) != 1 )
     {
         std::cerr << n_line << ": error: "
-                  << "Illegal time info \"" << line << "\"" << std::endl;
+                  << "Illegal time info \"" << line << "\""
+                  << std::endl;
         return false;
     }
     buf += n_read;
@@ -673,7 +679,8 @@ Parser::parseShowLine( const int n_line,
                           &n_read ) != 4 )
         {
             std::cerr << n_line << ": error: "
-                      << "Illegal ball info \"" << line << "\"" << std::endl;
+                      << "Illegal ball info \"" << line << "\""
+                      << std::endl;
             return false;
         }
         buf += n_read;
@@ -685,10 +692,10 @@ Parser::parseShowLine( const int n_line,
         if ( *buf == ')' ) break;
 
         char side = 'n';
-        int unum = 0;
+        short unum = 0;
 
         if ( std::sscanf( buf,
-                          " ( ( %c %d ) %n ",
+                          " ( ( %c %hd ) %n ",
                           &side, &unum,
                           &n_read ) != 2 )
         {
@@ -704,21 +711,24 @@ Parser::parseShowLine( const int n_line,
         if ( idx < 0 || MAX_PLAYER*2 <= idx )
         {
             std::cerr << n_line << ": error: "
-                      << " Illegal player " << i << " \"" << line << "\""
+                      << " Illegal player id. " << side << ' ' << unum
+                      << " \"" << line << "\""
                       << std::endl;;
             return false;
         }
 
         PlayerT & p = show.player_[idx];
+        p.side_ = side;
+        p.unum_ = unum;
 
         if ( std::sscanf( buf,
-                          " ( %hd %x %f %f %f %f %f %f %n ",
+                          " %hd %x %f %f %f %f %f %f %n ",
                           &p.type_, &p.state_,
                           &p.x_, &p.y_, &p.vx_, &p.vy_, &p.body_, &p.neck_,
-                          &n_read ) != 10 )
+                          &n_read ) != 8 )
         {
             std::cerr << n_line << ": error: "
-                      << " Illegal player " << side << ' ' << unum
+                      << " Illegal player pos. " << side << ' ' << unum
                       << " \"" << line << "\""
                       << std::endl;;
             return false;
@@ -739,7 +749,9 @@ Parser::parseShowLine( const int n_line,
                           &n_read ) != 2 )
         {
             std::cerr << n_line << ": error: "
-                      << "Illegal player " << i << " view \"" << line << "\"" << std::endl;;
+                      << " Illegal player view. " << side << ' ' << unum
+                      << " \"" << line << "\""
+                      << std::endl;;
             return false;
         }
         buf += n_read;
@@ -750,7 +762,9 @@ Parser::parseShowLine( const int n_line,
                           &n_read ) != 3 )
         {
             std::cerr << n_line << ": error: "
-                      << "Illegal player " << i << " stamina \"" << line << "\"" << std::endl;;
+                      << " Illegal player stamina. " << side << ' ' << unum
+                      << " \"" << line << "\""
+                      << std::endl;;
             return false;
         }
         buf += n_read;
@@ -771,7 +785,9 @@ Parser::parseShowLine( const int n_line,
                           &n_read ) != 11 )
         {
             std::cerr << n_line << ": error: "
-                      << "Illegal player " << i << " count \"" << line << "\"" << std::endl;;
+                      << " Illegal player count. " << side << ' ' << unum
+                      << " \"" << line << "\""
+                      << std::endl;;
             return false;
         }
         buf += n_read;
