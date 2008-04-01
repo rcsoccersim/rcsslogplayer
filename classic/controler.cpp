@@ -813,6 +813,7 @@ Player::comJump()
     {
         if ( std::sscanf( t, "%d", &M_to_time ) == 1 )
         {
+            std::cerr << "scanned to_time=" << M_to_time << std::endl;
             M_state = STATE_JUMP;
         }
         else if ( ! std::strncmp( t, "end", std::strlen( "end" ) ) )

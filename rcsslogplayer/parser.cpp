@@ -671,6 +671,8 @@ Parser::parseShowLine( const int n_line,
     }
     buf += n_read;
 
+    show.time_ = static_cast< UInt32 >( time );
+
     // ball
     {
         BallT & ball = show.ball_;

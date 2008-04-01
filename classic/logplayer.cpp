@@ -411,6 +411,13 @@ Player::quit()
     M_out_strm.flush();
     M_out_strm.close();
 
+//     if ( M_monitor_child > 0 )
+//     {
+//         ::kill( M_monitor_child, SIGINT );
+//         std::cout << "Killing " << M_monitor_child << std::endl;
+//         M_monitor_child = 0;
+//     }
+
     std::exit( 0 );
 }
 
@@ -516,7 +523,7 @@ struct DispInfoCmp
     result_type operator()( const first_argument_type & lhs,
                             const second_argument_type & rhs )
       {
-          return ntohs( lhs->show_.time_ ) < ntohs( rhs->show_.time_ );
+          return lhs->show_.time_ < rhs->show_.time_;
       }
 };
 
