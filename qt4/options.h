@@ -170,17 +170,6 @@ public:
           return M_game_log_file;
       }
 
-    const
-    std::string & gameLogDir() const
-      {
-          return M_game_log_dir;
-      }
-
-    void setGameLogDir( const std::string & dir )
-      {
-          M_game_log_dir = dir;
-      }
-
     bool timeShiftReplay() const
       {
           return M_time_shift_replay;

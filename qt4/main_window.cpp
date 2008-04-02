@@ -40,15 +40,15 @@
 
 //#include "color_setting_dialog.h"
 //#include "image_save_dialog.h"
-#include "detail_dialog.h"
+//#include "detail_dialog.h"
 //#include "font_setting_dialog.h"
 //#include "monitor_move_dialog.h"
-#include "player_type_dialog.h"
+//#include "player_type_dialog.h"
 //#include "view_config_dialog.h"
 #include "field_canvas.h"
-#include "monitor_client.h"
-#include "log_player.h"
-#include "log_player_tool_bar.h"
+//#include "monitor_client.h"
+//#include "log_player.h"
+//#include "log_player_tool_bar.h"
 #include "options.h"
 
 #include <string>
@@ -756,72 +756,37 @@ MainWindow::createMenuHelp()
 void
 MainWindow::createToolBars()
 {
-//     M_monitor_tool_bar = new QToolBar( tr( "Monitor" ), this );
-//     M_monitor_tool_bar->setIconSize( QSize( 16, 16 ) );
-//     M_monitor_tool_bar->addAction( M_set_live_mode_act );
-//     M_monitor_tool_bar->addAction( M_toggle_drag_move_mode_act );
-//     M_monitor_tool_bar->addAction( M_toggle_debug_server_act );
+//     M_log_player_tool_bar = new LogPlayerToolBar( M_log_player,
+//                                                   M_main_data,
+//                                                   this );
 
-//     this->addToolBar( M_monitor_tool_bar );
+//     M_log_player_tool_bar->addSeparator();
 
-    //
-    M_log_player_tool_bar = new LogPlayerToolBar( M_log_player,
-                                                  M_main_data,
-                                                  this );
+//     M_log_player_tool_bar->addAction( M_set_live_mode_act );
+//     M_log_player_tool_bar->addAction( M_toggle_drag_move_mode_act );
+//     M_log_player_tool_bar->addAction( M_toggle_debug_server_act );
+//     {
+//         QFrame * dummy_frame = new QFrame;
+//         QHBoxLayout * layout = new QHBoxLayout;
+//         //layout->addSpacing( 10 );
+//         layout->addStretch( 1 );
+//         dummy_frame->setLayout( layout );
+//         M_log_player_tool_bar->addWidget( dummy_frame );
+//     }
+//     {
+//         QFrame * dummy_frame = new QFrame;
+//         QVBoxLayout * layout = new QVBoxLayout;
+//         //layout->addSpacing( 10 );
+//         layout->addStretch( 1 );
+//         dummy_frame->setLayout( layout );
+//         M_log_player_tool_bar->addWidget( dummy_frame );
+//     }
 
-    M_log_player_tool_bar->addSeparator();
-
-    M_log_player_tool_bar->addAction( M_set_live_mode_act );
-    M_log_player_tool_bar->addAction( M_toggle_drag_move_mode_act );
-    M_log_player_tool_bar->addAction( M_toggle_debug_server_act );
-    {
-        QFrame * dummy_frame = new QFrame;
-        QHBoxLayout * layout = new QHBoxLayout;
-        //layout->addSpacing( 10 );
-        layout->addStretch( 1 );
-        dummy_frame->setLayout( layout );
-        M_log_player_tool_bar->addWidget( dummy_frame );
-    }
-    {
-        QFrame * dummy_frame = new QFrame;
-        QVBoxLayout * layout = new QVBoxLayout;
-        //layout->addSpacing( 10 );
-        layout->addStretch( 1 );
-        dummy_frame->setLayout( layout );
-        M_log_player_tool_bar->addWidget( dummy_frame );
-    }
-
-    connect( this,  SIGNAL( viewUpdated() ),
-             M_log_player_tool_bar, SLOT( updateSlider() ) );
+//     connect( this,  SIGNAL( viewUpdated() ),
+//              M_log_player_tool_bar, SLOT( updateSlider() ) );
 
 
-    if ( AppConfig::instance().toolBarArea() == "top" )
-    {
-        this->addToolBar( Qt::TopToolBarArea, M_log_player_tool_bar );
-    }
-    else if ( AppConfig::instance().toolBarArea() == "bottom" )
-    {
-        this->addToolBar( Qt::BottomToolBarArea, M_log_player_tool_bar );
-    }
-    else if ( AppConfig::instance().toolBarArea() == "left" )
-    {
-        M_log_player_tool_bar->changeOrientation( Qt::Vertical );
-        this->addToolBar( Qt::LeftToolBarArea, M_log_player_tool_bar );
-    }
-    else if ( AppConfig::instance().toolBarArea() == "right" )
-    {
-        M_log_player_tool_bar->changeOrientation( Qt::Vertical );
-        this->addToolBar( Qt::RightToolBarArea, M_log_player_tool_bar );
-    }
-    else
-    {
-        std::cerr << "***WARNING*** Unsupported tool bar position ["
-                  << AppConfig::instance().toolBarArea() << ']'
-                  << std::endl;
-    }
-
-    //this->addToolBar( M_log_player_tool_bar ); // qt4
-
+//     this->addToolBar( Qt::TopToolBarArea, M_log_player_tool_bar );
 }
 
 /*-------------------------------------------------------------------*/
@@ -842,13 +807,6 @@ MainWindow::createStatusBar()
     M_position_label->setAlignment( Qt::AlignRight );
 
     this->statusBar()->addPermanentWidget( M_position_label );
-
-    //QSlider * slider = new QSlider( Qt::Horizontal );
-    //this->statusBar()->addWidget( slider );
-
-    //QLineEdit * edit = new QLineEdit( tr( "0" ) );
-    //edit->setMaximumSize( 36, 20 );
-    //this->statusBar()->addWidget( edit );
 }
 
 /*-------------------------------------------------------------------*/
@@ -886,45 +844,42 @@ MainWindow::createFieldCanvas()
         QMenu * menu = new QMenu( M_field_canvas );
         menu->addAction( M_open_rcg_act );
         menu->addAction( M_connect_monitor_act );
-#ifndef Q_WS_WIN
-        menu->addAction( M_restart_server_act );
-#endif
 
         M_field_canvas->setNormalMenu( menu );
     }
-    {
-        QMenu * menu = new QMenu( M_field_canvas );
-        menu->addAction( M_open_rcg_act );
-        menu->addAction( M_connect_monitor_act );
-#ifndef Q_WS_WIN
-        menu->addSeparator();
-        menu->addAction( M_kill_server_act );
-        menu->addAction( M_restart_server_act );
-#endif
+//     {
+//         QMenu * menu = new QMenu( M_field_canvas );
+//         menu->addAction( M_open_rcg_act );
+//         menu->addAction( M_connect_monitor_act );
+// #ifndef Q_WS_WIN
+//         menu->addSeparator();
+//         menu->addAction( M_kill_server_act );
+//         menu->addAction( M_restart_server_act );
+// #endif
 
-        M_field_canvas->setSystemMenu( menu );
-    }
-    {
-        QMenu * menu = new QMenu( M_field_canvas );
-        menu->addAction( M_kick_off_act );
-        menu->addSeparator();
-        menu->addAction( tr( "Drop Ball" ),
-                         M_field_canvas, SLOT( dropBall() ) );
-        menu->addAction( tr( "Free Kick Left" ),
-                         M_field_canvas, SLOT( freeKickLeft() ) );
-        menu->addAction( tr( "Free Kick Right" ),
-                         M_field_canvas, SLOT( freeKickRight() ) );
-        menu->addSeparator();
+//         M_field_canvas->setSystemMenu( menu );
+//     }
+//     {
+//         QMenu * menu = new QMenu( M_field_canvas );
+//         menu->addAction( M_kick_off_act );
+//         menu->addSeparator();
+//         menu->addAction( tr( "Drop Ball" ),
+//                          M_field_canvas, SLOT( dropBall() ) );
+//         menu->addAction( tr( "Free Kick Left" ),
+//                          M_field_canvas, SLOT( freeKickLeft() ) );
+//         menu->addAction( tr( "Free Kick Right" ),
+//                          M_field_canvas, SLOT( freeKickRight() ) );
+//         menu->addSeparator();
 
-        QAction * drop_ball_there
-            = new QAction( tr( "Drop Ball There" ), this );
-        drop_ball_there->setStatusTip( tr( "Drop ball at the current ball position." ) );
-        connect( drop_ball_there, SIGNAL( triggered() ),
-                 this, SLOT( dropBallThere() ) );
-        menu->addAction( drop_ball_there );
+//         QAction * drop_ball_there
+//             = new QAction( tr( "Drop Ball There" ), this );
+//         drop_ball_there->setStatusTip( tr( "Drop ball at the current ball position." ) );
+//         connect( drop_ball_there, SIGNAL( triggered() ),
+//                  this, SLOT( dropBallThere() ) );
+//         menu->addAction( drop_ball_there );
 
-        M_field_canvas->setMonitorMenu( menu );
-    }
+//         M_field_canvas->setMonitorMenu( menu );
+//     }
 
 }
 
@@ -2054,100 +2009,20 @@ MainWindow::showDebugMessageWindow()
 
 */
 void
-MainWindow::toggleDebugServer( bool on )
-{
-    if ( on )
-    {
-        startDebugServer();
-    }
-    else
-    {
-        stopDebugServer();
-    }
-}
-
-/*-------------------------------------------------------------------*/
-/*!
-
-*/
-void
-MainWindow::startDebugServer()
-{
-    if ( M_debug_server )
-    {
-        // the server instance has already existed.
-        return;
-    }
-
-    int port = static_cast< int >( AppConfig::instance().debugServerPort() );
-
-    M_debug_server
-        = boost::shared_ptr< DebugServer >
-        ( new DebugServer( M_main_data.getViewHolder(), port ) );
-
-    if ( ! M_debug_server->isConnected() )
-    {
-        std::cerr << "failed to create Debug Server" << std::endl;
-        M_debug_server.reset();
-        M_toggle_debug_server_act->setChecked( false );
-        return;
-    }
-
-    std::cerr << "Start Debug Server" << std::endl;
-}
-
-/*-------------------------------------------------------------------*/
-/*!
-
-*/
-void
-MainWindow::stopDebugServer()
-{
-    if ( M_debug_server )
-    {
-        std::cerr << "Stop Debug Server" << std::endl;
-        M_debug_server.reset();
-    }
-}
-
-/*-------------------------------------------------------------------*/
-/*!
-
-*/
-void
-MainWindow::showImageSaveDialog()
-{
-    M_log_player->stop();
-
-    ImageSaveDialog dlg( this,
-                         M_field_canvas,
-                         M_main_data );
-
-    dlg.exec();
-}
-
-/*-------------------------------------------------------------------*/
-/*!
-
-*/
-void
 MainWindow::about()
 {
-    QString msg( tr( PACKAGE_NAME ) );
-    msg += tr( "-" );
-    msg += tr( VERSION );
-    msg += tr( "\n\n" );
-    msg += tr( "soccerwindow2 is a viewer applicaton for\n"
+    QString msg( tr( PACKAGE_NAME"-"VERSION"\n\n" ) );
+    msg += tr( "The RoboCup Soccer Simulator LogPlayer(rcsslogplayer)\n"
+               "is a game log replay tool for the RoboCup Soccer Siulator"
+               "Server (rcssserver).\n"
                "the RoboCup Soccer Simulator.\n"
                "  http://sserver.sourceforge.net/\n"
-               "\n"
-               "soccerwindow2 Development Site:\n"
-               "  http://rctools.sourceforge.jp/\n"
                "Author:\n"
-               "  Hidehisa Akiyama <akky@users.sourceforge.jp>" );
+               "  The RoboCup Soccer Simulator Maintenance Committee.\n"
+               "  <sserver-admin@lists.sourceforgenet>" );
 
     QMessageBox::about( this,
-                        tr( "About soccerwindow2" ),
+                        tr( "About "PACKAGE_NAME ),
                         msg );
 
     // from Qt 4.1 documents
@@ -2207,30 +2082,6 @@ MainWindow::resizeCanvas( const QSize & size )
 /*-------------------------------------------------------------------*/
 /*!
 
- */
-void
-MainWindow::saveImageAndQuit()
-{
-    if ( ! this->isVisible() )
-    {
-        QTimer::singleShot( 500,
-                            this, SLOT( saveImageAndQuit() ) );
-        return;
-    }
-
-    ImageSaveDialog dlg( this,
-                         M_field_canvas,
-                         M_main_data );
-    dlg.show();
-    dlg.selectAllCycle();
-    dlg.executeSave();
-
-    qApp->quit(); // QApplication::exit( 0 );
-}
-
-/*-------------------------------------------------------------------*/
-/*!
-
 */
 void
 MainWindow::receiveMonitorPacket()
@@ -2282,12 +2133,13 @@ void
 MainWindow::updatePositionLabel( const QPoint & point )
 {
     if ( M_position_label
+         && M_field_canvas
          && statusBar()
          && statusBar()->isVisible()
          )
     {
-        double x = M_main_data.viewConfig().fieldX( point.x() );
-        double y = M_main_data.viewConfig().fieldY( point.y() );
+        double x = M_field_canvas->fieldX( point.x() );
+        double y = M_field_canvas->fieldY( point.y() );
 
         char buf[32];
         std::snprintf( buf, 32,

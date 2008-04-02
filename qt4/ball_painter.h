@@ -54,7 +54,7 @@ private:
     const BallPainter & operator=( const BallPainter & );
 public:
 
-    BallPainter( const FieldCanvas & canvas;
+    BallPainter( const FieldCanvas & canvas,
                  const MainData & main_data );
     ~BallPainter();
 

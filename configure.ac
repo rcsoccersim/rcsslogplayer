@@ -184,17 +184,10 @@ fi
 
 # optional features
 
-AC_ARG_WITH(sstream,
-            AC_HELP_STRING([--with-sstream],
-                           [use sstream instead of strstream (default=yes)]),
-                           use_sstream=$withval, use_sstream=yes)
-if test "$use_sstream" = "yes"; then
-   AC_CXX_HAVE_SSTREAM
-fi
-
 
 AC_CONFIG_FILES([Makefile
                  rcsslogplayer/Makefile
                  tool/Makefile
-                 classic/Makefile])
+                 classic/Makefile
+                 qt4/Makefile])
 AC_OUTPUT

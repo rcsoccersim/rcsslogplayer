@@ -4,7 +4,7 @@ LIBTOOL_DEPS = @LIBTOOL_DEPS@
 libtool:	$(LIBTOOL_DEPS)
 	$(SHELL) ./config.status --recheck
 
-SUBDIRS = rcsslogplayer tool classic .
+SUBDIRS = rcsslogplayer tool classic qt4 .
 
 EXTRA_DIST = \
 	icons/ff.xpm\

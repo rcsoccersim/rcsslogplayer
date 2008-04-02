@@ -40,24 +40,18 @@
 
 //#include "draw_config.h"
 #include "field_painter.h"
-#include "score_board_painter.h"
-#include "ball_painter.h"
-#include "player_painter.h"
+// #include "score_board_painter.h"
+// #include "ball_painter.h"
+// #include "player_painter.h"
 //#include "team_graphic_painter.h"
 
 // model
 #include "main_data.h"
-#include "app_config.h"
-
-#include <rcsc/common/server_param.h>
+#include "options.h"
 
 #include <iostream>
 #include <cmath>
 #include <cassert>
-
-namespace {
-int cursor_timeout = 5000;
-}
 
 /*-------------------------------------------------------------------*/
 /*!
@@ -65,14 +59,14 @@ int cursor_timeout = 5000;
 */
 FieldCanvas::FieldCanvas( MainData & main_data )
     : M_main_data( main_data )
+    , M_normal_menu( static_cast< QMenu * >( 0 ) )
+    , M_system_menu( static_cast< QMenu * >( 0 ) )
+    , M_monitor_menu( static_cast< QMenu * >( 0 ) )
+    , M_measure_pen( QColor( 255, 0, 0 ), 0, Qt::SolidLine )
     , M_field_scale( 1.0 )
     , M_zoomed( false )
     , M_field_center( 0, 0 )
     , M_focus_point( 0.0, 0.0 )
-//     , M_redraw_all( true )
-//     , M_normal_menu( static_cast< QMenu * >( 0 ) )
-//     , M_system_menu( static_cast< QMenu * >( 0 ) )
-//     , M_monitor_menu( static_cast< QMenu * >( 0 ) )
 {
     //this->setPalette( M_background_color );
     //this->setAutoFillBackground( true );
@@ -106,17 +100,16 @@ FieldCanvas::createPainters()
 {
     M_painters.clear();
 
-    M_field_painter
-        = boost::shared_ptr< FieldPainter >( new FieldPainter( *this ) );
+    M_field_painter = boost::shared_ptr< FieldPainter >( new FieldPainter( *this, M_main_data ) );
 
     //M_painters.push_back( boost::shared_ptr< PainterInterface >
     //                      ( new TeamGraphicPainter( *this, M_main_data ) ) );
-    M_painters.push_back( boost::shared_ptr< PainterInterface >
-                          ( new PlayerPainter( *this, M_main_data ) ) );
-    M_painters.push_back( boost::shared_ptr< PainterInterface >
-                          ( new BallPainter( *this, M_main_data ) ) );
-    M_painters.push_back( boost::shared_ptr< PainterInterface >
-                          ( new ScoreBoardPainter( *this, M_main_data ) ) );
+//     M_painters.push_back( boost::shared_ptr< PainterInterface >
+//                           ( new PlayerPainter( *this, M_main_data ) ) );
+//     M_painters.push_back( boost::shared_ptr< PainterInterface >
+//                           ( new BallPainter( *this, M_main_data ) ) );
+//     M_painters.push_back( boost::shared_ptr< PainterInterface >
+//                           ( new ScoreBoardPainter( *this, M_main_data ) ) );
 }
 
 /*-------------------------------------------------------------------*/
@@ -172,9 +165,9 @@ FieldCanvas::setMonitorMenu( QMenu * menu )
 
 */
 void
-FieldCanvas::setRedrawAllFlag()
+FieldCanvas::updateScale()
 {
-    M_redraw_all = true;
+    M_field_scale = 4.0;
 }
 
 /*-------------------------------------------------------------------*/
@@ -184,7 +177,6 @@ FieldCanvas::setRedrawAllFlag()
 void
 FieldCanvas::redrawAll()
 {
-    M_redraw_all = true;
     this->update();
 }
 
@@ -226,15 +218,17 @@ void
 FieldCanvas::paintEvent( QPaintEvent * )
 {
     QPainter painter( this );
-    if ( M_main_data.viewConfig().antiAliasing() )
+
+    if ( Options::instance().antiAliasing() )
     {
         painter.setRenderHint( QPainter::Antialiasing );
         // for QGLWidget
         //painter.setRenderHint( QPainter::HighQualityAntialiasing );
     }
 
-    M_main_data.update( this->width(),
-                        this->height() );
+    //M_main_data.update( this->width(),
+    //                    this->height() );
+    updateScale();
 
     draw( painter );
 
@@ -243,11 +237,6 @@ FieldCanvas::paintEvent( QPaintEvent * )
     if ( M_mouse_state[2].isDragged() )
     {
         drawMouseMeasure( painter );
-    }
-
-    if ( ! M_player_dragged_point.isNull() )
-    {
-        drawDraggedPlayer( painter );
     }
 }
 
@@ -263,11 +252,6 @@ FieldCanvas::mouseDoubleClickEvent( QMouseEvent * event )
     if ( event->button() == Qt::LeftButton )
     {
         emit focusChanged( event->pos() );
-    }
-
-    if ( M_main_data.viewConfig().cursorHide() )
-    {
-        M_cursor_timer->start( cursor_timeout );
     }
 }
 
@@ -390,23 +374,16 @@ FieldCanvas::mouseMoveEvent( QMouseEvent * event )
 
     if ( M_mouse_state[0].isDragged() )
     {
-        if ( M_main_data.trainerData().isPlayerDragged() )
+        if ( this->cursor().shape() != Qt::ClosedHandCursor )
         {
-            dragPlayer( event->pos() );
+            this->setCursor( QCursor( Qt::ClosedHandCursor ) );
         }
-        else
-        {
-            if ( this->cursor().shape() != Qt::ClosedHandCursor )
-            {
-                this->setCursor( QCursor( Qt::ClosedHandCursor ) );
-            }
 
-            int new_x = M_main_data.viewConfig().absScreenX( M_main_data.viewConfig().focusPoint().x );
-            int new_y = M_main_data.viewConfig().absScreenY( M_main_data.viewConfig().focusPoint().y );
-            new_x -= ( event->pos().x() - M_mouse_state[0].draggedPoint().x() );
-            new_y -= ( event->pos().y() - M_mouse_state[0].draggedPoint().y() );
-            emit focusChanged( QPoint( new_x, new_y ) );
-        }
+        int new_x = screenX( focusPoint().x() );
+        int new_y = screenY( focusPoint().y() );
+        new_x -= ( event->pos().x() - M_mouse_state[0].draggedPoint().x() );
+        new_y -= ( event->pos().y() - M_mouse_state[0].draggedPoint().y() );
+        emit focusChanged( QPoint( new_x, new_y ) );
     }
 
     for ( int i = 0; i < 3; ++i )
@@ -440,10 +417,9 @@ FieldCanvas::mouseMoveEvent( QMouseEvent * event )
 void
 FieldCanvas::draw( QPainter & painter )
 {
-    M_field_painter->setRedraw( M_redraw_all );
     M_field_painter->draw( painter );
 
-    if ( ! M_main_data.getViewData( M_main_data.viewIndex() ) )
+    if ( ! M_main_data.getDispInfo( M_main_data.index() ) )
     {
         return;
     }
@@ -456,7 +432,7 @@ FieldCanvas::draw( QPainter & painter )
         (*it)->draw( painter );
     }
 
-    M_redraw_all = false;
+    //M_redraw_all = false;
 }
 
 /*-------------------------------------------------------------------*/
@@ -466,14 +442,12 @@ FieldCanvas::draw( QPainter & painter )
 void
 FieldCanvas::drawMouseMeasure( QPainter & painter )
 {
-    const ViewConfig & vconf = M_main_data.viewConfig();
-
     QPoint start_point = M_mouse_state[2].pressedPoint();
     QPoint end_point = M_mouse_state[2].draggedPoint();
 
     // draw straight line
-    painter.setPen( DrawConfig::instance().measurePen() );
-    painter.setBrush( DrawConfig::instance().transparentBrush() );
+    painter.setPen( M_measure_pen );
+    painter.setBrush( Qt::NoBrush );
     painter.drawLine( start_point, end_point );
 
     QPainterPath mark_path;
@@ -486,10 +460,10 @@ FieldCanvas::drawMouseMeasure( QPainter & painter )
                           4,
                           4 );
 
-    rcsc::Vector2D start_real( vconf.fieldX( start_point.x() ),
-                               vconf.fieldY( start_point.y() ) );
-    rcsc::Vector2D end_real( vconf.fieldX( end_point.x() ),
-                             vconf.fieldY( end_point.y() ) );
+    QPointF start_real( fieldX( start_point.x() ),
+                        fieldY( start_point.y() ) );
+    QPointF end_real( fieldX( end_point.x() ),
+                      fieldY( end_point.y() ) );
 
     // ball travel marks
     {

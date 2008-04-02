@@ -35,7 +35,7 @@
 
 #include <QMainWindow>
 
-#include "main_data.h"
+//#include "main_data.h"
 
 #include <boost/shared_ptr.hpp>
 
@@ -64,23 +64,20 @@ class MainWindow
 
 private:
 
-    MainData M_main_data;
+    //MainData M_main_data;
 
     FieldCanvas * M_field_canvas;
-
-    LogPlayer * M_log_player;
-
-    LogPlayerToolBar * M_log_player_tool_bar;
+    //LogPlayer * M_log_player;
+    //LogPlayerToolBar * M_log_player_tool_bar;
 
     QLabel * M_position_label;
 
-
-    boost::shared_ptr< MonitorServer > M_monitor_server;
+    //boost::shared_ptr< MonitorServer > M_monitor_server;
     //boost::shared_ptr< MonitorClient > M_monitor_client;
 
     // file actions
     QAction * M_open_rcg_act;
-    QAction * M_save_rcg_act;
+    //QAction * M_save_rcg_act;
     QAction * M_exit_act;
 
     // monitor actions
@@ -140,7 +137,7 @@ private:
     void createStatusBar();
 
     void createFieldCanvas();
-    void createViewConfigDialog();
+    //void createViewConfigDialog();
 
 protected:
 
@@ -155,13 +152,13 @@ protected:
 private:
 
     void openRCG( const QString & file_path );
-    void connectMonitorTo( const char * hostname );
+    //void connectMonitorTo( const char * hostname );
 
 private slots:
 
     // file menu actions slots
     void openRCG();
-    void saveRCG();
+    //void saveRCG();
     // QWidget::close() is used as a quit action's slot.
 
     // monitor menu actions slots

@@ -2,16 +2,19 @@
 
 if BUILD_QT4
 BUILD_PROGS = rcsslogplayer
-BUILD_SCRIPTS = rcsslogplay
+#BUILD_SCRPTS = rcsslogplay
 endif
 
 bin_PROGRAMS = $(BUILD_PROGS)
 
-bin_SCRRIPTS = $(BUILD_SCRIPTS)
+#bin_SCRRIPTS = $(BUILD_SCRPTS)
 
 rcsslogplayer_SOURCES = \
+	disp_holder.cpp \
 	field_canvas.cpp \
+	field_painter.cpp \
 	main.cpp \
+	main_data.cpp \
 	main_window.cpp \
 	options.cpp
 
@@ -20,7 +23,10 @@ nodist_rcsslogplayer_SOURCES = \
 	moc_main_window.cpp
 
 noinst_HEADERS = \
+	disp_holder.h \
 	field_canvas.h \
+	field_painter.h \
+	main_data.h \
 	main_window.h \
 	options.h
 

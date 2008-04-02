@@ -64,17 +64,17 @@ private:
 
     MainData & M_main_data;
 
-    //     bool M_redraw_all;
-
-    //     QMenu * M_normal_menu;
-    //     QMenu * M_system_menu;
-    //     QMenu * M_monitor_menu;
+    QMenu * M_normal_menu;
+    QMenu * M_system_menu;
+    QMenu * M_monitor_menu;
 
     boost::shared_ptr< FieldPainter > M_field_painter;
     std::vector< boost::shared_ptr< PainterInterface > > M_painters;
 
     //! 0: left, 1: middle, 2: right
     MouseState M_mouse_state[3];
+    QPen M_measure_pen;
+
 
     double M_field_scale; //!< scaling factor
     bool M_zoomed; //!< zoom flag
@@ -140,6 +140,8 @@ public:
 private:
 
     void drawMouseMeasure( QPainter & painter );
+
+    void updateScale();
 
 protected:
 
