@@ -1,5 +1,10 @@
 2008-04-02  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 
+	* configure.ac:
+	* rcsslogplayer/Makefile.am:
+	- fixed install directory.
+	- fixed build option checking.
+
 	* icons/blank.xpm:
 	* icons/ff.xpm:
 	* icons/go.xpm:

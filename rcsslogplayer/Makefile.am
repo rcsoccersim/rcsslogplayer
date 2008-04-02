@@ -6,7 +6,7 @@ librcssrcgparser_la_SOURCES = \
 	types.cpp \
 	util.cpp
 
-librcssrcgparserincludedir = $(includedir)/rcg
+librcssrcgparserincludedir = $(includedir)/rcsslogplayer
 
 librcssrcgparserinclude_HEADERS = \
 	parser.h \

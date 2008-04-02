@@ -100,9 +100,10 @@ if test "x$enableval" != "xno"; then
 
   if test x$have_qt4 != xyes ; then
     AC_MSG_NOTICE([The QtCore, QtGui or QtNetwork library could not be found.])
+    AM_CONDITIONAL(BUILD_QT4, [test "1" = "0"])
+  else
+    AM_CONDITIONAL(BUILD_QT4, [test "1" = "1"])
   fi
-
-  AM_CONDITIONAL(BUILD_QT4, [test "1" = "1"])
 else
   AM_CONDITIONAL(BUILD_QT4, [test "1" = "0"])
 fi
