@@ -12,7 +12,8 @@ bin_SCRRIPTS = $(BUILD_SCRIPTS)
 rcsslogplayer_SOURCES = \
 	field_canvas.cpp \
 	main.cpp \
-	main_window.cpp
+	main_window.cpp \
+	options.cpp
 
 nodist_rcsslogplayer_SOURCES = \
 	moc_field_canvas.cpp \
@@ -20,9 +21,10 @@ nodist_rcsslogplayer_SOURCES = \
 
 noinst_HEADERS = \
 	field_canvas.h \
-	main_window.h
+	main_window.h \
+	options.h
 
-rcsslogplayer_CPPFLAGS = -I.. -I$(top_srcdir) $(QT4_CPPFLAGS)
+rcsslogplayer_CPPFLAGS = -I$(top_srcdir) $(QT4_CPPFLAGS)
 rcsslogplayer_CXXFLAGS = -Wall $(QT4_CXXFLAGS)
 rcsslogplayer_LDFLAGS = -L$(top_builddir)/rcsslogplayer $(QT4_LDFLAGS)
 rcsslogplayer_LDADD = -lrcssrcgparser $(QT4_LDADD)
@@ -41,17 +43,6 @@ AM_CFLAGS = -Wall
 AM_CXXFLAGS = -Wall
 AM_LDFLAGS =
 
-EXTRA_DIST = \
-	xpm/ff.xpm\
-	play.xpm \
-	plus.xpm \
-	stop.xpm \
-	minus.xpm \
-	rev.xpm \
-	rew.xpm \
-	rec.xpm \
-	blank.xpm \
-	quit.xpm \
-	go.xpm
+EXTRA_DIST =
 
 CLEANFILES = $(nodist_rcsslogplayer_SOURCES) *~

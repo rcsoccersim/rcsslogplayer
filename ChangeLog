@@ -1,5 +1,37 @@
 2008-04-02  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 
+	* icons/blank.xpm:
+	* icons/ff.xpm:
+	* icons/go.xpm:
+	* icons/minus.xpm:
+	* icons/play.xpm:
+	* icons/plus.xpm:
+	* icons/quit.xpm:
+	* icons/rec.xpm:
+	* icons/rev.xpm:
+	* icons/rew.xpm:
+	* icons/stop.xpm:
+	* qt4/ball_painter.cpp:
+	* qt4/ball_painter.h:
+	* qt4/field_canvas.cpp:
+	* qt4/field_canvas.h:
+	* qt4/field_painter.cpp:
+	* qt4/field_painter.h:
+	* qt4/mouse_state.h:
+	* qt4/options.cpp:
+	* qt4/options.h:
+	* qt4/painter_interface.h:
+	* qt4/player_painter.cpp:
+	* qt4/player_painter.h:
+	* qt4/score_board_painter.cpp:
+	* qt4/score_board_painter.h:
+	* Makefile.am:
+	* configure.ac:
+	* qt4/Makefile.am:
+	* qt4/main_window.h:
+	* tool/Makefile.am:
+	- added files for new logplayer, but not fully implemente yet.
+
 	* classic/rcsslogplay_classic:
 	* classic/logplayer.cpp:
 	* classic/logplayer.h:

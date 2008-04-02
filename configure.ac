@@ -99,7 +99,7 @@ if test "x$enableval" != "xno"; then
   AX_QT4(4.3.0)
 
   if test x$have_qt4 != xyes ; then
-    AC_MSG_ERROR([The QtCore, QtGui or QtNetwork library could not be found.])
+    AC_MSG_NOTICE([The QtCore, QtGui or QtNetwork library could not be found.])
   fi
 
   AM_CONDITIONAL(BUILD_QT4, [test "1" = "1"])
@@ -111,10 +111,9 @@ fi
 # check classic
 AC_ARG_ENABLE(classic,
               AC_HELP_STRING([--enable-classic],
-                             [build classic logplayer (default no)]))
-if test "x$enableval" == "xyes"; then
+                             [build classic logplayer (default yes)]))
+if test "x$enableval" != "xno"; then
   AC_MSG_NOTICE(enabled classic logplayer)
-  AM_CONDITIONAL(BUILD_CLASSIC, [test "1" = "1"])
 
   AC_SUBST(CLASSIC_CPPFLAGS)
   AC_SUBST(CLASSIC_CXXFLAGS)
@@ -176,6 +175,8 @@ if test "x$enableval" == "xyes"; then
                               date. Please (re)install rcssbase before proceeding, or
                               specify where it was installed with the RCSSBASE
                               environment variable.])])
+
+  AM_CONDITIONAL(BUILD_CLASSIC, [test "1" = "1"])
 else
   AM_CONDITIONAL(BUILD_CLASSIC, [test "1" = "0"])
 fi

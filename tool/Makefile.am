@@ -38,16 +38,17 @@ rcg4to3_LDFLAGS = -L$(top_builddir)/rcsslogplayer
 rcg4to3_LDADD = -lrcssrcgparser $(BOOST_PROGRAM_OPTIONS_LIB)
 
 
-pkgdata_DATA =
-
 AM_CPPFLAGS = -I$(top_srcdir)
 AM_CFLAGS = -Wall
 AM_CXXFLAGS = -Wall
 AM_LDFLAGS =
 
 
-EXTRA_DIST = \
+pkgdata_DATA = \
 	rcg.xsd \
 	rcg-0.1.xsd
+
+
+EXTRA_DIST =
 
 CLEANFILES = *~

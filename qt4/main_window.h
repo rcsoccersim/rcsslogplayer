@@ -30,8 +30,8 @@
 
 /////////////////////////////////////////////////////////////////////
 
-#ifndef SOCCERWINDOW2_QT_MAIN_WINDOW_H
-#define SOCCERWINDOW2_QT_MAIN_WINDOW_H
+#ifndef RCSSLOGPLAYER_MAIN_WINDOW_H
+#define RCSSLOGPLAYER_MAIN_WINDOW_H
 
 #include <QMainWindow>
 
@@ -54,7 +54,7 @@ class FieldCanvas;
 class LogPlayer;
 class LogPlayerToolBar;
 class MonitorServer;
-class MonitorClient;
+//class MonitorClient;
 class PlayerTypeDialog;
 
 class MainWindow
@@ -76,7 +76,7 @@ private:
 
 
     boost::shared_ptr< MonitorServer > M_monitor_server;
-    boost::shared_ptr< MonitorClient > M_monitor_client;
+    //boost::shared_ptr< MonitorClient > M_monitor_client;
 
     // file actions
     QAction * M_open_rcg_act;
