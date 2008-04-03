@@ -107,6 +107,9 @@ AppConfig::AppConfig()
     , M_show_pointto( true )
     , M_ball_size( 0.35 )
     , M_player_size( 0.0 )
+    , M_grid_step( 5.0 )
+    , M_show_grid( false )
+    , M_show_grid_coord( false )
 {
 
 }
@@ -231,6 +234,15 @@ AppConfig::parseCmdLine( int argc,
         ( "player-size",
           po::value< double >( &M_player_size )->default_value( 0.0, "0.0" ),
           "set a fixed player radius in enlarge mode." )
+        ( "show-grid",
+          po::value< bool >( &M_show_grid )->default_value( false, "false" ),
+          "show grid lines." )
+        ( "show-grid-coord",
+          po::value< bool >( &M_show_grid_coord )->default_value( false, "false" ),
+          "show grid line coordinate value." )
+        ( "grid-step",
+          po::value< bool >( &M_grid_step )->default_value( 5.0, "5.0" ),
+          "set a grid step size." )
         ;
 
     po::options_description invisibles( "Invisibles" );

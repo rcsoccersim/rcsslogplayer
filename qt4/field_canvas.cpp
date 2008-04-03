@@ -62,22 +62,20 @@ FieldCanvas::FieldCanvas( MainData & main_data )
     , M_normal_menu( static_cast< QMenu * >( 0 ) )
     , M_system_menu( static_cast< QMenu * >( 0 ) )
     , M_monitor_menu( static_cast< QMenu * >( 0 ) )
-    , M_measure_pen( QColor( 255, 0, 0 ), 0, Qt::SolidLine )
     , M_field_scale( 1.0 )
     , M_zoomed( false )
     , M_field_center( 0, 0 )
     , M_focus_point( 0.0, 0.0 )
+    , M_measure_line_pen( QColor( 0, 255, 255 ), 0, Qt::SolidLine )
+    , M_measure_mark_pen( QColor( 255, 0, 0 ), 0, Qt::SolidLine )
+    , M_measure_font_pen( QColor( 255, 191, 191 ), 0, Qt::SolidLine )
+    , M_measure_font_pen2( QColor( 224, 224, 192 ), 0, Qt::SolidLine )
+    , M_measure_font( "6x13bold", 9 )
 {
-    //this->setPalette( M_background_color );
-    //this->setAutoFillBackground( true );
-
-    // need for the MouseMoveEvent
-    this->setMouseTracking( true );
-
+    this->setMouseTracking( true ); // need for the MouseMoveEvent
     this->setFocusPolicy( Qt::WheelFocus );
 
-    // paint directory
-    //this->setAttribute( Qt::WA_PaintOnScreen );
+    readSettings();
 
     createPainters();
 }
@@ -88,7 +86,60 @@ FieldCanvas::FieldCanvas( MainData & main_data )
 */
 FieldCanvas::~FieldCanvas()
 {
+    writeSettings();
+}
 
+/*-------------------------------------------------------------------*/
+/*!
+
+*/
+void
+FieldCanvas::readSettings()
+{
+    QSettings settings( QDir::homePath() + "/.rcsslogplayer",
+                        QSettings::IniFormat );
+
+    settings.beginGroup( "FieldCanvas" );
+
+    QVariant val;
+
+    val = settings.value( "measure_line_pen" );
+    if ( val.isValid() ) M_measure_line_pen.setColor( val.toString() );
+
+    val = settings.value( "measure_mark_pen" );
+    if ( val.isValid() ) M_measure_mark_pen.setColor( val.toString() );
+
+    val = settings.value( "measure_font_pen" );
+    if ( val.isValid() ) M_measure_font_pen.setColor( val.toString() );
+
+    val = settings.value( "measure_font_pen2" );
+    if ( val.isValid() ) M_measure_font_pen2.setColor( val.toString() );
+
+    val = settings.value( "measure_font" );
+    if ( val.isValid() ) M_measure_font.fromString( val.toString() );
+
+    settings.endGroup();
+}
+
+/*-------------------------------------------------------------------*/
+/*!
+
+*/
+void
+FieldCanvas::writeSettings()
+{
+    QSettings settings( QDir::homePath() + "/.rcsslogplayer",
+                        QSettings::IniFormat );
+
+    settings.beginGroup( "FieldCanvas" );
+
+    settings.setValue( "measure_line_pen", M_measure_line_pen.color().name() );
+    settings.setValue( "measure_mark_pen", M_measure_mark_pen.color().name() );
+    settings.setValue( "measure_font_pen", M_measure_font_pen.color().name() );
+    settings.setValue( "measure_font_pen2", M_measure_font_pen2.color().name() );
+    settings.setValue( "measure_font", M_measure_font.toString() );
+
+    settings.endGroup();
 }
 
 /*-------------------------------------------------------------------*/
@@ -446,92 +497,34 @@ FieldCanvas::drawMouseMeasure( QPainter & painter )
     QPoint end_point = M_mouse_state[2].draggedPoint();
 
     // draw straight line
-    painter.setPen( M_measure_pen );
+    painter.setPen( M_measure_line_pen );
     painter.setBrush( Qt::NoBrush );
     painter.drawLine( start_point, end_point );
 
-    QPainterPath mark_path;
-    mark_path.addEllipse( start_point.x() - 2,
-                          start_point.y() - 2,
-                          4,
-                          4 );
-    mark_path.addEllipse( end_point.x() - 2,
-                          end_point.y() - 2,
-                          4,
-                          4 );
-
-    QPointF start_real( fieldX( start_point.x() ),
-                        fieldY( start_point.y() ) );
-    QPointF end_real( fieldX( end_point.x() ),
-                      fieldY( end_point.y() ) );
-
-    // ball travel marks
-    {
-        double ball_speed = rcsc::ServerParam::i().ballSpeedMax();
-
-        if ( ! M_measure_ball_speed_point.isNull()
-             && M_measure_ball_speed_point != start_point )
-        {
-            rcsc::Vector2D vel( std::abs( M_measure_ball_speed_point.x()
-                                          - start_point.x() )
-                                / vconf.fieldScale(),
-                                std::abs( M_measure_ball_speed_point.y()
-                                          - start_point.y() )
-                                / vconf.fieldScale() );
-            ball_speed = vel.r();
-            if ( ball_speed > rcsc::ServerParam::i().ballSpeedMax() )
-            {
-                ball_speed = rcsc::ServerParam::i().ballSpeedMax();
-            }
-        }
-
-        rcsc::Vector2D ball_pos = start_real;
-        rcsc::Vector2D ball_vel = end_real - start_real;
-        ball_vel.setLength( ball_speed );
-
-        const double max_length = start_real.dist( end_real );
-        double total_travel = 0.0;
-
-        ball_pos += ball_vel;
-        ball_vel *= rcsc::ServerParam::i().ballDecay();
-        total_travel += ball_vel.r();
-        QPoint last_pt( start_point.x() - 2,
-                        start_point.y() - 2 );
-        while ( total_travel < max_length )
-        {
-            QPoint pt( vconf.absScreenX( ball_pos.x ) - 2,
-                       vconf.absScreenY( ball_pos.y ) - 2 );
-            if ( std::abs( pt.x() - last_pt.x() ) < 1
-                 && std::abs( pt.y() - last_pt.y() ) < 1 )
-            {
-                break;
-            }
-            last_pt = pt;
-            mark_path.addEllipse( pt.x(),
-                                  pt.y(),
-                                  4,
-                                  4 );
-            ball_pos += ball_vel;
-            ball_vel *= rcsc::ServerParam::i().ballDecay();
-            ball_speed *= rcsc::ServerParam::i().ballDecay();
-            total_travel += ball_speed;
-        }
-    }
-
-    painter.setPen( Qt::red );
-    painter.drawPath( mark_path );
+    // draw mark
+    painter.setPen( M_measure_mark_pen );
+    painter.drawEllipse( start_point.x() - 2,
+                         start_point.y() - 2,
+                         4,
+                         4 );
+    painter.drawEllipse( end_point.x() - 2,
+                         end_point.y() - 2,
+                         4,
+                         4 );
 
     // draw distance & angle text
-    painter.setFont( DrawConfig::instance().measureFont() );
-    painter.setPen( DrawConfig::instance().measureFontPen() );
-    //painter.setBackgroundMode( Qt::TransparentMode );
+    painter.setFont( M_measure_font );
+    painter.setPen( M_measure_font_pen );
 
     char buf[64];
+
+    // draw start point value
+    QPointF start_real( fieldX( start_point.x() ),
+                        fieldY( start_point.y() ) );
     std::snprintf( buf, 64,
                    "(%.2f,%.2f)",
-                   start_real.x,
-                   start_real.y );
-
+                   start_real.x(),
+                   start_real.y() );
     painter.drawText( start_point,
                       QString::fromAscii( buf ) );
 
@@ -541,20 +534,29 @@ FieldCanvas::drawMouseMeasure( QPainter & painter )
         return;
     }
 
+    // draw end point value
+    QPointF end_real( fieldX( end_point.x() ),
+                      fieldY( end_point.y() ) );
     std::snprintf( buf, 64,
                    "(%.2f,%.2f)",
-                   end_real.x,
-                   end_real.y );
-
+                   end_real.x(),
+                   end_real.y() );
     painter.drawText( end_point.x(),
                       end_point.y(),
                       QString::fromAscii( buf ) );
 
-    painter.setPen( QColor( 224, 224, 192 ) );
-    rcsc::Vector2D rel( end_real - start_real );
+    // draw relative coordinate value
+    painter.setPen( M_measure_font_pen2 );
+
+    QPointF rel( end_real - start_real );
+    double r = std::sqrt( std::pow( rel.x(), 2.0 ) + std::pow( rel.y(), 2.0 ) );
+    double th = ( rel.x() == 0.0 && rel.y() == 0.0
+                   ? 0.0
+                   : std::atan2( rel.y(), rel.x() ) * 180.0 / M_PI );
+
     std::snprintf( buf, 64,
                    "rel(%.2f,%.2f) r%.2f th%.1f",
-                   rel.x, rel.y, rel.r(), rel.th().degree() );
+                   rel.x(), rel.y(), r, th );
 
     int dist_add_y = ( end_point.y() > start_point.y()
                        ? + painter.fontMetrics().height()

@@ -55,9 +55,39 @@ public:
           return M_index;
       }
 
+    const
+    DispHolder & dispHolder() const
+      {
+          return M_disp_holder;
+      }
+
     DispConstPtr getDispInfo( const std::size_t idx ) const
       {
           return M_disp_holder.getDispInfo( idx );
+      }
+
+    const
+    rcss::rcg::ServerParamT & serverParam() const
+      {
+          return M_disp_holder.serverParam();
+      }
+
+    const
+    rcss::rcg::PlayerParamT & playerParam() const
+      {
+          return M_disp_holder.playerParam();
+      }
+
+    const
+    std::map< int, rcss::rcg::PlayerTypeT > & playerTypes() const
+      {
+          return M_disp_holder.playerTypes();
+      }
+
+    const
+    rcss::rcg::PlayerTypeT & playerType( const int id ) const
+      {
+          return M_disp_holder.playerType( id );
       }
 
 };

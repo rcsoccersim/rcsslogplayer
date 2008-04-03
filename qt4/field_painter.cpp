@@ -40,17 +40,22 @@
 
 #include "field_canvas.h"
 #include "main_data.h"
+#include "options.h"
 
 #include <iostream>
 
 const double FieldPainter::PITCH_LENGTH = 105.0;
 const double FieldPainter::PITCH_WIDTH = 68.0;
+const double FieldPainter::PITCH_HALF_LENGTH = FieldPainter::PITCH_LENGTH * 0.5;
+const double FieldPainter::PITCH_HALF_WIDTH = FieldPainter::PITCH_WIDTH * 0.5;
 const double FieldPainter::PITCH_MARGIN = 5.0;
 const double FieldPainter::CENTER_CIRCLE_R = 9.15;
 const double FieldPainter::PENALTY_AREA_LENGTH = 16.5;
 const double FieldPainter::PENALTY_AREA_WIDTH = 40.32;
 const double FieldPainter::PENALTY_CIRCLE_R = 9.15;
 const double FieldPainter::PENALTY_SPOT_DIST = 11.0;
+const double FieldPainter::GOAL_WIDTH = 14.02;
+const double FieldPainter::GOAL_HALF_WIDTH = FieldPainter::GOAL_WIDTH * 0.5;
 const double FieldPainter::GOAL_AREA_LENGTH = 5.5;
 const double FieldPainter::GOAL_AREA_WIDTH = 18.32;
 const double FieldPainter::GOAL_DEPTH = 2.44;
@@ -61,7 +66,7 @@ const double FieldPainter::GOAL_POST_RADIUS = 0.06;
 /*!
 
  */
-FieldPainter::FieldPainter( const FieldCanfas & canvas,
+FieldPainter::FieldPainter( const FieldCanvas & canvas,
                             const MainData & main_data )
     : M_canvas( canvas )
     , M_main_data( main_data )
@@ -77,7 +82,7 @@ FieldPainter::FieldPainter( const FieldCanfas & canvas,
  */
 FieldPainter::~FieldPainter()
 {
-    saveSettings();
+    writeSettings();
 }
 
 /*-------------------------------------------------------------------*/
@@ -169,10 +174,10 @@ FieldPainter::drawLines( QPainter & painter ) const
     painter.setBrush( Qt::NoBrush );
 
     // set screen coordinates of field
-    int left_x   = M_canvas.screenX( - PITCH_LENGTH*0.5 );
-    int right_x  = M_canvas.screenX( + PITCH_LENGTH*0.5 );
-    int top_y    = M_canvas.screenY( - PITCH_WIDTH*0.5 );
-    int bottom_y = M_canvas.screenY( + PITCH_WIDTH*0.5 );
+    int left_x   = M_canvas.screenX( - PITCH_HALF_LENGTH );
+    int right_x  = M_canvas.screenX( + PITCH_HALF_LENGTH );
+    int top_y    = M_canvas.screenY( - PITCH_HALF_WIDTH );
+    int bottom_y = M_canvas.screenY( + PITCH_HALF_WIDTH );
 
     // side lines & goal lines
     painter.drawLine( left_x, top_y, right_x, top_y );
@@ -231,12 +236,12 @@ FieldPainter::drawPenaltyAreaLines( QPainter & painter ) const
     painter.setBrush( Qt::NoBrush );
 
     // set screen coordinates of field
-    int left_x   = M_canvas.screenX( - PITCH_LENGTH*0.5 );
-    int right_x  = M_canvas.screenX( + PITCH_LENGTH*0.5 );
+    int left_x   = M_canvas.screenX( - PITCH_HALF_LENGTH );
+    int right_x  = M_canvas.screenX( + PITCH_HALF_LENGTH );
 
     // set penalty area params
-    int pen_top_y    = M_canvas.screenY( - PITCH_WIDTH*0.5 );
-    int pen_bottom_y = M_canvas.screenY( + PITCH_WIDTH*0.5 );
+    int pen_top_y    = M_canvas.screenY( - PITCH_HALF_WIDTH );
+    int pen_bottom_y = M_canvas.screenY( + PITCH_HALF_WIDTH );
     double pen_circle_y_degree_abs
         = std::acos( ( PENALTY_AREA_LENGTH*0.5 - PENALTY_SPOT_DIST )
                      / PENALTY_CIRCLE_R )
@@ -246,11 +251,11 @@ FieldPainter::drawPenaltyAreaLines( QPainter & painter ) const
     int pen_circle_size = M_canvas.scale( PENALTY_CIRCLE_R * 2.0 );
 
     // left penalty area X
-    int pen_x = M_canvas.screenX( -( PITCH_LENGTH*0.5 - PENALTY_AREA_LENGTH ) );
+    int pen_x = M_canvas.screenX( -( PITCH_HALF_LENGTH - PENALTY_AREA_LENGTH ) );
     // left arc
-    int pen_spot_x = M_canvas.screenX( -( PITCH_LENGTH*0.5 - PENALTY_SPOT_DIST ) );
+    int pen_spot_x = M_canvas.screenX( -( PITCH_HALF_LENGTH - PENALTY_SPOT_DIST ) );
     painter.drawArc( pen_spot_x - pen_circle_r + 1,
-                     M_canvas.fieldCenter().y - pen_circle_r,
+                     M_canvas.fieldCenter().y() - pen_circle_r,
                      pen_circle_size,
                      pen_circle_size,
                      qRound( -pen_circle_y_degree_abs * 16 ),
@@ -260,14 +265,14 @@ FieldPainter::drawPenaltyAreaLines( QPainter & painter ) const
     painter.drawLine( pen_x, pen_top_y, pen_x, pen_bottom_y );
     painter.drawLine( pen_x, pen_bottom_y, left_x, pen_bottom_y );
     // left spot
-    painter.drawPoint( pen_spot_x, M_canvas.fieldCenter().y );
+    painter.drawPoint( pen_spot_x, M_canvas.fieldCenter().y() );
 
     // right penalty area X
-    pen_x = M_canvas.screenX( +( PITCH_LENGTH*0.5 - PENALTY_AREA_LENGTH ) );
+    pen_x = M_canvas.screenX( +( PITCH_HALF_LENGTH - PENALTY_AREA_LENGTH ) );
     // right arc
-    pen_spot_x = M_canvas.screenX( +( PITCH_LENGTH*0.5 - PENALTY_SPOT_DIST ) );
+    pen_spot_x = M_canvas.screenX( +( PITCH_HALF_LENGTH - PENALTY_SPOT_DIST ) );
     painter.drawArc( pen_spot_x - pen_circle_r,
-                     M_canvas.fieldCenter().y - pen_circle_r,
+                     M_canvas.fieldCenter().y() - pen_circle_r,
                      pen_circle_size, pen_circle_size,
                      qRound( ( 180.0 - pen_circle_y_degree_abs + 0.5 ) * 16 ),
                      span_angle );
@@ -276,7 +281,7 @@ FieldPainter::drawPenaltyAreaLines( QPainter & painter ) const
     painter.drawLine( pen_x, pen_top_y, pen_x, pen_bottom_y );
     painter.drawLine( pen_x, pen_bottom_y, right_x, pen_bottom_y );
     // right spot
-    painter.drawPoint( pen_spot_x, M_canvas.fieldCenter().y );
+    painter.drawPoint( pen_spot_x, M_canvas.fieldCenter().y() );
 }
 
 /*-------------------------------------------------------------------*/
@@ -291,22 +296,22 @@ FieldPainter::drawGoalAreaLines( QPainter & painter ) const
     painter.setBrush( Qt::NoBrush );
 
     // set screen coordinates of field
-    int left_x   = M_canvas.screenX( - PITCH_LENGTH*0.5 );
-    int right_x  = M_canvas.screenX( + PITCH_LENGTH*0.5 );
+    int left_x   = M_canvas.screenX( - PITCH_HALF_LENGTH );
+    int right_x  = M_canvas.screenX( + PITCH_HALF_LENGTH );
 
     // set coordinates M_canvass
     int goal_area_y_abs = M_canvas.scale( GOAL_AREA_WIDTH*0.5 );
-    int goal_area_top_y = M_canvas.fieldCenter().y - goal_area_y_abs;
-    int goal_area_bottom_y = M_canvas.fieldCenter().y + goal_area_y_abs;
+    int goal_area_top_y = M_canvas.fieldCenter().y() - goal_area_y_abs;
+    int goal_area_bottom_y = M_canvas.fieldCenter().y() + goal_area_y_abs;
 
     // left goal area
-    int goal_area_x = M_canvas.screenX( - PITCH_LENGTH*0.5 + GOAL_AREA_LENGTH );
+    int goal_area_x = M_canvas.screenX( - PITCH_HALF_LENGTH + GOAL_AREA_LENGTH );
     painter.drawLine( left_x, goal_area_top_y, goal_area_x, goal_area_top_y );
     painter.drawLine( goal_area_x, goal_area_top_y, goal_area_x, goal_area_bottom_y );
     painter.drawLine( goal_area_x, goal_area_bottom_y, left_x, goal_area_bottom_y );
 
     // right goal area
-    goal_area_x = M_canvas.screenX( PITCH_LENGTH*0.5 - GOAL_AREA_LENGTH );
+    goal_area_x = M_canvas.screenX( PITCH_HALF_LENGTH - GOAL_AREA_LENGTH );
     painter.drawLine( right_x, goal_area_top_y, goal_area_x, goal_area_top_y );
     painter.drawLine( goal_area_x, goal_area_top_y, goal_area_x, goal_area_bottom_y );
     painter.drawLine( goal_area_x, goal_area_bottom_y, right_x, goal_area_bottom_y );
@@ -333,13 +338,13 @@ FieldPainter::drawGoals( QPainter & painter ) const
     int post_diameter = M_canvas.scale( GOAL_POST_RADIUS*2.0 );
 
     // left goal
-    painter.drawRect( M_canvas.screenX( - PITCH_LENGTH*0.5 - GOAL_DEPTH ) - 1,
+    painter.drawRect( M_canvas.screenX( - PITCH_HALF_LENGTH - GOAL_DEPTH ) - 1,
                       goal_top_y,
                       goal_size_x,
                       goal_size_y );
     if ( post_diameter >= 1 )
     {
-        int post_x = M_canvas.screenX( - PITCH_LENGTH*0.5 );
+        int post_x = M_canvas.screenX( - PITCH_HALF_LENGTH );
         painter.drawEllipse( post_x,
                              post_top_y,
                              post_diameter,
@@ -350,13 +355,13 @@ FieldPainter::drawGoals( QPainter & painter ) const
                              post_diameter );
     }
     // right goal
-    painter.drawRect( M_canvas.screenX( PITCH_LENGTH*0.5 ) + 1,
+    painter.drawRect( M_canvas.screenX( PITCH_HALF_LENGTH ) + 1,
                       goal_top_y,
                       goal_size_x,
                       goal_size_y );
     if ( post_diameter >= 1 )
     {
-        int post_x = M_canvas.screenX( PITCH_LENGTH*0.5 - GOAL_POST_RADIUS*2.0 );
+        int post_x = M_canvas.screenX( PITCH_HALF_LENGTH - GOAL_POST_RADIUS*2.0 );
         painter.drawEllipse( post_x,
                              post_top_y,
                              post_diameter,
@@ -386,11 +391,11 @@ FieldPainter::drawFlags( QPainter & painter ) const
     int flag_diameter = flag_radius * 2;
 
     int x, y;
-    int pitch_half_length = M_canvas.scale( PITCH_LENGTH*0.5 );
-    int pitch_half_width = M_canvas.scale( PITCH_WIDTH*0.5 );
-    int pitch_margin_x = M_canvas.scale( PITCH_LENGTH*0.5 + PITCH_MARGIN );
-    int pitch_margin_y = M_canvas.scale( PITCH_WIDTH*0.5 + PITCH_MARGIN );
-    int penalty_x = M_canvas.scale( PITCH_LENGTH*0.5 - PENALTY_AREA_LENGTH );
+    int pitch_half_length = M_canvas.scale( PITCH_HALF_LENGTH );
+    int pitch_half_width = M_canvas.scale( PITCH_HALF_WIDTH );
+    int pitch_margin_x = M_canvas.scale( PITCH_HALF_LENGTH + PITCH_MARGIN );
+    int pitch_margin_y = M_canvas.scale( PITCH_HALF_WIDTH + PITCH_MARGIN );
+    int penalty_x = M_canvas.scale( PITCH_HALF_LENGTH - PENALTY_AREA_LENGTH );
     int penalty_y = M_canvas.scale( PENALTY_AREA_WIDTH*0.5 );
     int goal_y = M_canvas.scale( GOAL_WIDTH*0.5 );
     int scale10 = M_canvas.scale( 10.0 );
@@ -402,206 +407,206 @@ FieldPainter::drawFlags( QPainter & painter ) const
     QPainterPath path;
 
     // goal left
-    x = M_canvas.fieldCenter().x - pitch_half_length - flag_radius;
-    y = M_canvas.fieldCenter().y - flag_radius;
+    x = M_canvas.fieldCenter().x() - pitch_half_length - flag_radius;
+    y = M_canvas.fieldCenter().y() - flag_radius;
     path.addEllipse( x, y, flag_diameter, flag_diameter );
     // goal right
-    x = M_canvas.fieldCenter().x + pitch_half_length - flag_radius;
-    y = M_canvas.fieldCenter().y - flag_radius;
+    x = M_canvas.fieldCenter().x() + pitch_half_length - flag_radius;
+    y = M_canvas.fieldCenter().y() - flag_radius;
     path.addEllipse( x, y, flag_diameter, flag_diameter );
     // flag c
-    x  = M_canvas.fieldCenter().x - flag_radius;
-    y = M_canvas.fieldCenter().y - flag_radius;
+    x  = M_canvas.fieldCenter().x() - flag_radius;
+    y = M_canvas.fieldCenter().y() - flag_radius;
     path.addEllipse( x, y, flag_diameter, flag_diameter );
     // flag c t
-    x = M_canvas.fieldCenter().x - flag_radius;
-    y = M_canvas.fieldCenter().y - pitch_half_width - flag_radius;
+    x = M_canvas.fieldCenter().x() - flag_radius;
+    y = M_canvas.fieldCenter().y() - pitch_half_width - flag_radius;
     path.addEllipse( x, y, flag_diameter, flag_diameter );
 
     // flag c b
-    x = M_canvas.fieldCenter().x - flag_radius;
-    y = M_canvas.fieldCenter().y + pitch_half_width - flag_radius;
+    x = M_canvas.fieldCenter().x() - flag_radius;
+    y = M_canvas.fieldCenter().y() + pitch_half_width - flag_radius;
     path.addEllipse( x, y, flag_diameter, flag_diameter );
     // flag l t
-    x = M_canvas.fieldCenter().x - pitch_half_length - flag_radius;
-    y = M_canvas.fieldCenter().y - pitch_half_width - flag_radius;
+    x = M_canvas.fieldCenter().x() - pitch_half_length - flag_radius;
+    y = M_canvas.fieldCenter().y() - pitch_half_width - flag_radius;
     path.addEllipse( x, y, flag_diameter, flag_diameter );
     // flag l b
-    x = M_canvas.fieldCenter().x - pitch_half_length - flag_radius;
-    y = M_canvas.fieldCenter().y + pitch_half_width - flag_radius;
+    x = M_canvas.fieldCenter().x() - pitch_half_length - flag_radius;
+    y = M_canvas.fieldCenter().y() + pitch_half_width - flag_radius;
     path.addEllipse( x, y, flag_diameter, flag_diameter );
     // flag r t
-    x = M_canvas.fieldCenter().x + pitch_half_length - flag_radius;
-    y = M_canvas.fieldCenter().y - pitch_half_width - flag_radius;
+    x = M_canvas.fieldCenter().x() + pitch_half_length - flag_radius;
+    y = M_canvas.fieldCenter().y() - pitch_half_width - flag_radius;
     path.addEllipse( x, y, flag_diameter, flag_diameter );
     // flag r b
-    x = M_canvas.fieldCenter().x + pitch_half_length - flag_radius;
-    y = M_canvas.fieldCenter().y + pitch_half_width - flag_radius;
+    x = M_canvas.fieldCenter().x() + pitch_half_length - flag_radius;
+    y = M_canvas.fieldCenter().y() + pitch_half_width - flag_radius;
     path.addEllipse( x, y, flag_diameter, flag_diameter );
     // flag p l t
-    x = M_canvas.fieldCenter().x - penalty_x - flag_radius;
-    y = M_canvas.fieldCenter().y - penalty_y - flag_radius;
+    x = M_canvas.fieldCenter().x() - penalty_x - flag_radius;
+    y = M_canvas.fieldCenter().y() - penalty_y - flag_radius;
     path.addEllipse( x, y, flag_diameter, flag_diameter );
     // flag p l c
-    x = M_canvas.fieldCenter().x - penalty_x - flag_radius;
-    y = M_canvas.fieldCenter().y - flag_radius;
+    x = M_canvas.fieldCenter().x() - penalty_x - flag_radius;
+    y = M_canvas.fieldCenter().y() - flag_radius;
     path.addEllipse( x, y, flag_diameter, flag_diameter );
     // flag p l b
-    x = M_canvas.fieldCenter().x - penalty_x - flag_radius;
-    y = M_canvas.fieldCenter().y + penalty_y - flag_radius;
+    x = M_canvas.fieldCenter().x() - penalty_x - flag_radius;
+    y = M_canvas.fieldCenter().y() + penalty_y - flag_radius;
     path.addEllipse( x, y, flag_diameter, flag_diameter );
     // flag p r t
-    x = M_canvas.fieldCenter().x + penalty_x - flag_radius;
-    y = M_canvas.fieldCenter().y - penalty_y - flag_radius;
+    x = M_canvas.fieldCenter().x() + penalty_x - flag_radius;
+    y = M_canvas.fieldCenter().y() - penalty_y - flag_radius;
     path.addEllipse( x, y, flag_diameter, flag_diameter );
     // flag p r c
-    x = M_canvas.fieldCenter().x + penalty_x - flag_radius;
-    y = M_canvas.fieldCenter().y - flag_radius;
+    x = M_canvas.fieldCenter().x() + penalty_x - flag_radius;
+    y = M_canvas.fieldCenter().y() - flag_radius;
     path.addEllipse( x, y, flag_diameter, flag_diameter );
     // flag p r b
-    x = M_canvas.fieldCenter().x + penalty_x - flag_radius;
-    y = M_canvas.fieldCenter().y + penalty_y - flag_radius;
+    x = M_canvas.fieldCenter().x() + penalty_x - flag_radius;
+    y = M_canvas.fieldCenter().y() + penalty_y - flag_radius;
     path.addEllipse( x, y, flag_diameter, flag_diameter );
 
     // flag g l t
-    x = M_canvas.fieldCenter().x - pitch_half_length - flag_radius;
-    y = M_canvas.fieldCenter().y - goal_y - flag_radius;
+    x = M_canvas.fieldCenter().x() - pitch_half_length - flag_radius;
+    y = M_canvas.fieldCenter().y() - goal_y - flag_radius;
     path.addEllipse( x, y, flag_diameter, flag_diameter );
     // flag g l b
-    x = M_canvas.fieldCenter().x - pitch_half_length - flag_radius;
-    y = M_canvas.fieldCenter().y + goal_y - flag_radius;
+    x = M_canvas.fieldCenter().x() - pitch_half_length - flag_radius;
+    y = M_canvas.fieldCenter().y() + goal_y - flag_radius;
     path.addEllipse( x, y, flag_diameter, flag_diameter );
     // flag g r t
-    x = M_canvas.fieldCenter().x + pitch_half_length - flag_radius;
-    y = M_canvas.fieldCenter().y - goal_y - flag_radius;
+    x = M_canvas.fieldCenter().x() + pitch_half_length - flag_radius;
+    y = M_canvas.fieldCenter().y() - goal_y - flag_radius;
     path.addEllipse( x, y, flag_diameter, flag_diameter );
     // flag g r b
-    x = M_canvas.fieldCenter().x + pitch_half_length - flag_radius;
-    y = M_canvas.fieldCenter().y + goal_y - flag_radius;
+    x = M_canvas.fieldCenter().x() + pitch_half_length - flag_radius;
+    y = M_canvas.fieldCenter().y() + goal_y - flag_radius;
     path.addEllipse( x, y, flag_diameter, flag_diameter );
 
     // flag t ...
 
-    y = M_canvas.fieldCenter().y - pitch_margin_y - flag_radius;
+    y = M_canvas.fieldCenter().y() - pitch_margin_y - flag_radius;
     // flag t l 50
-    x = M_canvas.fieldCenter().x - scale50 - flag_radius;
+    x = M_canvas.fieldCenter().x() - scale50 - flag_radius;
     path.addEllipse( x, y, flag_diameter, flag_diameter );
     // flag t l 40
-    x = M_canvas.fieldCenter().x - scale40 - flag_radius;
+    x = M_canvas.fieldCenter().x() - scale40 - flag_radius;
     path.addEllipse( x, y, flag_diameter, flag_diameter );
     // flag t l 30
-    x = M_canvas.fieldCenter().x - scale30 - flag_radius;
+    x = M_canvas.fieldCenter().x() - scale30 - flag_radius;
     path.addEllipse( x, y, flag_diameter, flag_diameter );
     // flag t l 20
-    x = M_canvas.fieldCenter().x - scale20 - flag_radius;
+    x = M_canvas.fieldCenter().x() - scale20 - flag_radius;
     path.addEllipse( x, y, flag_diameter, flag_diameter );
     // flag t l 10
-    x = M_canvas.fieldCenter().x - scale10 - flag_radius;
+    x = M_canvas.fieldCenter().x() - scale10 - flag_radius;
     path.addEllipse( x, y, flag_diameter, flag_diameter );
     // flag t 0
-    x = M_canvas.fieldCenter().x - flag_radius;
+    x = M_canvas.fieldCenter().x() - flag_radius;
     path.addEllipse( x, y, flag_diameter, flag_diameter );
     // flag t r 10
-    x = M_canvas.fieldCenter().x + scale10 - flag_radius;
+    x = M_canvas.fieldCenter().x() + scale10 - flag_radius;
     path.addEllipse( x, y, flag_diameter, flag_diameter );
     // flag t r 20
-    x = M_canvas.fieldCenter().x + scale20 - flag_radius;
+    x = M_canvas.fieldCenter().x() + scale20 - flag_radius;
     path.addEllipse( x, y, flag_diameter, flag_diameter );
     // flag t r 30
-    x = M_canvas.fieldCenter().x + scale30 - flag_radius;
+    x = M_canvas.fieldCenter().x() + scale30 - flag_radius;
     path.addEllipse( x, y, flag_diameter, flag_diameter );
     // flag t r 40
-    x = M_canvas.fieldCenter().x + scale40 - flag_radius;
+    x = M_canvas.fieldCenter().x() + scale40 - flag_radius;
     path.addEllipse( x, y, flag_diameter, flag_diameter );
     // flag t r 50
-    x = M_canvas.fieldCenter().x + scale50 - flag_radius;
+    x = M_canvas.fieldCenter().x() + scale50 - flag_radius;
     path.addEllipse( x, y, flag_diameter, flag_diameter );
 
     // flag b ...
 
-    y = M_canvas.fieldCenter().y + pitch_margin_y - flag_radius;
+    y = M_canvas.fieldCenter().y() + pitch_margin_y - flag_radius;
     // flag b l 50
-    x = M_canvas.fieldCenter().x - scale50 - flag_radius;
+    x = M_canvas.fieldCenter().x() - scale50 - flag_radius;
     path.addEllipse( x, y, flag_diameter, flag_diameter );
     // flag b l 40
-    x = M_canvas.fieldCenter().x - scale40 - flag_radius;
+    x = M_canvas.fieldCenter().x() - scale40 - flag_radius;
     path.addEllipse( x, y, flag_diameter, flag_diameter );
     // flag b l 30
-    x = M_canvas.fieldCenter().x - scale30 - flag_radius;
+    x = M_canvas.fieldCenter().x() - scale30 - flag_radius;
     path.addEllipse( x, y, flag_diameter, flag_diameter );
     // flag b l 20
-    x = M_canvas.fieldCenter().x - scale20 - flag_radius;
+    x = M_canvas.fieldCenter().x() - scale20 - flag_radius;
     path.addEllipse( x, y, flag_diameter, flag_diameter );
     // flag b l 10
-    x = M_canvas.fieldCenter().x - scale10 - flag_radius;
+    x = M_canvas.fieldCenter().x() - scale10 - flag_radius;
     path.addEllipse( x, y, flag_diameter, flag_diameter );
     // flag b 0
-    x = M_canvas.fieldCenter().x - flag_radius;
+    x = M_canvas.fieldCenter().x() - flag_radius;
     path.addEllipse( x, y, flag_diameter, flag_diameter );
     // flag b r 10
-    x = M_canvas.fieldCenter().x + scale10 - flag_radius;
+    x = M_canvas.fieldCenter().x() + scale10 - flag_radius;
     path.addEllipse( x, y, flag_diameter, flag_diameter );
     // flag b r 20
-    x = M_canvas.fieldCenter().x + scale20 - flag_radius;
+    x = M_canvas.fieldCenter().x() + scale20 - flag_radius;
     path.addEllipse( x, y, flag_diameter, flag_diameter );
     // flag b r 30
-    x = M_canvas.fieldCenter().x + scale30 - flag_radius;
+    x = M_canvas.fieldCenter().x() + scale30 - flag_radius;
     path.addEllipse( x, y, flag_diameter, flag_diameter );
     // flag b r 40
-    x = M_canvas.fieldCenter().x + scale40 - flag_radius;
+    x = M_canvas.fieldCenter().x() + scale40 - flag_radius;
     path.addEllipse( x, y, flag_diameter, flag_diameter );
     // flag b r 50
-    x = M_canvas.fieldCenter().x + scale50 - flag_radius;
+    x = M_canvas.fieldCenter().x() + scale50 - flag_radius;
     path.addEllipse( x, y, flag_diameter, flag_diameter );
 
     // flag l ...
 
-    x = M_canvas.fieldCenter().x - pitch_margin_x - flag_radius;
+    x = M_canvas.fieldCenter().x() - pitch_margin_x - flag_radius;
     // flag l t 30
-    y = M_canvas.fieldCenter().y - scale30 - flag_radius;
+    y = M_canvas.fieldCenter().y() - scale30 - flag_radius;
     path.addEllipse( x, y, flag_diameter, flag_diameter );
     // flag l t 20
-    y = M_canvas.fieldCenter().y - scale20 - flag_radius;
+    y = M_canvas.fieldCenter().y() - scale20 - flag_radius;
     path.addEllipse( x, y, flag_diameter, flag_diameter );
     // flag l t 10
-    y = M_canvas.fieldCenter().y - scale10 - flag_radius;
+    y = M_canvas.fieldCenter().y() - scale10 - flag_radius;
     path.addEllipse( x, y, flag_diameter, flag_diameter );
     // flag l 0
-    y = M_canvas.fieldCenter().y - flag_radius;
+    y = M_canvas.fieldCenter().y() - flag_radius;
     path.addEllipse( x, y, flag_diameter, flag_diameter );
     // flag l b 10
-    y = M_canvas.fieldCenter().y + scale10 - flag_radius;
+    y = M_canvas.fieldCenter().y() + scale10 - flag_radius;
     path.addEllipse( x, y, flag_diameter, flag_diameter );
     // flag l b 20
-    y = M_canvas.fieldCenter().y + scale20 - flag_radius;
+    y = M_canvas.fieldCenter().y() + scale20 - flag_radius;
     path.addEllipse( x, y, flag_diameter, flag_diameter );
     // flag l b 30
-    y = M_canvas.fieldCenter().y + scale30 - flag_radius;
+    y = M_canvas.fieldCenter().y() + scale30 - flag_radius;
     path.addEllipse( x, y, flag_diameter, flag_diameter );
 
     // flag r ...
 
-    x = M_canvas.fieldCenter().x + pitch_margin_x - flag_radius;
+    x = M_canvas.fieldCenter().x() + pitch_margin_x - flag_radius;
     // flag r t 30
-    y = M_canvas.fieldCenter().y - scale30 - flag_radius;
+    y = M_canvas.fieldCenter().y() - scale30 - flag_radius;
     path.addEllipse( x, y, flag_diameter, flag_diameter );
     // flag r t 20
-    y = M_canvas.fieldCenter().y - scale20 - flag_radius;
+    y = M_canvas.fieldCenter().y() - scale20 - flag_radius;
     path.addEllipse( x, y, flag_diameter, flag_diameter );
     // flag r t 10
-    y = M_canvas.fieldCenter().y - scale10 - flag_radius;
+    y = M_canvas.fieldCenter().y() - scale10 - flag_radius;
     path.addEllipse( x, y, flag_diameter, flag_diameter );
     // flag r 0
-    y = M_canvas.fieldCenter().y - flag_radius;
+    y = M_canvas.fieldCenter().y() - flag_radius;
     path.addEllipse( x, y, flag_diameter, flag_diameter );
     // flag r b 10
-    y = M_canvas.fieldCenter().y + scale10 - flag_radius;
+    y = M_canvas.fieldCenter().y() + scale10 - flag_radius;
     path.addEllipse( x, y, flag_diameter, flag_diameter );
     // flag r b 20
-    y = M_canvas.fieldCenter().y + scale20 - flag_radius;
+    y = M_canvas.fieldCenter().y() + scale20 - flag_radius;
     path.addEllipse( x, y, flag_diameter, flag_diameter );
     // flag r b 30
-    y = M_canvas.fieldCenter().y + scale30 - flag_radius;
+    y = M_canvas.fieldCenter().y() + scale30 - flag_radius;
     path.addEllipse( x, y, flag_diameter, flag_diameter );
 
     painter.drawPath( path );
@@ -614,16 +619,27 @@ FieldPainter::drawFlags( QPainter & painter ) const
 void
 FieldPainter::drawGrid( QPainter & painter ) const
 {
-    const double grid_step = 0.1 * M_canvas.gridStep();
-    const int istep = M_canvas.scale( grid_step );
-    const int text_step = ( M_canvas.isShownGridCoord()
-                            ? 10
-                            : 100000 );
+    if ( ! Options::instance().showGrid() )
+    {
+        return;
+    }
 
+    const double grid_step = Options::instance().gridStep();
+    if ( grid_step <= 0.0 )
+    {
+        return;
+    }
+
+    const int istep = M_canvas.scale( grid_step );
     if ( istep < 2 )
     {
         return;
     }
+
+    const int text_step = ( Options::instance().showGridCoord()
+                            ? 10
+                            : 100000 );
+
 
     const QRect win = painter.window();
 

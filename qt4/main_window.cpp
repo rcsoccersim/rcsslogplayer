@@ -55,29 +55,23 @@
 #include <iostream>
 #include <cstring>
 
-#include "xpm/soccerwindow2.xpm"
-#include "xpm/soccerwindow2-nostr.xpm"
+#include "icons/rcss.xpm"
 
-#include "xpm/open_rcg.xpm"
-#include "xpm/save.xpm"
-
-#include "xpm/logplayer_live_mode.xpm"
-#include "xpm/monitor_move_player.xpm"
-#include "xpm/debug_server_switch.xpm"
+#include "icons/open.xpm"
 
 #ifndef PACKAGE_NAME
-#define PACKAGE_NAME "soccerwindow2"
+#define PACKAGE_NAME "rcsslogplayer"
 #endif
 
 /*-------------------------------------------------------------------*/
 /*!
 
-*/
+ */
 MainWindow::MainWindow()
-    : M_log_player( new LogPlayer( M_main_data, this ) )
-    , M_detail_dialog( static_cast< DetailDialog * >( 0 ) )
-    , M_player_type_dialog( static_cast< PlayerTypeDialog * >( 0 ) )
-    , M_monitor_client( static_cast< MonitorClient * >( 0 ) )
+//:M_log_player( new LogPlayer( M_main_data, this ) )
+//, M_detail_dialog( static_cast< DetailDialog * >( 0 ) )
+//, M_player_type_dialog( static_cast< PlayerTypeDialog * >( 0 ) )
+//, M_monitor_client( static_cast< MonitorClient * >( 0 ) )
 {
     readSettings();
 
@@ -88,44 +82,44 @@ MainWindow::MainWindow()
     // central widget
     createFieldCanvas();
     // control dialogs
-    createViewConfigDialog();
+    //    createViewConfigDialog();
 
-    connect( M_log_player, SIGNAL( updated() ),
-             this, SIGNAL( viewUpdated() ) );
+    //     connect( M_log_player, SIGNAL( updated() ),
+    //              this, SIGNAL( viewUpdated() ) );
 
-    this->setWindowIcon( QIcon( QPixmap( soccerwindow2_xpm ) ) );
+    this->setWindowIcon( QIcon( QPixmap( rcss_xpm ) ) );
     this->setWindowTitle( tr( PACKAGE_NAME ) );
 
     this->setMinimumSize( 280, 220 );
-    this->resize( AppConfig::instance().frameWidth() > 0
-                  ? AppConfig::instance().frameWidth()
+    this->resize( Options::instance().windowWidth() > 0
+                  ? Options::instance().windowWidth()
                   : 640,
-                  AppConfig::instance().frameHeight() > 0
-                  ? AppConfig::instance().frameHeight()
+                  Options::instance().windowHeight() > 0
+                  ? Options::instance().windowHeight()
                   : 480 );
-    this->move( AppConfig::instance().framePosX() >= 0
-                ? AppConfig::instance().framePosX()
+    this->move( Options::instance().windowX() >= 0
+                ? Options::instance().windowX()
                 : this->x(),
-                AppConfig::instance().framePosY() >= 0
-                ? AppConfig::instance().framePosY()
+                Options::instance().windowY() >= 0
+                ? Options::instance().windowY()
                 : this->y() );
 
     // this->setWindowOpacity( 0.5 ); // window transparency
 
     this->setAcceptDrops( true );
 
-    if ( AppConfig::instance().hideToolBar() )
+    if ( Options::instance().hideToolBar() )
     {
-        M_log_player_tool_bar->hide();
+        //M_log_player_tool_bar->hide();
         //M_monitor_tool_bar->hide();
     }
 
-    if ( AppConfig::instance().hideStatusBar() )
+    if ( Options::instance().hideStatusBar() )
     {
         this->statusBar()->hide();
     }
 
-    if ( AppConfig::instance().hideMenuBar() )
+    if ( Options::instance().hideMenuBar() )
     {
         this->menuBar()->hide();
     }
@@ -134,56 +128,47 @@ MainWindow::MainWindow()
 /*-------------------------------------------------------------------*/
 /*!
 
-*/
+ */
 MainWindow::~MainWindow()
 {
     //std::cerr << "delete MainWindow" << std::endl;
 
-    if ( AppConfig::instance().killServer() )
-    {
-        killServer();
-    }
     saveSettings();
 }
 
 /*-------------------------------------------------------------------*/
 /*!
 
-*/
+ */
 void
 MainWindow::init()
 {
-    if ( ! AppConfig::instance().gameLogFilePath().empty() )
+    if ( ! Options::instance().gameLogFile().empty() )
     {
-        openRCG( QString::fromStdString( AppConfig::instance().gameLogFilePath() ) );
+        openRCG( QString::fromStdString( Options::instance().gameLogFile() ) );
     }
-    else if ( AppConfig::instance().connect() )
+    else if ( Options::instance().connect() )
     {
-        std::string host = AppConfig::instance().host();
+        std::string host = Options::instance().host();
         if ( host.empty() )
         {
-            host = "localhost";
+            host = "127.0.0.1";
         }
 
         connectMonitorTo( host.c_str() );
-
-        if ( AppConfig::instance().debugServerMode() )
-        {
-            startDebugServer();
-        }
     }
 
-    if ( AppConfig::instance().canvasWidth() > 0
-         && AppConfig::instance().canvasHeight() > 0 )
+    if ( Options::instance().canvasWidth() > 0
+         && Options::instance().canvasHeight() > 0 )
     {
-        resizeCanvas( QSize( AppConfig::instance().canvasWidth(),
-                             AppConfig::instance().canvasHeight() ) );
+        resizeCanvas( QSize( Options::instance().canvasWidth(),
+                             Options::instance().canvasHeight() ) );
     }
-    else if ( AppConfig::instance().fullScreen() )
+    else if ( Options::instance().fullScreen() )
     {
         this->showFullScreen();
     }
-    else if ( AppConfig::instance().maximize() )
+    else if ( Options::instance().maximize() )
     {
         this->showMaximized();
     }
@@ -201,7 +186,7 @@ MainWindow::init()
         }
     }
 
-    if ( AppConfig::instance().autoImageSave() )
+    if ( Options::instance().autoImageSave() )
     {
         QTimer::singleShot( 500,
                             this, SLOT( saveImageAndQuit() ) );
@@ -212,7 +197,7 @@ MainWindow::init()
 /*-------------------------------------------------------------------*/
 /*!
 
-*/
+ */
 void
 MainWindow::readSettings()
 {
@@ -227,19 +212,19 @@ MainWindow::readSettings()
     //                    PACKAGE_NAME );
 
 
-    settings.beginGroup( "AppConfig" );
+    settings.beginGroup( "Options" );
 
-    if ( AppConfig::instance().gameLogDir().empty() )
+    if ( Options::instance().gameLogDir().empty() )
     {
-        AppConfig::instance()
+        Options::instance()
             .setGameLogDir( settings.value( "gameLogDir", "" )
                             .toString()
                             .toStdString() );
     }
 
-    if ( AppConfig::instance().debugLogDir().empty() )
+    if ( Options::instance().debugLogDir().empty() )
     {
-        AppConfig::instance()
+        Options::instance()
             .setDebugLogDir( settings.value( "debugLogDir", "" )
                              .toString()
                              .toStdString() );
@@ -251,7 +236,7 @@ MainWindow::readSettings()
 /*-------------------------------------------------------------------*/
 /*!
 
-*/
+ */
 void
 MainWindow::saveSettings()
 {
@@ -265,10 +250,10 @@ MainWindow::saveSettings()
     //                    "rctools",
     //                    PACKAGE_NAME );
 
-    settings.beginGroup( "AppConfig" );
+    settings.beginGroup( "Options" );
 
-    settings.setValue( "gameLogDir", AppConfig::instance().gameLogDir().c_str() );
-    settings.setValue( "debugLogDir", AppConfig::instance().debugLogDir().c_str() );
+    settings.setValue( "gameLogDir", Options::instance().gameLogDir().c_str() );
+    settings.setValue( "debugLogDir", Options::instance().debugLogDir().c_str() );
 
     settings.endGroup();
 }
@@ -276,7 +261,7 @@ MainWindow::saveSettings()
 /*-------------------------------------------------------------------*/
 /*!
 
-*/
+ */
 void
 MainWindow::createActions()
 {
@@ -291,20 +276,20 @@ MainWindow::createActions()
 /*-------------------------------------------------------------------*/
 /*!
 
-*/
+ */
 void
 MainWindow::createActionsFile()
 {
-    M_open_rcg_act = new QAction( QIcon( QPixmap( open_rcg_xpm ) ),
-                                  tr( "&Open rcg file..." ), this );
+    M_open_act = new QAction( QIcon( QPixmap( open_rcg_xpm ) ),
+                              tr( "&Open rcg file..." ), this );
 #ifdef Q_WS_MAC
-    M_open_rcg_act->setShortcut( tr( "Meta+O" ) );
+    M_open_act->setShortcut( tr( "Meta+O" ) );
 #else
-    M_open_rcg_act->setShortcut( tr( "Ctrl+O" ) );
+    M_open_act->setShortcut( tr( "Ctrl+O" ) );
 #endif
-    M_open_rcg_act->setStatusTip( tr( "Open RoboCup Game Log file" ) );
-    connect( M_open_rcg_act, SIGNAL( triggered() ), this, SLOT( openRCG() ) );
-    this->addAction( M_open_rcg_act );
+    M_open_act->setStatusTip( tr( "Open RoboCup Game Log file" ) );
+    connect( M_open_act, SIGNAL( triggered() ), this, SLOT( openRCG() ) );
+    this->addAction( M_open_act );
     //
     M_save_rcg_act = new QAction( QIcon( QPixmap( save_xpm ) ),
                                   tr( "Save rcg file as..." ), this );
@@ -312,7 +297,7 @@ MainWindow::createActionsFile()
     connect( M_save_rcg_act, SIGNAL( triggered() ), this, SLOT( saveRCG() ) );
     this->addAction( M_save_rcg_act );
     //
-    M_open_debug_view_act = new QAction( QIcon( QPixmap( open_rcg_xpm ) )
+    M_open_debug_view_act = new QAction( QIcon( QPixmap( open_xpm ) )
                                          ,tr( "Open debug view" ), this );
     M_open_debug_view_act
         ->setStatusTip( tr( "Open the directory where debug view logs exist" ) );
@@ -342,7 +327,7 @@ MainWindow::createActionsFile()
 /*-------------------------------------------------------------------*/
 /*!
 
-*/
+ */
 void
 MainWindow::createActionsMonitor()
 {
@@ -448,7 +433,7 @@ MainWindow::createActionsMonitor()
 /*-------------------------------------------------------------------*/
 /*!
 
-*/
+ */
 void
 MainWindow::createActionsView()
 {
@@ -517,19 +502,19 @@ MainWindow::createActionsView()
     // qt style menu group
     M_style_act_group = new QActionGroup( this );
     Q_FOREACH ( QString style_name, QStyleFactory::keys() )
+    {
+        QAction * subaction = new QAction( M_style_act_group );
+        subaction->setText( style_name );
+        subaction->setData( style_name );
+        subaction->setCheckable( true );
+        if ( style_name.toLower()
+             == QApplication::style()->objectName().toLower() )
         {
-            QAction * subaction = new QAction( M_style_act_group );
-            subaction->setText( style_name );
-            subaction->setData( style_name );
-            subaction->setCheckable( true );
-            if ( style_name.toLower()
-                 == QApplication::style()->objectName().toLower() )
-            {
-                subaction->setChecked( true );
-            }
-            connect( subaction, SIGNAL( triggered( bool ) ),
-                     this, SLOT( changeStyle( bool ) ) );
+            subaction->setChecked( true );
         }
+        connect( subaction, SIGNAL( triggered( bool ) ),
+                 this, SLOT( changeStyle( bool ) ) );
+    }
     //
     M_show_color_setting_dialog_act = new QAction( tr( "&Color Settings" ),
                                                    this );
@@ -562,7 +547,7 @@ MainWindow::createActionsView()
 /*-------------------------------------------------------------------*/
 /*!
 
-*/
+ */
 void
 MainWindow::createActionsTool()
 {
@@ -606,7 +591,7 @@ MainWindow::createActionsTool()
 /*-------------------------------------------------------------------*/
 /*!
 
-*/
+ */
 void
 MainWindow::createActionsHelp()
 {
@@ -620,7 +605,7 @@ MainWindow::createActionsHelp()
 /*-------------------------------------------------------------------*/
 /*!
 
-*/
+ */
 void
 MainWindow::createMenus()
 {
@@ -634,13 +619,13 @@ MainWindow::createMenus()
 /*-------------------------------------------------------------------*/
 /*!
 
-*/
+ */
 void
 MainWindow::createMenuFile()
 {
     QMenu * menu = menuBar()->addMenu( tr( "&File" ) );
 
-    menu->addAction( M_open_rcg_act );
+    menu->addAction( M_open_act );
     menu->addAction( M_save_rcg_act );
 
     menu->addSeparator();
@@ -654,7 +639,7 @@ MainWindow::createMenuFile()
 /*-------------------------------------------------------------------*/
 /*!
 
-*/
+ */
 void
 MainWindow::createMenuMonitor()
 {
@@ -686,7 +671,7 @@ MainWindow::createMenuMonitor()
 /*-------------------------------------------------------------------*/
 /*!
 
-*/
+ */
 void
 MainWindow::createMenuView()
 {
@@ -706,9 +691,9 @@ MainWindow::createMenuView()
     {
         QMenu * submenu = menu->addMenu( tr( "Qt &Style" ) );
         Q_FOREACH ( QAction * action, M_style_act_group->actions() )
-            {
-                submenu->addAction( action );
-            }
+        {
+            submenu->addAction( action );
+        }
     }
     menu->addAction( M_show_color_setting_dialog_act );
     menu->addAction( M_show_font_setting_dialog_act );
@@ -718,7 +703,7 @@ MainWindow::createMenuView()
 /*-------------------------------------------------------------------*/
 /*!
 
-*/
+ */
 void
 MainWindow::createMenuTool()
 {
@@ -735,64 +720,64 @@ MainWindow::createMenuTool()
 /*-------------------------------------------------------------------*/
 /*!
 
-*/
+ */
 void
 MainWindow::createMenuHelp()
 {
     QMenu * menu = menuBar()->addMenu( tr( "&Help" ) );
     menu->addAction( M_about_act );
 
-//     QAction * act = new QAction( tr( "About Qt" ), this );
-//     act->setStatusTip( tr( "Show about Qt." ) );
-//     connect( act, SIGNAL( triggered() ), qApp, SLOT( aboutQt() ) );
-//     menu->addAction( act );
+    //     QAction * act = new QAction( tr( "About Qt" ), this );
+    //     act->setStatusTip( tr( "Show about Qt." ) );
+    //     connect( act, SIGNAL( triggered() ), qApp, SLOT( aboutQt() ) );
+    //     menu->addAction( act );
     menu->addAction( tr( "About Qt" ), qApp, SLOT( aboutQt() ) );
 }
 
 /*-------------------------------------------------------------------*/
 /*!
 
-*/
+ */
 void
 MainWindow::createToolBars()
 {
-//     M_log_player_tool_bar = new LogPlayerToolBar( M_log_player,
-//                                                   M_main_data,
-//                                                   this );
+    //     M_log_player_tool_bar = new LogPlayerToolBar( M_log_player,
+    //                                                   M_main_data,
+    //                                                   this );
 
-//     M_log_player_tool_bar->addSeparator();
+    //     M_log_player_tool_bar->addSeparator();
 
-//     M_log_player_tool_bar->addAction( M_set_live_mode_act );
-//     M_log_player_tool_bar->addAction( M_toggle_drag_move_mode_act );
-//     M_log_player_tool_bar->addAction( M_toggle_debug_server_act );
-//     {
-//         QFrame * dummy_frame = new QFrame;
-//         QHBoxLayout * layout = new QHBoxLayout;
-//         //layout->addSpacing( 10 );
-//         layout->addStretch( 1 );
-//         dummy_frame->setLayout( layout );
-//         M_log_player_tool_bar->addWidget( dummy_frame );
-//     }
-//     {
-//         QFrame * dummy_frame = new QFrame;
-//         QVBoxLayout * layout = new QVBoxLayout;
-//         //layout->addSpacing( 10 );
-//         layout->addStretch( 1 );
-//         dummy_frame->setLayout( layout );
-//         M_log_player_tool_bar->addWidget( dummy_frame );
-//     }
+    //     M_log_player_tool_bar->addAction( M_set_live_mode_act );
+    //     M_log_player_tool_bar->addAction( M_toggle_drag_move_mode_act );
+    //     M_log_player_tool_bar->addAction( M_toggle_debug_server_act );
+    //     {
+    //         QFrame * dummy_frame = new QFrame;
+    //         QHBoxLayout * layout = new QHBoxLayout;
+    //         //layout->addSpacing( 10 );
+    //         layout->addStretch( 1 );
+    //         dummy_frame->setLayout( layout );
+    //         M_log_player_tool_bar->addWidget( dummy_frame );
+    //     }
+    //     {
+    //         QFrame * dummy_frame = new QFrame;
+    //         QVBoxLayout * layout = new QVBoxLayout;
+    //         //layout->addSpacing( 10 );
+    //         layout->addStretch( 1 );
+    //         dummy_frame->setLayout( layout );
+    //         M_log_player_tool_bar->addWidget( dummy_frame );
+    //     }
 
-//     connect( this,  SIGNAL( viewUpdated() ),
-//              M_log_player_tool_bar, SLOT( updateSlider() ) );
+    //     connect( this,  SIGNAL( viewUpdated() ),
+    //              M_log_player_tool_bar, SLOT( updateSlider() ) );
 
 
-//     this->addToolBar( Qt::TopToolBarArea, M_log_player_tool_bar );
+    //     this->addToolBar( Qt::TopToolBarArea, M_log_player_tool_bar );
 }
 
 /*-------------------------------------------------------------------*/
 /*!
 
-*/
+ */
 void
 MainWindow::createStatusBar()
 {
@@ -812,7 +797,7 @@ MainWindow::createStatusBar()
 /*-------------------------------------------------------------------*/
 /*!
 
-*/
+ */
 void
 MainWindow::createFieldCanvas()
 {
@@ -824,7 +809,7 @@ MainWindow::createFieldCanvas()
 
     connect( this, SIGNAL( viewUpdated() ),
              M_field_canvas, SLOT( update() ) );
-             //M_field_canvas, SLOT( repaint() ) );
+    //M_field_canvas, SLOT( repaint() ) );
 
     connect( M_field_canvas, SIGNAL( mouseMoved( const QPoint & ) ),
              this, SLOT( updatePositionLabel( const QPoint & ) ) );
@@ -842,51 +827,52 @@ MainWindow::createFieldCanvas()
     // create & set context menus
     {
         QMenu * menu = new QMenu( M_field_canvas );
-        menu->addAction( M_open_rcg_act );
+        menu->addAction( M_open_act );
         menu->addAction( M_connect_monitor_act );
 
         M_field_canvas->setNormalMenu( menu );
     }
-//     {
-//         QMenu * menu = new QMenu( M_field_canvas );
-//         menu->addAction( M_open_rcg_act );
-//         menu->addAction( M_connect_monitor_act );
-// #ifndef Q_WS_WIN
-//         menu->addSeparator();
-//         menu->addAction( M_kill_server_act );
-//         menu->addAction( M_restart_server_act );
-// #endif
+    //     {
+    //         QMenu * menu = new QMenu( M_field_canvas );
+    //         menu->addAction( M_open_act );
+    //         menu->addAction( M_connect_monitor_act );
+    // #ifndef Q_WS_WIN
+    //         menu->addSeparator();
+    //         menu->addAction( M_kill_server_act );
+    //         menu->addAction( M_restart_server_act );
+    // #endif
 
-//         M_field_canvas->setSystemMenu( menu );
-//     }
-//     {
-//         QMenu * menu = new QMenu( M_field_canvas );
-//         menu->addAction( M_kick_off_act );
-//         menu->addSeparator();
-//         menu->addAction( tr( "Drop Ball" ),
-//                          M_field_canvas, SLOT( dropBall() ) );
-//         menu->addAction( tr( "Free Kick Left" ),
-//                          M_field_canvas, SLOT( freeKickLeft() ) );
-//         menu->addAction( tr( "Free Kick Right" ),
-//                          M_field_canvas, SLOT( freeKickRight() ) );
-//         menu->addSeparator();
+    //         M_field_canvas->setSystemMenu( menu );
+    //     }
+    //     {
+    //         QMenu * menu = new QMenu( M_field_canvas );
+    //         menu->addAction( M_kick_off_act );
+    //         menu->addSeparator();
+    //         menu->addAction( tr( "Drop Ball" ),
+    //                          M_field_canvas, SLOT( dropBall() ) );
+    //         menu->addAction( tr( "Free Kick Left" ),
+    //                          M_field_canvas, SLOT( freeKickLeft() ) );
+    //         menu->addAction( tr( "Free Kick Right" ),
+    //                          M_field_canvas, SLOT( freeKickRight() ) );
+    //         menu->addSeparator();
 
-//         QAction * drop_ball_there
-//             = new QAction( tr( "Drop Ball There" ), this );
-//         drop_ball_there->setStatusTip( tr( "Drop ball at the current ball position." ) );
-//         connect( drop_ball_there, SIGNAL( triggered() ),
-//                  this, SLOT( dropBallThere() ) );
-//         menu->addAction( drop_ball_there );
+    //         QAction * drop_ball_there
+    //             = new QAction( tr( "Drop Ball There" ), this );
+    //         drop_ball_there->setStatusTip( tr( "Drop ball at the current ball position." ) );
+    //         connect( drop_ball_there, SIGNAL( triggered() ),
+    //                  this, SLOT( dropBallThere() ) );
+    //         menu->addAction( drop_ball_there );
 
-//         M_field_canvas->setMonitorMenu( menu );
-//     }
+    //         M_field_canvas->setMonitorMenu( menu );
+    //     }
 
 }
 
 /*-------------------------------------------------------------------*/
 /*!
 
-*/
+ */
+#if 0
 void
 MainWindow::createViewConfigDialog()
 {
@@ -1189,11 +1175,12 @@ MainWindow::createViewConfigDialog()
                  M_view_config_dialog, SLOT( setUnselect() ) );
     }
 }
+#endif
 
 /*-------------------------------------------------------------------*/
 /*!
 
-*/
+ */
 void
 MainWindow::closeEvent( QCloseEvent * event )
 {
@@ -1206,7 +1193,7 @@ MainWindow::closeEvent( QCloseEvent * event )
 /*-------------------------------------------------------------------*/
 /*!
 
-*/
+ */
 void
 MainWindow::resizeEvent( QResizeEvent * event )
 {
@@ -1222,7 +1209,7 @@ MainWindow::resizeEvent( QResizeEvent * event )
 /*-------------------------------------------------------------------*/
 /*!
 
-*/
+ */
 void
 MainWindow::wheelEvent( QWheelEvent * event )
 {
@@ -1241,7 +1228,7 @@ MainWindow::wheelEvent( QWheelEvent * event )
 /*-------------------------------------------------------------------*/
 /*!
 
-*/
+ */
 void
 MainWindow::dragEnterEvent( QDragEnterEvent * event )
 {
@@ -1254,7 +1241,7 @@ MainWindow::dragEnterEvent( QDragEnterEvent * event )
 /*-------------------------------------------------------------------*/
 /*!
 
-*/
+ */
 void
 MainWindow::dropEvent( QDropEvent * event )
 {
@@ -1262,14 +1249,14 @@ MainWindow::dropEvent( QDropEvent * event )
 
     QList< QUrl > urls = mimedata->urls();
 
-//     std::cerr << "urls size = " << urls.size() << std::endl;
+    //     std::cerr << "urls size = " << urls.size() << std::endl;
 
-//     for ( int i = 0; i < urls.size() && i < 32; ++i )
-//     {
-//         std::cerr << "url " << i << ": "
-//                   << urls.at(i).path().toStdString()
-//                   << std::endl;
-//     }
+    //     for ( int i = 0; i < urls.size() && i < 32; ++i )
+    //     {
+    //         std::cerr << "url " << i << ": "
+    //                   << urls.at(i).path().toStdString()
+    //                   << std::endl;
+    //     }
 
     while ( ! urls.empty()
             && urls.back().isEmpty() )
@@ -1302,7 +1289,7 @@ MainWindow::dropEvent( QDropEvent * event )
 /*-------------------------------------------------------------------*/
 /*!
 
-*/
+ */
 void
 MainWindow::openRCG()
 {
@@ -1315,7 +1302,7 @@ MainWindow::openRCG()
 #endif
 
     QString default_dir
-        = QString::fromStdString( AppConfig::instance().gameLogDir() );
+        = QString::fromStdString( Options::instance().gameLogDir() );
 
     QString file_path = QFileDialog::getOpenFileName( this,
                                                       tr( "Choose a game log file to open" ),
@@ -1336,7 +1323,7 @@ MainWindow::openRCG()
 /*-------------------------------------------------------------------*/
 /*!
 
-*/
+ */
 void
 MainWindow::openRCG( const QString & file_path )
 {
@@ -1379,7 +1366,7 @@ MainWindow::openRCG( const QString & file_path )
 
     QFileInfo file_info( file_path );
 
-    AppConfig::instance().setGameLogDir( file_info.absoluteFilePath().toStdString() );
+    Options::instance().setGameLogDir( file_info.absoluteFilePath().toStdString() );
 
     if ( M_player_type_dialog )
     {
@@ -1414,7 +1401,7 @@ MainWindow::openRCG( const QString & file_path )
 /*-------------------------------------------------------------------*/
 /*!
 
-*/
+ */
 void
 MainWindow::saveRCG()
 {
@@ -1462,7 +1449,7 @@ MainWindow::saveRCG()
 #endif
 
     QString default_dir
-        = QString::fromStdString( AppConfig::instance().gameLogDir() );
+        = QString::fromStdString( Options::instance().gameLogDir() );
     if ( ! default_file_name.isEmpty() )
     {
         default_dir += tr( "/" );
@@ -1487,7 +1474,7 @@ MainWindow::saveRCG()
 
     // update game log dir
     QFileInfo file_info( file_path );
-    AppConfig::instance().setGameLogDir( file_info.absolutePath().toStdString() );
+    Options::instance().setGameLogDir( file_info.absolutePath().toStdString() );
 
     // check gzip usability
     bool is_gzip = false;
@@ -1523,14 +1510,14 @@ MainWindow::saveRCG()
 /*-------------------------------------------------------------------*/
 /*!
 
-*/
+ */
 void
 MainWindow::openDebugView()
 {
     std::cerr << "MainWindow::openDebugView()" << std::endl;
 
     QString default_dir
-        = QString::fromStdString( AppConfig::instance().debugLogDir() );
+        = QString::fromStdString( Options::instance().debugLogDir() );
 #if 0
     QString dir_path
         = QFileDialog::getExistingDirectory( this,
@@ -1563,7 +1550,7 @@ MainWindow::openDebugView()
 /*-------------------------------------------------------------------*/
 /*!
 
-*/
+ */
 void
 MainWindow::saveDebugView()
 {
@@ -1601,7 +1588,7 @@ MainWindow::saveDebugView()
 /*-------------------------------------------------------------------*/
 /*!
 
-*/
+ */
 void
 MainWindow::kickOff()
 {
@@ -1616,7 +1603,7 @@ MainWindow::kickOff()
 /*-------------------------------------------------------------------*/
 /*!
 
-*/
+ */
 void
 MainWindow::setLiveMode()
 {
@@ -1632,7 +1619,7 @@ MainWindow::setLiveMode()
 /*-------------------------------------------------------------------*/
 /*!
 
-*/
+ */
 void
 MainWindow::connectMonitor()
 {
@@ -1643,7 +1630,7 @@ MainWindow::connectMonitor()
 /*-------------------------------------------------------------------*/
 /*!
 
-*/
+ */
 void
 MainWindow::connectMonitorTo()
 {
@@ -1651,7 +1638,7 @@ MainWindow::connectMonitorTo()
 
     if ( M_last_connected_host.isEmpty() )
     {
-        M_last_connected_host = "localhost";
+        M_last_connected_host = "127.0.0.1";
     }
 
     bool ok = true;
@@ -1671,7 +1658,7 @@ MainWindow::connectMonitorTo()
 /*-------------------------------------------------------------------*/
 /*!
 
-*/
+ */
 void
 MainWindow::connectMonitorTo( const char * hostname )
 {
@@ -1687,8 +1674,8 @@ MainWindow::connectMonitorTo( const char * hostname )
         = boost::shared_ptr< MonitorClient >
         ( new MonitorClient( M_main_data.getViewHolder(),
                              hostname,
-                             AppConfig::instance().port(),
-                             AppConfig::instance().clientVersion() ) );
+                             Options::instance().port(),
+                             Options::instance().clientVersion() ) );
 
     if ( ! M_monitor_client->isConnected() )
     {
@@ -1723,7 +1710,7 @@ MainWindow::connectMonitorTo( const char * hostname )
         startDebugServer();
     }
 
-    AppConfig::instance().setMonitorClientMode( true );
+    Options::instance().setMonitorClientMode( true );
 
     M_save_rcg_act->setEnabled( false );
 
@@ -1761,7 +1748,7 @@ MainWindow::connectMonitorTo( const char * hostname )
 /*-------------------------------------------------------------------*/
 /*!
 
-*/
+ */
 void
 MainWindow::disconnectMonitor()
 {
@@ -1784,7 +1771,7 @@ MainWindow::disconnectMonitor()
         M_debug_server.reset();
     }
 
-    AppConfig::instance().setMonitorClientMode( false );
+    Options::instance().setMonitorClientMode( false );
 
     M_save_rcg_act->setEnabled( true );
 
@@ -1806,7 +1793,7 @@ MainWindow::disconnectMonitor()
 /*-------------------------------------------------------------------*/
 /*!
 
-*/
+ */
 // void
 // MainWindow::toggleMenuBar()
 // {
@@ -1816,7 +1803,7 @@ MainWindow::disconnectMonitor()
 /*-------------------------------------------------------------------*/
 /*!
 
-*/
+ */
 void
 MainWindow::toggleToolBar()
 {
@@ -1827,7 +1814,7 @@ MainWindow::toggleToolBar()
 /*-------------------------------------------------------------------*/
 /*!
 
-*/
+ */
 void
 MainWindow::toggleStatusBar()
 {
@@ -1837,7 +1824,7 @@ MainWindow::toggleStatusBar()
 /*-------------------------------------------------------------------*/
 /*!
 
-*/
+ */
 void
 MainWindow::toggleFullScreen()
 {
@@ -1854,7 +1841,7 @@ MainWindow::toggleFullScreen()
 /*-------------------------------------------------------------------*/
 /*!
 
-*/
+ */
 void
 MainWindow::showPlayerTypeDialog()
 {
@@ -1874,7 +1861,7 @@ MainWindow::showPlayerTypeDialog()
 /*-------------------------------------------------------------------*/
 /*!
 
-*/
+ */
 void
 MainWindow::showMonitorMoveDialog()
 {
@@ -1898,7 +1885,7 @@ MainWindow::showMonitorMoveDialog()
 /*-------------------------------------------------------------------*/
 /*!
 
-*/
+ */
 void
 MainWindow::showDetailDialog()
 {
@@ -1921,7 +1908,7 @@ MainWindow::showDetailDialog()
 /*-------------------------------------------------------------------*/
 /*!
 
-*/
+ */
 void
 MainWindow::changeStyle( bool checked )
 {
@@ -1940,7 +1927,7 @@ MainWindow::changeStyle( bool checked )
 /*-------------------------------------------------------------------*/
 /*!
 
-*/
+ */
 void
 MainWindow::showColorSettingDialog()
 {
@@ -1955,7 +1942,7 @@ MainWindow::showColorSettingDialog()
 /*-------------------------------------------------------------------*/
 /*!
 
-*/
+ */
 void
 MainWindow::showFontSettingDialog()
 {
@@ -1970,7 +1957,7 @@ MainWindow::showFontSettingDialog()
 /*-------------------------------------------------------------------*/
 /*!
 
-*/
+ */
 void
 MainWindow::showViewConfigDialog()
 {
@@ -1982,7 +1969,7 @@ MainWindow::showViewConfigDialog()
 /*-------------------------------------------------------------------*/
 /*!
 
-*/
+ */
 void
 MainWindow::showDebugMessageWindow()
 {
@@ -2007,7 +1994,7 @@ MainWindow::showDebugMessageWindow()
 /*-------------------------------------------------------------------*/
 /*!
 
-*/
+ */
 void
 MainWindow::about()
 {
@@ -2041,7 +2028,7 @@ MainWindow::about()
 /*-------------------------------------------------------------------*/
 /*!
 
-*/
+ */
 void
 MainWindow::resizeCanvas( const QSize & size )
 {
@@ -2082,7 +2069,7 @@ MainWindow::resizeCanvas( const QSize & size )
 /*-------------------------------------------------------------------*/
 /*!
 
-*/
+ */
 void
 MainWindow::receiveMonitorPacket()
 {
@@ -2099,7 +2086,7 @@ MainWindow::receiveMonitorPacket()
     }
 
 
-    if ( AppConfig::instance().autoQuitMode() )
+    if ( Options::instance().autoQuitMode() )
     {
         if ( M_main_data.viewHolder().lastPlayMode() == rcsc::PM_TimeOver )
         {
@@ -2112,9 +2099,9 @@ MainWindow::receiveMonitorPacket()
             else
             {
                 if ( s_game_end_time.secsTo( QDateTime::currentDateTime() )
-                     >= AppConfig::instance().waitSeconds() )
+                     >= Options::instance().waitSeconds() )
                 {
-                    std::cerr << "Elapsed " << AppConfig::instance().waitSeconds()
+                    std::cerr << "Elapsed " << Options::instance().waitSeconds()
                               << " seconds after game end\n"
                               << "Exit..."
                               << std::endl;
@@ -2128,7 +2115,7 @@ MainWindow::receiveMonitorPacket()
 /*-------------------------------------------------------------------*/
 /*!
 
-*/
+ */
 void
 MainWindow::updatePositionLabel( const QPoint & point )
 {
@@ -2153,7 +2140,7 @@ MainWindow::updatePositionLabel( const QPoint & point )
 /*-------------------------------------------------------------------*/
 /*!
 
-*/
+ */
 void
 MainWindow::dropBallThere()
 {
@@ -2174,7 +2161,7 @@ MainWindow::dropBallThere()
 /*-------------------------------------------------------------------*/
 /*!
 
-*/
+ */
 void
 MainWindow::dropBall( const QPoint & point )
 {
@@ -2199,7 +2186,7 @@ MainWindow::dropBall( const QPoint & point )
 /*-------------------------------------------------------------------*/
 /*!
 
-*/
+ */
 void
 MainWindow::freeKickLeft( const QPoint & point )
 {
@@ -2228,7 +2215,7 @@ MainWindow::freeKickLeft( const QPoint & point )
 /*-------------------------------------------------------------------*/
 /*!
 
-*/
+ */
 void
 MainWindow::freeKickRight( const QPoint & point )
 {
@@ -2257,7 +2244,7 @@ MainWindow::freeKickRight( const QPoint & point )
 /*-------------------------------------------------------------------*/
 /*!
 
-*/
+ */
 void
 MainWindow::movePlayer( const QPoint & point )
 {
@@ -2288,7 +2275,7 @@ MainWindow::movePlayer( const QPoint & point )
 /*-------------------------------------------------------------------*/
 /*!
 
-*/
+ */
 void
 MainWindow::moveObjects()
 {

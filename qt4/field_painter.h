@@ -46,12 +46,16 @@ class FieldPainter
 public:
     static const double PITCH_LENGTH;
     static const double PITCH_WIDTH;
+    static const double PITCH_HALF_LENGTH;
+    static const double PITCH_HALF_WIDTH;
     static const double PITCH_MARGIN;
     static const double CENTER_CIRCLE_R;
     static const double PENALTY_AREA_LENGTH;
     static const double PENALTY_AREA_WIDTH;
     static const double PENALTY_CIRCLE_R;
     static const double PENALTY_SPOT_DIST;
+    static const double GOAL_WIDTH;
+    static const double GOAL_HALF_WIDTH;
     static const double GOAL_AREA_LENGTH;
     static const double GOAL_AREA_WIDTH;
     static const double GOAL_DEPTH;

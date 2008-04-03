@@ -76,7 +76,7 @@ private:
     //boost::shared_ptr< MonitorClient > M_monitor_client;
 
     // file actions
-    QAction * M_open_rcg_act;
+    QAction * M_open_act;
     //QAction * M_save_rcg_act;
     QAction * M_exit_act;
 
@@ -152,7 +152,7 @@ protected:
 private:
 
     void openRCG( const QString & file_path );
-    //void connectMonitorTo( const char * hostname );
+    void connectMonitorTo( const char * hostname );
 
 private slots:
 

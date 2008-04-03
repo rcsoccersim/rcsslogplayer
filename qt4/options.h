@@ -105,6 +105,10 @@ private:
     double M_ball_size; //!< fixed ball radius
     double M_player_size; //!< fixed player radius
 
+    double M_grid_step;
+    bool M_show_grid;
+    bool M_show_grid_coord;
+
     //! private access for singleton
     Options();
 
@@ -204,7 +208,7 @@ public:
           return M_window_width;
       }
 
-    int windoHeight() const
+    int windowHeight() const
       {
           return M_window_height;
       }
@@ -303,6 +307,23 @@ public:
     double & playerSize() const
       {
           return M_player_size;
+      }
+
+
+    const
+    double & gridStep() const
+      {
+          return M_grid_step;
+      }
+
+    bool showGrid() const
+      {
+          return M_show_grid;
+      }
+
+    bool showGridCoord() const
+      {
+          return M_show_grid_coord;
       }
 
 };

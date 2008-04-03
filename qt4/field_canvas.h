@@ -73,13 +73,17 @@ private:
 
     //! 0: left, 1: middle, 2: right
     MouseState M_mouse_state[3];
-    QPen M_measure_pen;
-
 
     double M_field_scale; //!< scaling factor
     bool M_zoomed; //!< zoom flag
     QPoint M_field_center; //!< field center point on the screen
     QPointF M_focus_point; //!< the current focus point
+
+    QPen M_measure_line_pen;
+    QPen M_measure_mark_pen;
+    QPen M_measure_font_pen;
+    QPen M_measure_font_pen2;
+    QFont M_measure_font;
 
     // not used
     FieldCanvas( const FieldCanvas & );
@@ -138,6 +142,9 @@ public:
       }
 
 private:
+
+    void readSettings();
+    void writeSettings();
 
     void drawMouseMeasure( QPainter & painter );
 
