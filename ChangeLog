@@ -1,3 +1,20 @@
+2008-04-04  Hidehisa Akiyama  <akky@users.sourceforge.jp>
+
+	* configure.ac:
+	- fixed enable options.
+
+	* rcsslogplayer/handler.h:
+	* rcsslogplayer/parser.cpp:
+	* rcsslogplayer/parser.h:
+	* rcsslogplayer/types.h:
+	* classic/logplayer.cpp:
+	* tool/rcg2xml.cpp:
+	* tool/rcg3to4.cpp:
+	* tool/rcg4to3.cpp:
+	* tool/rcgsplit.cpp:
+	- changed parser loop policy.
+	- supported drawinfo parsing.
+
 2008-04-02  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 
 	* configure.ac:

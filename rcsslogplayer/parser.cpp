@@ -113,6 +113,7 @@ clean_string( std::string str )
     return str;
 }
 
+
 bool
 parse_param_line( const int n_line,
                   const std::string & line,
@@ -243,6 +244,8 @@ namespace rcg {
 
 Parser::Parser( Handler & handler )
     : M_handler( handler )
+    , M_header_parsed( false )
+    , M_line_count( 0 )
 {
 
 }
@@ -251,18 +254,33 @@ Parser::Parser( Handler & handler )
 bool
 Parser::parse( std::istream & is )
 {
-    if ( ! parseHeader( is ) )
+    // check stream status
+    if ( ! is.good() )
     {
-        return false;
+        return strmErr( is );
     }
+
+    // parse header
+
+    if ( ! M_header_parsed )
+    {
+        M_header_parsed = true;
+        if ( ! parseHeader( is ) )
+        {
+            return false;
+        }
+    }
+
+    // parse data
 
     if ( M_handler.getLogVersion() >= REC_VERSION_4 )
     {
-        return parseLines( is );
+        return parseLine( is );
     }
 
-    return parseLoop( is );
+    return parseData( is );
 }
+
 
 bool
 Parser::parseHeader( std::istream & is )
@@ -301,29 +319,9 @@ Parser::parseHeader( std::istream & is )
     return true;
 }
 
-bool
-Parser::parseLoop( std::istream & is )
-{
-    while ( is.good() )
-    {
-        if ( ! parseNext( is ) )
-        {
-            return false;
-        }
-    }
-
-    if ( is.eof() )
-    {
-        M_handler.handleEOF();
-        return true;
-    }
-
-    return false;
-}
-
 
 bool
-Parser::parseNext( std::istream & is )
+Parser::parseData( std::istream & is )
 {
     if ( M_handler.getLogVersion() == REC_OLD_VERSION )
     {
@@ -335,13 +333,14 @@ Parser::parseNext( std::istream & is )
     }
 }
 
+
 bool
 Parser::parseDispInfo( std::istream & is )
 {
     dispinfo_t disp;
     is.read( reinterpret_cast< char * >( &disp ), sizeof( dispinfo_t ) );
 
-    if ( ! is.good() )
+    if ( is.gcount() != sizeof( dispinfo_t ) )
     {
         return strmErr( is );
     }
@@ -352,35 +351,37 @@ Parser::parseDispInfo( std::istream & is )
     case NO_INFO:
         return true;
     case SHOW_MODE:
-        return parseShowInfo( is );
+        {
+            ShowInfoT show;
+            convert( disp.body.show, show );
+            M_handler.handleShowInfo( show );
+        }
+        return true;
     case MSG_MODE:
-        return parseMsgInfo( is );
-    case PM_MODE:
-        return parsePlayMode( is );
-    case TEAM_MODE:
-        return parseTeamInfo( is );
-    case PARAM_MODE:
-        return parseServerParams( is );
-    case PPARAM_MODE:
-        return parsePlayerParams( is );
-    case PT_MODE:
-        return parsePlayerType( is );
+        M_handler.handleMsgInfo( ntohs( disp.body.msg.board ),
+                                 disp.body.msg.message );
+        return true;
+    case DRAW_MODE:
+        return parseDrawInfo( is.tellg(), disp.body.draw );
+    case BLANK_MODE:
+        return true;
     default:
-        throw std::string( "Unknown mode\n" );
+        std::cerr << is.tellg() <<": Unknown mode " << mode
+                  << std::endl;
+        break;
     }
 
     return false;
 }
 
+
 bool
 Parser::parseMode( std::istream & is )
 {
-    std::streampos pos = is.tellg();
-
     Int16 mode;
-    is.read( reinterpret_cast< char * >( &mode ), sizeof( mode ) );
+    is.read( reinterpret_cast< char * >( &mode ), sizeof( Int16 ) );
 
-    if ( ! is.good() )
+    if ( is.gcount() != sizeof( Int16 ) )
     {
         return strmErr( is );
     }
@@ -392,22 +393,29 @@ Parser::parseMode( std::istream & is )
         return parseShowInfo( is );
     case MSG_MODE:
         return parseMsgInfo( is );
+    case DRAW_MODE:
+        return parseDrawInfo( is );
+    case BLANK_MODE:
+        return true;
     case PM_MODE:
         return parsePlayMode( is );
     case TEAM_MODE:
         return parseTeamInfo( is );
     case PARAM_MODE:
-        return parseServerParams( is );
+        return parseServerParam( is );
     case PPARAM_MODE:
-        return parsePlayerParams( is );
+        return parsePlayerParam( is );
     case PT_MODE:
         return parsePlayerType( is );
     default:
-        throw std::string( "Unknown mode\n" );
+        std::cerr << is.tellg() <<": Unknown mode " << ntohs( mode )
+                  << std::endl;
+        break;
     }
 
     return false;
 }
+
 
 bool
 Parser::parseShowInfo( std::istream & is )
@@ -419,7 +427,7 @@ Parser::parseShowInfo( std::istream & is )
         short_showinfo_t2 show;
         is.read( reinterpret_cast< char * >( &show ), sizeof( short_showinfo_t2 ) );
 
-        if ( ! is.good() )
+        if ( is.gcount() != sizeof( short_showinfo_t2 ) )
         {
             return strmErr( is );
         }
@@ -432,7 +440,7 @@ Parser::parseShowInfo( std::istream & is )
         showinfo_t show;
         is.read( reinterpret_cast< char * >( &show ), sizeof( showinfo_t ) );
 
-        if ( ! is.good() )
+        if ( is.gcount() != sizeof( showinfo_t ) )
         {
             return strmErr( is );
         }
@@ -444,13 +452,14 @@ Parser::parseShowInfo( std::istream & is )
     return true;
 }
 
+
 bool
 Parser::parseMsgInfo( std::istream & is )
 {
     Int16 board;
     is.read( reinterpret_cast< char * >( &board ), sizeof( Int16 ) );
 
-    if ( ! is.good() )
+    if ( is.gcount() != sizeof( Int16 ) )
     {
         return strmErr( is );
     }
@@ -458,7 +467,7 @@ Parser::parseMsgInfo( std::istream & is )
     Int16 len;
     is.read( reinterpret_cast< char * >( &len ), sizeof( Int16 ) );
 
-    if ( ! is.good() )
+    if ( is.gcount() != sizeof( Int16 ) )
     {
         return strmErr( is );
     }
@@ -467,7 +476,7 @@ Parser::parseMsgInfo( std::istream & is )
     char * msg = new char[len];
     is.read( msg, len );
 
-    if ( ! is.good() )
+    if ( is.gcount() != len )
     {
         delete [] msg;
         return strmErr( is );
@@ -488,13 +497,65 @@ Parser::parseMsgInfo( std::istream & is )
     return true;
 }
 
+
+bool
+Parser::parseDrawInfo( std::istream & is )
+{
+    drawinfo_t draw;
+    is.read( reinterpret_cast< char * >( &draw ), sizeof( drawinfo_t ) );
+
+    if ( is.gcount() != sizeof( drawinfo_t ) )
+    {
+        return strmErr( is );
+    }
+
+    return parseDrawInfo( is.tellg(), draw );
+}
+
+
+bool
+Parser::parseDrawInfo( const std::streampos pos,
+                       const drawinfo_t & draw )
+{
+    switch ( ntohs( draw.mode ) ) {
+    case DrawClear:
+        M_handler.handleDrawClear();
+        return true;
+    case DrawPoint:
+        M_handler.handleDrawPointInfo( PointInfoT( nstohf( draw.object.pinfo.x ),
+                                                   nstohf( draw.object.pinfo.y ),
+                                                   draw.object.pinfo.color ) );
+        return true;
+    case DrawCircle:
+        M_handler.handleDrawCircleInfo( CircleInfoT( nstohf( draw.object.cinfo.x ),
+                                                     nstohf( draw.object.cinfo.y ),
+                                                     nstohf( draw.object.cinfo.r ),
+                                                     draw.object.cinfo.color ) );
+        return true;
+    case DrawLine:
+        M_handler.handleDrawLineInfo( LineInfoT( nstohf( draw.object.linfo.x1 ),
+                                                 nstohf( draw.object.linfo.y1 ),
+                                                 nstohf( draw.object.linfo.x2 ),
+                                                 nstohf( draw.object.linfo.y2 ),
+                                                 draw.object.linfo.color ) );
+        return true;
+    default:
+        std::cerr << pos <<": Unknown draw mode " << ntohs( draw.mode )
+                  << std::endl;
+        return false;
+    }
+
+    return false;
+}
+
+
 bool
 Parser::parsePlayMode( std::istream & is )
 {
     char playmode;
     is.read( &playmode, sizeof( char ) );
 
-    if ( ! is.good() )
+    if ( is.gcount() != sizeof( char ) )
     {
         return strmErr( is );
     }
@@ -503,13 +564,14 @@ Parser::parsePlayMode( std::istream & is )
     return true;
 }
 
+
 bool
 Parser::parseTeamInfo( std::istream & is )
 {
     team_t teams[2];
     is.read( reinterpret_cast< char * >( teams ), sizeof( team_t ) * 2 );
 
-    if ( ! is.good() )
+    if ( is.gcount() != sizeof( team_t ) * 2 )
     {
         return strmErr( is );
     }
@@ -522,13 +584,14 @@ Parser::parseTeamInfo( std::istream & is )
     return true;
 }
 
+
 bool
-Parser::parseServerParams( std::istream & is )
+Parser::parseServerParam( std::istream & is )
 {
     server_params_t params;
-    is.read( reinterpret_cast< char * >( &params ), sizeof( params ) );
+    is.read( reinterpret_cast< char * >( &params ), sizeof( server_params_t ) );
 
-    if ( ! is.good() )
+    if ( is.gcount() != sizeof( server_params_t ) )
     {
         return strmErr( is );
     }
@@ -540,13 +603,14 @@ Parser::parseServerParams( std::istream & is )
     return true;
 }
 
+
 bool
-Parser::parsePlayerParams( std::istream & is )
+Parser::parsePlayerParam( std::istream & is )
 {
     player_params_t params;
-    is.read( reinterpret_cast< char * >( &params ), sizeof( params ) );
+    is.read( reinterpret_cast< char * >( &params ), sizeof( player_params_t ) );
 
-    if ( ! is.good() )
+    if ( is.gcount() != sizeof( player_params_t ) )
     {
         return strmErr( is );
     }
@@ -558,13 +622,14 @@ Parser::parsePlayerParams( std::istream & is )
     return true;
 }
 
+
 bool
 Parser::parsePlayerType( std::istream & is )
 {
     player_type_t type;
-    is.read( reinterpret_cast< char * >( &type ), sizeof( type ) );
+    is.read( reinterpret_cast< char * >( &type ), sizeof( player_type_t ) );
 
-    if ( ! is.good() )
+    if ( is.gcount() != sizeof( player_type_t ) )
     {
         return strmErr( is );
     }
@@ -576,13 +641,14 @@ Parser::parsePlayerType( std::istream & is )
     return true;
 }
 
+
 bool
 Parser::strmErr( std::istream & is )
 {
     if ( is.eof() )
     {
         M_handler.handleEOF();
-        return true;
+        return false;
     }
 
     return false;
@@ -590,63 +656,70 @@ Parser::strmErr( std::istream & is )
 
 
 bool
-Parser::parseLines( std::istream & is )
+Parser::parseLine( std::istream & is )
 {
-    int n_line = 0;
-
     std::string line;
-    line.reserve( 8192 );
 
-    while ( std::getline( is, line ) )
+    if ( std::getline( is, line ) )
     {
-        ++n_line;
-        if ( line.empty() ) continue;
+        ++M_line_count;
+        if ( line.empty() )
+        {
+            return true;
+        }
 
         if ( line.compare( 0, 6, "(show " ) == 0 )
         {
-            parseShowLine( n_line, line );
+            parseShowLine( M_line_count, line );
         }
         else if ( line.compare( 0, 6, "(draw " ) == 0 )
         {
-            parseDrawLine( n_line, line );
+            parseDrawLine( M_line_count, line );
         }
         else if ( line.compare( 0, 5, "(msg " ) == 0 )
         {
-            parseMsgLine( n_line, line );
+            parseMsgLine( M_line_count, line );
         }
         else if ( line.compare( 0, 10, "(playmode " ) == 0 )
         {
-            parsePlayModeLine( n_line, line );
+            parsePlayModeLine( M_line_count, line );
         }
         else if ( line.compare( 0, 6, "(team " ) == 0 )
         {
-            parseTeamLine( n_line, line );
+            parseTeamLine( M_line_count, line );
         }
         else if ( line.compare( 0, 13, "(player_type " ) == 0 )
         {
-            parsePlayerTypeLine( n_line, line );
+            parsePlayerTypeLine( M_line_count, line );
         }
         else if ( line.compare( 0, 14, "(server_param " ) == 0 )
         {
-            parseServerParamLine( n_line, line );
+            parseServerParamLine( M_line_count, line );
         }
         else if ( line.compare( 0, 14, "(player_param " ) == 0 )
         {
-            parsePlayerParamLine( n_line, line );
+            parsePlayerParamLine( M_line_count, line );
         }
         else
         {
-            std::cerr << n_line << ": error: "
+            std::cerr << M_line_count << ": error: "
                       << "Unknown info. " << "\"" << line << "\""
                       << std::endl;
         }
+
+        return true;
     }
 
-    M_handler.handleEOF();
+    if ( ! is.eof() )
+    {
+        std::cerr << M_line_count << ": error: "
+                  << "Failed to get line."
+                  << std::endl;
+    }
 
     return true;
-
 }
+
 
 bool
 Parser::parseShowLine( const int n_line,
@@ -805,6 +878,90 @@ bool
 Parser::parseDrawLine( const int n_line,
                        const std::string & line )
 {
+    // ( draw <time> (clear))
+    // ( draw <time> (point <x> <y> "<color>"))
+    // ( draw <time> (circle <x> <y> <radius> "<color>"))
+    // ( draw <time> (line <sx> <sy> <ex> <ey> "<color>"))
+
+    const char * buf = line.c_str();
+
+    int n_read = 0;
+
+    // parse time
+
+    int time = 0;
+    if ( std::sscanf( buf, " ( draw %d %n ",
+                      &time, &n_read ) != 1 )
+    {
+        std::cerr << n_line << ": error: "
+                  << "Illegal time info \"" << line << "\""
+                  << std::endl;
+        return false;
+    }
+    buf += n_read;
+
+    // parse object
+
+    if ( ! std::strncmp( buf, "(point ", 7 ) )
+    {
+        float x, y;
+        char col[64];
+        if ( std::sscanf( buf,
+                          " (point %f %f \"%63[^\"]\" ) ",
+                          &x, &y, col ) != 3 )
+        {
+            std::cerr << n_line << ": error: "
+                      << "Illegal draw point info \"" << line << "\""
+                      << std::endl;
+            return false;
+        }
+
+        M_handler.handleDrawPointInfo( PointInfoT( x, y, col ) );
+    }
+    else if ( ! std::strncmp( buf, "(circle ", 8 ) )
+    {
+        float x, y, r;
+        char col[64];
+        if ( std::sscanf( buf,
+                          " (circle %f %f %f \"%63[^\"]\" ) ",
+                          &x, &y, &r, col ) != 4 )
+        {
+            std::cerr << n_line << ": error: "
+                      << "Illegal draw circle info \"" << line << "\""
+                      << std::endl;
+            return false;
+        }
+
+        M_handler.handleDrawCircleInfo( CircleInfoT( x, y, r, col ) );
+    }
+    else if ( ! std::strncmp( buf, "(line ", 6 ) )
+    {
+        float x1, y1, x2, y2;
+        char col[64];
+
+        if ( std::sscanf( buf,
+                          " (line %f %f %f %f \"%63[^\"]\" ) ",
+                          &x1, &y1, &x2, &y2, col ) != 4 )
+        {
+            std::cerr << n_line << ": error: "
+                      << "Illegal draw line info \"" << line << "\""
+                      << std::endl;
+            return false;
+        }
+
+        M_handler.handleDrawLineInfo( LineInfoT( x1, y1, x2, y2, col ) );
+    }
+    else if ( ! std::strncmp( buf, "(clear)", 7 ) )
+    {
+        M_handler.handleDrawClear();
+    }
+    else
+    {
+        std::cerr << n_line << ": error: "
+                  << "Illegal draw info \"" << line << "\""
+                  << std::endl;
+        return false;
+    }
 
     return true;
 }
@@ -837,7 +994,7 @@ bool
 Parser::parsePlayModeLine( const int n_line,
                            const std::string & line )
 {
-    static const char * playmode_strings[] = PLAYMODE_STRINGS;
+    static const char * s_playmode_strings[] = PLAYMODE_STRINGS;
 
     int time = 0;
     char pm_string[32];
@@ -854,7 +1011,7 @@ Parser::parsePlayModeLine( const int n_line,
     PlayMode pm = PM_Null;
     for ( int n = 0; n < PM_MAX; ++n )
     {
-        if ( ! std::strcmp( playmode_strings[n], pm_string ) )
+        if ( ! std::strcmp( s_playmode_strings[n], pm_string ) )
         {
             pm = static_cast< PlayMode >( n );
             break;
@@ -906,14 +1063,13 @@ Parser::parsePlayerTypeLine( const int n_line,
 {
     PlayerTypeT param;
 
+    //
+    // prepare param map
+    //
     IntMap int_map;
     DoubleMap double_map;
     BoolMap bool_map;
     StringMap string_map;
-
-    //
-    // prepare param map
-    //
 
     int_map.insert( IntMap::value_type( "id", &param.id_ ) );
 
@@ -953,14 +1109,13 @@ Parser::parsePlayerParamLine( const int n_line,
 {
     PlayerParamT param;
 
+    //
+    // prepare param map
+    //
     IntMap int_map;
     DoubleMap double_map;
     BoolMap bool_map;
     StringMap string_map;
-
-    //
-    // prepare param map
-    //
 
     int_map.insert( IntMap::value_type( "player_types", &param.player_types_ ) );
     int_map.insert( IntMap::value_type( "subs_max", &param.subs_max_ ) );
@@ -1011,14 +1166,13 @@ Parser::parseServerParamLine( const int n_line,
 {
     ServerParamT param;
 
+    //
+    // prepare param map
+    //
     IntMap int_map;
     DoubleMap double_map;
     BoolMap bool_map;
     StringMap string_map;
-
-    //
-    // prepare param map
-    //
 
     double_map.insert( DoubleMap::value_type( "goal_width", &param.goal_width_ ) );
     double_map.insert( DoubleMap::value_type( "inertia_moment", &param.inertia_moment_ ) );
@@ -1224,8 +1378,6 @@ Parser::parseServerParamLine( const int n_line,
 
     return true;
 }
-
-
 
 }
 }

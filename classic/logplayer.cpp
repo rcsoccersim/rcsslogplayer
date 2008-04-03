@@ -390,7 +390,7 @@ Player::startMonitor( const std::string & command )
 
     if ( pid == 0 )
     {
-        //::sleep( 1 );
+        ::usleep( 500000 ); // 0.5 sec
         ::execlp( "/bin/sh", "sh", "-c", command.c_str(), (char *)NULL );
         std::cerr << PACKAGE << "-" << VERSION
                   << ": Error: Could not execute \"/bin/sh -c "
@@ -975,8 +975,17 @@ Player::openGameLog()
     }
 
     rcss::rcg::Parser parser( *this );
+    int count = 0;
+    while ( parser.parse( fin ) )
+    {
+        if ( ++count % 1000 == 0 )
+        {
+            std::fprintf( stdout, "parsing... %d\r", M_dispinfo_cache.size() );
+            std::fflush( stdout );
+        }
+    }
 
-    if ( ! parser.parse( fin ) )
+    if ( ! fin.eof() )
     {
         std::cerr << "Error reading log: " << std::endl;
         return false;

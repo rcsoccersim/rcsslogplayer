@@ -487,15 +487,14 @@ private:
           std::cout << "<Recovery>" << recovery << "</Recovery>\n";
       }
 
-    void
-    printCounts( short kick,
-                 short dash,
-                 short turn,
-                 short say,
-                 short tneck,
-                 short katch,
-                 short move,
-                 short chg_view )
+    void printCounts( UInt16 kick,
+                      UInt16 dash,
+                      UInt16 turn,
+                      UInt16 say,
+                      UInt16 tneck,
+                      UInt16 katch,
+                      UInt16 move,
+                      UInt16 chg_view )
       {
           std::cout << "<Count>\n";
           std::cout << "<Kick>" << kick << "</Kick>\n";
@@ -576,9 +575,9 @@ main()
     rcss::rcg::XMLWriter writer;
     rcss::rcg::Parser parser( writer );
 
-    if ( ! parser.parse( std::cin ) )
+    while ( parser.parse( std::cin ) )
     {
-        return 1;
+
     }
 
     return 0;

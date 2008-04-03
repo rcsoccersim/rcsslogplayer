@@ -49,6 +49,7 @@
 #include <vector>
 #include <fstream>
 #include <cmath>
+#include <cstdio>
 
 #ifdef HAVE_NETINET_IN_H
 #include <netinet/in.h>
@@ -102,6 +103,10 @@ public:
           return M_filepath;
       }
 
+    int currentTime() const
+      {
+          return M_time;
+      }
 private:
 
     virtual
@@ -324,7 +329,7 @@ RCGSplitter::printShowV4( const ShowInfoT & show )
     {
         const PlayerT & p = show.player_[i];
 
-        os << " (" << p.side_ << ' ' << p.unum_ << ')';
+        os << " ((" << p.side_ << ' ' << p.unum_ << ')';
         os << ' ' << p.type_;
         os << ' ' << std::hex << std::showbase << p.state_ << std::dec << std::noshowbase;
 
@@ -732,9 +737,15 @@ main( int argc, char ** argv )
 #endif
 
     rcss::rcg::Parser parser( splitter );
-    if ( ! parser.parse( fin ) )
+    int count = 0;
+    while ( parser.parse( fin ) )
     {
-        return 1;
+        if ( ++count % 500 == 0 )
+        {
+            std::fprintf( stdout, "parsing... %d\r",
+                          splitter.currentTime() );
+            std::fflush( stdout );
+        }
     }
 
     return 0;

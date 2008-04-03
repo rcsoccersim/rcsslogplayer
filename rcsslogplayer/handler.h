@@ -90,6 +90,26 @@ private:
           doHandleTeamInfo( team_l, team_r );
       }
 
+    void handleDrawClear()
+      {
+          doHandleDrawClear();
+      }
+
+    void handleDrawPointInfo( const PointInfoT & p )
+      {
+          doHandleDrawPointInfo( p );
+      }
+
+    void handleDrawCircleInfo( const CircleInfoT & c )
+      {
+          doHandleDrawCircleInfo( c );
+      }
+
+    void handleDrawLineInfo( const LineInfoT & l )
+      {
+          doHandleDrawLineInfo( l );
+      }
+
     void handleServerParam( const ServerParamT & param )
       {
           doHandleServerParam( param );
@@ -133,6 +153,22 @@ protected:
     virtual
     void doHandleTeamInfo( const TeamT &,
                            const TeamT & )
+      { }
+
+    virtual
+    void doHandleDrawClear()
+      { }
+
+    virtual
+    void doHandleDrawPointInfo( const PointInfoT & )
+      { }
+
+    virtual
+    void doHandleDrawCircleInfo( const CircleInfoT & )
+      { }
+
+    virtual
+    void doHandleDrawLineInfo( const LineInfoT & )
       { }
 
     virtual

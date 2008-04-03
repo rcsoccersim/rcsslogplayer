@@ -484,9 +484,9 @@ main( int argc, char ** argv )
     }
 
     rcss::rcg::Parser parser( converter );
-    if ( ! parser.parse( fin ) )
+    while ( parser.parse( fin ) )
     {
-        return 1;
+
     }
 
     return 0;

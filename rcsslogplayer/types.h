@@ -209,7 +209,8 @@ const int DEFAULT_REC_VERSION = REC_VERSION_4;
 
 /*!
   \enum DispInfoMode
-  \brief monitor data types. */
+  \brief display data types.
+*/
 enum DispInfoMode {
     NO_INFO = 0,
     SHOW_MODE = 1,
@@ -224,10 +225,21 @@ enum DispInfoMode {
 };
 
 /*!
-  \enum MsgInfoMode
-  \brief message data type id enumeration
+  \enum DrawMode
+  \brief draw data types
  */
-enum MsgInfoMode {
+enum DrawMode {
+    DrawClear = 0,
+    DrawPoint = 1,
+    DrawCircle = 2,
+    DrawLine = 3,
+};
+
+/*!
+  \enum MsgInfoMode
+  \brief message data types
+ */
+enum BoardType {
     MSG_BOARD = 1,
     LOG_BOARD = 2
 };
@@ -320,9 +332,9 @@ struct lineinfo_t {
 struct drawinfo_t {
     Int16 mode;
     union {
-        pointinfo_t		pinfo;
-        circleinfo_t	cinfo;
-        lineinfo_t		linfo;
+        pointinfo_t pinfo;
+        circleinfo_t cinfo;
+        lineinfo_t linfo;
     } object;
 };
 
@@ -333,9 +345,9 @@ struct drawinfo_t {
 struct dispinfo_t {
     Int16 mode;
     union {
-        showinfo_t	show;
+        showinfo_t show;
         msginfo_t	msg;
-        drawinfo_t	draw;
+        drawinfo_t draw;
     } body;
 };
 
@@ -845,6 +857,69 @@ struct DispInfoT {
     PlayMode pmode_;
     TeamT team_[2];
     ShowInfoT show_;
+};
+
+/*!
+  \struct PointInfoT
+  \brief point data for drawing
+*/
+struct PointInfoT {
+    float x_;
+    float y_;
+    std::string color_;
+
+    PointInfoT( const float x,
+                const float y,
+                const char * color )
+        : x_( x )
+        , y_( y )
+        , color_( color )
+      { }
+};
+
+/*!
+  \struct CircleInfoT
+  \brief circle data for drawing
+*/
+struct CircleInfoT {
+    float x_;
+    float y_;
+    float r_;
+    std::string color_;
+
+    CircleInfoT( const float x,
+                 const float y,
+                 const float r,
+                 const char * color )
+        : x_( x )
+        , y_( y )
+        , r_( r )
+        , color_( color )
+      { }
+};
+
+/*!
+  \struct LineInfoT
+  \brief line data for drawing
+*/
+struct LineInfoT {
+    float x1_;
+    float y1_;
+    float x2_;
+    float y2_;
+    std::string color_;
+
+    LineInfoT( const float x1,
+               const float y1,
+               const float x2,
+               const float y2,
+               const char * color )
+        : x1_( x1 )
+        , y1_( y1 )
+        , x2_( x1 )
+        , y2_( y1 )
+        , color_( color )
+      { }
 };
 
 /*!

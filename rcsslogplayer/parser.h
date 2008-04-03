@@ -9,7 +9,7 @@
  *Copyright:
 
  Copyright (C) The RoboCup Soccer Server Maintenance Group.
-               Hidehisa AKIYAMA
+ Hidehisa AKIYAMA
 
  This code is free software; you can redistribute it and/or
  modify it under the terms of the GNU Lesser General Public
@@ -52,8 +52,8 @@ private:
     //! reference to the data handler instance
     Handler & M_handler;
 
-    PlayMode M_playmode;
-    TeamT M_teams[2];
+    bool M_header_parsed; //!< flag to determin whether the header data is parsed or not
+    int M_line_count; //!< total number of parsed line. This variable is used only for v4+ log.
 
     // not used
     Parser();
@@ -89,26 +89,28 @@ private:
     // version 3 or older
     //
 
-    bool parseLoop( std::istream & is );
+    bool parseData( std::istream & is );
 
-    bool parseNext( std::istream & is );
     bool parseDispInfo( std::istream & is );
     bool parseMode( std::istream & is );
     bool parseItem( std::istream & is,
                     const Int16 mode );
     bool parseShowInfo( std::istream & is );
     bool parseMsgInfo( std::istream & is );
+    bool parseDrawInfo( std::istream & is );
+    bool parseDrawInfo( const std::streampos pos,
+                        const drawinfo_t & draw );
     bool parsePlayMode( std::istream & is );
     bool parseTeamInfo( std::istream & is );
     bool parsePlayerType( std::istream & is );
-    bool parsePlayerParams( std::istream & is );
-		bool parseServerParams( std::istream & is );
+    bool parsePlayerParam( std::istream & is );
+		bool parseServerParam( std::istream & is );
 
     //
     // version 4
     //
 
-    bool parseLines( std::istream & is );
+    bool parseLine( std::istream & is );
 
     bool parseShowLine( const int n_line,
                         const std::string & line );

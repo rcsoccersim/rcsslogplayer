@@ -384,8 +384,12 @@ RCG4to3::doHandlePlayerType( const PlayerTypeT & param )
         return;
     }
 
+    Int16 mode = htons( PT_MODE );
     player_type_t p;
     convert( param, p );
+
+    M_fout.write( reinterpret_cast< const char * >( &mode ),
+                  sizeof( Int16 ) );
     M_fout.write( reinterpret_cast< const char * >( &p ),
                   sizeof( player_type_t ) );
 }
@@ -399,8 +403,12 @@ RCG4to3::doHandlePlayerParam( const PlayerParamT & param )
         return;
     }
 
+    Int16 mode = htons( PPARAM_MODE );
     player_params_t p;
     convert( param, p );
+
+    M_fout.write( reinterpret_cast< const char * >( &mode ),
+                  sizeof( Int16 ) );
     M_fout.write( reinterpret_cast< const char * >( &p ),
                   sizeof( player_params_t ) );
 }
@@ -414,8 +422,12 @@ RCG4to3::doHandleServerParam( const ServerParamT & param )
         return;
     }
 
+    Int16 mode = htons( PARAM_MODE );
     server_params_t p;
     convert( param, p );
+
+    M_fout.write( reinterpret_cast< const char * >( &mode ),
+                  sizeof( Int16 ) );
     M_fout.write( reinterpret_cast< const char * >( &p ),
                   sizeof( server_params_t ) );
 }
@@ -450,9 +462,9 @@ main( int argc, char ** argv )
     }
 
     rcss::rcg::Parser parser( converter );
-    if ( ! parser.parse( fin ) )
+    while ( parser.parse( fin ) )
     {
-        return 1;
+
     }
 
     return 0;

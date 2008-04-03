@@ -93,7 +93,7 @@ AC_CHECK_LIB([rcssgz], [main],
 AC_ARG_ENABLE(qt4,
               AC_HELP_STRING([--enable-qt4],
                              [use Qt4 GUI tool kit (default yes)]))
-if test "x$enableval" != "xno"; then
+if test "x$enable_qt4" != "xno"; then
   AC_MSG_NOTICE(enabled Qt4)
 
   AX_QT4(4.3.0)
@@ -113,7 +113,7 @@ fi
 AC_ARG_ENABLE(classic,
               AC_HELP_STRING([--enable-classic],
                              [build classic logplayer (default yes)]))
-if test "x$enableval" != "xno"; then
+if test "x$enable_classic" != "xno"; then
   AC_MSG_NOTICE(enabled classic logplayer)
 
   AC_SUBST(CLASSIC_CPPFLAGS)
