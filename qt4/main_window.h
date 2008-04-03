@@ -34,8 +34,9 @@
 #define RCSSLOGPLAYER_MAIN_WINDOW_H
 
 #include <QMainWindow>
+#include <QString>
 
-//#include "main_data.h"
+#include "main_data.h"
 
 #include <boost/shared_ptr.hpp>
 
@@ -47,8 +48,8 @@ class QDropEvent;
 class QLabel;
 class QPoint;
 class QResizeEvent;
-class QString;
 
+class ConfigDialog;
 class DetailDialog;
 class FieldCanvas;
 class LogPlayer;
@@ -64,11 +65,15 @@ class MainWindow
 
 private:
 
-    //MainData M_main_data;
+    MainData M_main_data;
+
+    QString M_window_style;
+    QString M_game_log_path; //!< file path to the last opened game log
 
     FieldCanvas * M_field_canvas;
     //LogPlayer * M_log_player;
     //LogPlayerToolBar * M_log_player_tool_bar;
+    //ConfigDialog * M_config_dialog;
 
     QLabel * M_position_label;
 
@@ -82,22 +87,21 @@ private:
 
     // monitor actions
     QAction * M_kick_off_act;
-    QAction * M_set_live_mode_act;;
-    QAction * M_connect_monitor_act;;
-    QAction * M_connect_monitor_to_act;;
-    QAction * M_disconnect_monitor_act;;
+    QAction * M_set_live_mode_act;
+    QAction * M_connect_monitor_act;
+    QAction * M_connect_monitor_to_act;
+    QAction * M_disconnect_monitor_act;
+    QAction * M_toggle_drag_move_mode_act;
 
     // view actions
-    //QAction * M_toggle_menu_bar_act;
+    QAction * M_toggle_menu_bar_act;
     QAction * M_toggle_tool_bar_act;
     QAction * M_toggle_status_bar_act;
     QAction * M_full_screen_act;
     QAction * M_show_player_type_dialog_act;
     QAction * M_show_detail_dialog_act;
-    //QActionGroup * M_style_act_group;
-    //QAction * M_show_color_setting_dialog_act;
-    //QAction * M_show_font_setting_dialog_act;
-    //QAction * M_show_view_config_dialog_act;
+    QActionGroup * M_style_act_group;
+    QAction * M_show_config_dialog_act;
 
     // help actions
     QAction * M_about_act;
@@ -117,27 +121,25 @@ public:
 private:
 
     void readSettings();
-    void saveSettings();
+    void writeSettings();
 
     void createActions();
     void createActionsFile();
     void createActionsMonitor();
     void createActionsView();
-    void createActionsTool();
     void createActionsHelp();
 
     void createMenus();
     void createMenuFile();
     void createMenuMonitor();
     void createMenuView();
-    void createMenuTool();
     void createMenuHelp();
 
     void createToolBars();
     void createStatusBar();
 
     void createFieldCanvas();
-    //void createViewConfigDialog();
+    void createConfigDialog();
 
 protected:
 
@@ -158,8 +160,7 @@ private slots:
 
     // file menu actions slots
     void openRCG();
-    //void saveRCG();
-    // QWidget::close() is used as a quit action's slot.
+    // QWidget::close() can be used as the slot for a quit action.
 
     // monitor menu actions slots
     void kickOff();
@@ -176,10 +177,7 @@ private slots:
     void showPlayerTypeDialog();
     void showDetailDialog();
     void changeStyle( bool checked );
-    void showColorSettingDialog();
-    void showFontSettingDialog();
-    void showMonitorMoveDialog();
-    void showViewConfigDialog();
+    void showConfigDialog();
 
     // tool menu actions slots
     void showDebugMessageWindow();

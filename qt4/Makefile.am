@@ -10,6 +10,7 @@ bin_PROGRAMS = $(BUILD_PROGS)
 #bin_SCRRIPTS = $(BUILD_SCRPTS)
 
 rcsslogplayer_SOURCES = \
+	config_dialog.cpp \
 	disp_holder.cpp \
 	field_canvas.cpp \
 	field_painter.cpp \
@@ -19,10 +20,12 @@ rcsslogplayer_SOURCES = \
 	options.cpp
 
 nodist_rcsslogplayer_SOURCES = \
+	moc_config_dialog.cpp \
 	moc_field_canvas.cpp \
 	moc_main_window.cpp
 
 noinst_HEADERS = \
+	config_dialog.h \
 	disp_holder.h \
 	field_canvas.h \
 	field_painter.h \

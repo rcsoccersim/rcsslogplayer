@@ -7,6 +7,7 @@ libtool:	$(LIBTOOL_DEPS)
 SUBDIRS = rcsslogplayer tool classic qt4 .
 
 EXTRA_DIST = \
+	icons/rcss.xpm\
 	icons/ff.xpm\
 	icons/play.xpm \
 	icons/plus.xpm \

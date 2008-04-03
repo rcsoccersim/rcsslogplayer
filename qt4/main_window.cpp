@@ -44,7 +44,7 @@
 //#include "font_setting_dialog.h"
 //#include "monitor_move_dialog.h"
 //#include "player_type_dialog.h"
-//#include "view_config_dialog.h"
+#include "config_dialog.h"
 #include "field_canvas.h"
 //#include "monitor_client.h"
 //#include "log_player.h"
@@ -68,9 +68,11 @@
 
  */
 MainWindow::MainWindow()
-//:M_log_player( new LogPlayer( M_main_data, this ) )
-//, M_detail_dialog( static_cast< DetailDialog * >( 0 ) )
-//, M_player_type_dialog( static_cast< PlayerTypeDialog * >( 0 ) )
+    : M_window_style( "plastique" )
+    , M_game_log_path()
+    , M_log_player( new LogPlayer( M_main_data, this ) )
+    , M_detail_dialog( static_cast< DetailDialog * >( 0 ) )
+    , M_player_type_dialog( static_cast< PlayerTypeDialog * >( 0 ) )
 //, M_monitor_client( static_cast< MonitorClient * >( 0 ) )
 {
     readSettings();
@@ -82,7 +84,7 @@ MainWindow::MainWindow()
     // central widget
     createFieldCanvas();
     // control dialogs
-    //    createViewConfigDialog();
+    createConfigDialog();
 
     //     connect( M_log_player, SIGNAL( updated() ),
     //              this, SIGNAL( viewUpdated() ) );
@@ -133,7 +135,7 @@ MainWindow::~MainWindow()
 {
     //std::cerr << "delete MainWindow" << std::endl;
 
-    saveSettings();
+    writeSettings();
 }
 
 /*-------------------------------------------------------------------*/
@@ -173,24 +175,18 @@ MainWindow::init()
         this->showMaximized();
     }
 
-    if ( QApplication::setStyle( "plastique" ) )
+    if ( QApplication::setStyle( M_window_style ) ) // no style found
     {
         Q_FOREACH( QAction * action, M_style_act_group->actions() )
         {
             if ( action->data().toString().toLower()
                  == QApplication::style()->objectName().toLower() )
             {
+                M_window_style = QApplication::style()->objectName().toLower();
                 action->setChecked( true );
                 break;
             }
         }
-    }
-
-    if ( Options::instance().autoImageSave() )
-    {
-        QTimer::singleShot( 500,
-                            this, SLOT( saveImageAndQuit() ) );
-        this->setEnabled( false );
     }
 }
 
@@ -201,34 +197,15 @@ MainWindow::init()
 void
 MainWindow::readSettings()
 {
-    QSettings settings( QDir::homePath() + "/.soccerwindow2-qt4",
+    QSettings settings( QDir::homePath() + "/.rcsslogplayer",
                         QSettings::IniFormat );
-    //QSettings settings( QSettings::IniFormat,
-    //                    QSettings::UserScope,
-    //                    PACKAGE_NAME );
-    //QSettings settings( QSettings::NativeFormat,
-    //                    QSettings::UserScope,
-    //                    "rctools",
-    //                    PACKAGE_NAME );
 
+    settings.beginGroup( "Main" );
 
-    settings.beginGroup( "Options" );
+    QVariant val;
 
-    if ( Options::instance().gameLogDir().empty() )
-    {
-        Options::instance()
-            .setGameLogDir( settings.value( "gameLogDir", "" )
-                            .toString()
-                            .toStdString() );
-    }
-
-    if ( Options::instance().debugLogDir().empty() )
-    {
-        Options::instance()
-            .setDebugLogDir( settings.value( "debugLogDir", "" )
-                             .toString()
-                             .toStdString() );
-    }
+    M_window_style = settings.value( "window_style", "plastique" ).toString();
+    M_game_log_path = settings.value( "game_log_path", "" ).toString();
 
     settings.endGroup();
 }
@@ -238,22 +215,15 @@ MainWindow::readSettings()
 
  */
 void
-MainWindow::saveSettings()
+MainWindow::writeSettings()
 {
-    QSettings settings( QDir::homePath() + "/.soccerwindow2-qt4",
+    QSettings settings( QDir::homePath() + "/.rcsslogplayer",
                         QSettings::IniFormat );
-    //QSettings settings( QSettings::IniFormat,
-    //                    QSettings::UserScope,
-    //                    PACKAGE_NAME );
-    //QSettings settings( QSettings::NativeFormat,
-    //                    QSettings::UserScope,
-    //                    "rctools",
-    //                    PACKAGE_NAME );
 
-    settings.beginGroup( "Options" );
+    settings.beginGroup( "Main" );
 
-    settings.setValue( "gameLogDir", Options::instance().gameLogDir().c_str() );
-    settings.setValue( "debugLogDir", Options::instance().debugLogDir().c_str() );
+    settings.setValue( "window_style", M_window_style );
+    settings.setValue( "game_log_path", M_game_log_path );
 
     settings.endGroup();
 }
@@ -268,7 +238,6 @@ MainWindow::createActions()
     createActionsFile();
     createActionsMonitor();
     createActionsView();
-    createActionsTool();
     createActionsHelp();
 
 }
@@ -280,7 +249,7 @@ MainWindow::createActions()
 void
 MainWindow::createActionsFile()
 {
-    M_open_act = new QAction( QIcon( QPixmap( open_rcg_xpm ) ),
+    M_open_act = new QAction( QIcon( QPixmap( open_xpm ) ),
                               tr( "&Open rcg file..." ), this );
 #ifdef Q_WS_MAC
     M_open_act->setShortcut( tr( "Meta+O" ) );
@@ -290,28 +259,6 @@ MainWindow::createActionsFile()
     M_open_act->setStatusTip( tr( "Open RoboCup Game Log file" ) );
     connect( M_open_act, SIGNAL( triggered() ), this, SLOT( openRCG() ) );
     this->addAction( M_open_act );
-    //
-    M_save_rcg_act = new QAction( QIcon( QPixmap( save_xpm ) ),
-                                  tr( "Save rcg file as..." ), this );
-    M_save_rcg_act->setStatusTip( tr( "Save RoboCup Game Log file" ) );
-    connect( M_save_rcg_act, SIGNAL( triggered() ), this, SLOT( saveRCG() ) );
-    this->addAction( M_save_rcg_act );
-    //
-    M_open_debug_view_act = new QAction( QIcon( QPixmap( open_xpm ) )
-                                         ,tr( "Open debug view" ), this );
-    M_open_debug_view_act
-        ->setStatusTip( tr( "Open the directory where debug view logs exist" ) );
-    connect( M_open_debug_view_act, SIGNAL( triggered() ),
-             this, SLOT( openDebugView() ) );
-    this->addAction( M_open_debug_view_act );
-    //
-    M_save_debug_view_act = new QAction( QIcon( QPixmap( save_xpm ) ),
-                                         tr( "Save debug view" ), this );
-    M_save_debug_view_act
-        ->setStatusTip( tr( "Save debug view logs to the directory..." ) );
-    connect( M_save_debug_view_act, SIGNAL( triggered() ),
-             this, SLOT( saveDebugView() ) );
-    this->addAction( M_save_debug_view_act );
     //
     M_exit_act = new QAction( tr( "&Quit" ), this );
 #ifdef Q_WS_MAC
@@ -332,18 +279,15 @@ void
 MainWindow::createActionsMonitor()
 {
     M_kick_off_act = new QAction( tr( "&KickOff" ), this );
-#ifdef Q_WS_MAC
-    M_kick_off_act->setShortcut( tr( "Meta+K" ) );
-#else
-    M_kick_off_act->setShortcut( tr( "Ctrl+K" ) );
-#endif
+    M_kick_off_act->setShortcut( Qt::Key_S );
     M_kick_off_act->setStatusTip( tr( "Start the game" ) );
     M_kick_off_act->setEnabled( false );
     connect( M_kick_off_act, SIGNAL( triggered() ), this, SLOT( kickOff() ) );
     this->addAction( M_kick_off_act );
     //
-    M_set_live_mode_act = new QAction( QIcon( QPixmap( logplayer_live_mode_xpm ) ),
-                                       tr( "&Live Mode" ), this );
+    M_set_live_mode_act = new QAction( //QIcon( QPixmap( logplayer_live_mode_xpm ) ),
+                                       tr( "&Live Mode" ),
+                                       this );
 #ifdef Q_WS_MAC
     M_set_live_mode_act->setShortcut( tr( "Meta+L" ) );
 #else
@@ -356,11 +300,7 @@ MainWindow::createActionsMonitor()
     this->addAction( M_set_live_mode_act );
     //
     M_connect_monitor_act = new QAction( tr( "&Connect" ), this );
-#ifdef Q_WS_MAC
-    M_connect_monitor_act->setShortcut( tr( "Meta+C" ) );
-#else
-    M_connect_monitor_act->setShortcut( tr( "Ctrl+C" ) );
-#endif
+    M_connect_monitor_act->setShortcut( Qt::Key_C );
     M_connect_monitor_act
         ->setStatusTip( "Connect to the rcssserver on localhost" );
     M_connect_monitor_act->setEnabled( true );
@@ -383,22 +323,7 @@ MainWindow::createActionsMonitor()
              this, SLOT( disconnectMonitor() ) );
     this->addAction( M_disconnect_monitor_act );
     //
-#ifndef Q_WS_WIN
-    M_kill_server_act = new QAction( tr( "&Kill server" ), this );
-    M_kill_server_act->setStatusTip( tr( "Kill the rcssserver process" ) );
-    M_kill_server_act->setEnabled( false );
-    connect( M_kill_server_act, SIGNAL( triggered() ),
-             this, SLOT( killServer() ) );
-    this->addAction( M_kill_server_act );
-    //
-    M_restart_server_act = new QAction( tr( "(Re)&start server" ), this );
-    M_restart_server_act->setStatusTip( tr( "(Re)start rcssserver" ) );
-    connect( M_restart_server_act, SIGNAL( triggered() ),
-             this, SLOT( restartServer() ) );
-    this->addAction( M_restart_server_act );
-#endif
-    //
-    M_toggle_drag_move_mode_act = new QAction( QIcon( QPixmap( monitor_move_player_xpm ) ),
+    M_toggle_drag_move_mode_act = new QAction( //QIcon( QPixmap( monitor_move_player_xpm ) ),
                                                tr( "Drag Move Mode." ),
                                                this );
     M_toggle_drag_move_mode_act->setStatusTip( tr( "Toggle drag move mode." ) );
@@ -408,26 +333,6 @@ MainWindow::createActionsMonitor()
     connect( M_toggle_drag_move_mode_act, SIGNAL( toggled( bool ) ),
              this, SLOT( toggleDragMoveMode( bool ) ) );
     this->addAction( M_toggle_drag_move_mode_act );
-    //
-    M_show_monitor_move_dialog_act = new QAction( tr( "Move Dialog" ), this );
-    M_show_monitor_move_dialog_act->setStatusTip( tr( "Show player move dialog" ) );
-    //M_show_monitor_move_dialog_act->setEnabled( false );
-    connect( M_show_monitor_move_dialog_act, SIGNAL( triggered() ),
-             this, SLOT( showMonitorMoveDialog() ) );
-    this->addAction( M_show_monitor_move_dialog_act );
-    //
-#ifndef Q_WS_WIN
-    M_show_launcher_dialog_act = new QAction( tr( "Launcher Dialog" ), this );
-#ifdef Q_WS_MAC
-    M_show_launcher_dialog_act->setShortcut( tr( "Meta+X" ) );
-#else
-    M_show_launcher_dialog_act->setShortcut( tr( "Ctrl+X" ) );
-#endif
-    M_show_launcher_dialog_act->setStatusTip( tr( "Show launcher dialog" ) );
-    connect( M_show_launcher_dialog_act, SIGNAL( triggered() ),
-             this, SLOT( showLauncherDialog() ) );
-    this->addAction( M_show_launcher_dialog_act );
-#endif
 }
 
 /*-------------------------------------------------------------------*/
@@ -516,76 +421,16 @@ MainWindow::createActionsView()
                  this, SLOT( changeStyle( bool ) ) );
     }
     //
-    M_show_color_setting_dialog_act = new QAction( tr( "&Color Settings" ),
-                                                   this );
-    M_show_color_setting_dialog_act
-        ->setStatusTip( tr( "Show color setting dialog" ) );
-    connect( M_show_color_setting_dialog_act, SIGNAL( triggered() ),
-             this, SLOT( showColorSettingDialog() ) );
-    this->addAction( M_show_color_setting_dialog_act );
-    //
-    M_show_font_setting_dialog_act = new QAction( tr( "&Font Settings" ), this );
-    M_show_font_setting_dialog_act
-        ->setStatusTip( tr( "Show font setting dialog" ) );
-    connect( M_show_font_setting_dialog_act, SIGNAL( triggered() ),
-             this, SLOT( showFontSettingDialog() ) );
-    this->addAction( M_show_font_setting_dialog_act );
-    //
-    M_show_view_config_dialog_act = new QAction( tr( "&View Preference" ), this );
+    M_show_config_dialog_act = new QAction( tr( "&Preference" ), this );
 #ifdef Q_WS_MAC
-    M_show_view_config_dialog_act->setShortcut( tr( "Meta+V" ) );
+    M_show_config_dialog_act->setShortcut( tr( "Meta+P" ) );
 #else
-    M_show_view_config_dialog_act->setShortcut( tr( "Ctrl+V" ) );
+    M_show_config_dialog_act->setShortcut( tr( "Ctrl+P" ) );
 #endif
-    M_show_view_config_dialog_act
-        ->setStatusTip( tr( "Show view preference dialog" ) );
-    connect( M_show_view_config_dialog_act, SIGNAL( triggered() ),
-             this, SLOT( showViewConfigDialog() ) );
-    this->addAction( M_show_view_config_dialog_act );
-}
-
-/*-------------------------------------------------------------------*/
-/*!
-
- */
-void
-MainWindow::createActionsTool()
-{
-    M_show_debug_message_window_act = new QAction( tr( "Debug &Message" ), this );
-#ifdef Q_WS_MAC
-    M_show_debug_message_window_act->setShortcut( tr( "Meta+D" ) );
-#else
-    M_show_debug_message_window_act->setShortcut( tr( "Ctrl+D" ) );
-#endif
-    M_show_debug_message_window_act
-        ->setStatusTip( tr( "Show debug message window" ) );
-    connect( M_show_debug_message_window_act, SIGNAL( triggered() ),
-             this, SLOT( showDebugMessageWindow() ) );
-    this->addAction( M_show_debug_message_window_act );
-    //
-    M_toggle_debug_server_act = new QAction( QIcon( QPixmap( debug_server_switch_xpm ) ),
-                                             tr( "Start/Stop the debug server." ),
-                                             this );
-#ifdef Q_WS_MAC
-    M_toggle_debug_server_act->setShortcut( tr( "Meta+S" ) );
-#else
-    M_toggle_debug_server_act->setShortcut( tr( "Ctrl+S" ) );
-#endif
-    M_toggle_debug_server_act
-        ->setStatusTip( tr( "Start/Stop the debug server." ) );
-    M_toggle_debug_server_act->setEnabled( false );
-    M_toggle_debug_server_act->setCheckable( true );
-    M_toggle_debug_server_act->setChecked( false );
-    connect( M_toggle_debug_server_act, SIGNAL( toggled( bool ) ),
-             this, SLOT( toggleDebugServer( bool ) ) );
-    this->addAction( M_toggle_debug_server_act );
-    //
-    M_show_image_save_dialog_act = new QAction( tr( "Save &Image" ), this );
-    M_show_image_save_dialog_act
-        ->setStatusTip( tr( "Save game log data as image files" ) );
-    connect( M_show_image_save_dialog_act, SIGNAL( triggered() ),
-             this, SLOT( showImageSaveDialog() ) );
-    this->addAction( M_show_image_save_dialog_act );
+    M_show_config_dialog_act->setStatusTip( tr( "Show preference dialog" ) );
+    connect( M_show_config_dialog_act, SIGNAL( triggered() ),
+             this, SLOT( showConfigDialog() ) );
+    this->addAction( M_show_config_dialog_act );
 }
 
 /*-------------------------------------------------------------------*/
@@ -595,7 +440,7 @@ MainWindow::createActionsTool()
 void
 MainWindow::createActionsHelp()
 {
-    M_about_act = new QAction( QIcon( QPixmap( soccerwindow2_nostr_xpm ) ),
+    M_about_act = new QAction( QIcon( QPixmap( rcss_xpm ) ),
                                tr( "&About" ), this );
     M_about_act->setStatusTip( tr( "Show the about dialog." ) );
     connect( M_about_act, SIGNAL( triggered() ), this, SLOT( about() ) );
@@ -612,7 +457,6 @@ MainWindow::createMenus()
     createMenuFile();
     createMenuMonitor();
     createMenuView();
-    createMenuTool();
     createMenuHelp();
 }
 
@@ -626,11 +470,6 @@ MainWindow::createMenuFile()
     QMenu * menu = menuBar()->addMenu( tr( "&File" ) );
 
     menu->addAction( M_open_act );
-    menu->addAction( M_save_rcg_act );
-
-    menu->addSeparator();
-    menu->addAction( M_open_debug_view_act );
-    menu->addAction( M_save_debug_view_act );
 
     menu->addSeparator();
     menu->addAction( M_exit_act );
@@ -653,19 +492,8 @@ MainWindow::createMenuMonitor()
     menu->addAction( M_connect_monitor_to_act );
     menu->addAction( M_disconnect_monitor_act );
 
-#ifndef Q_WS_WIN
-    menu->addSeparator();
-    menu->addAction( M_kill_server_act );
-    menu->addAction( M_restart_server_act );
-#endif
     menu->addSeparator();
     menu->addAction( M_toggle_drag_move_mode_act );
-    menu->addAction( M_show_monitor_move_dialog_act );
-
-#ifndef Q_WS_WIN
-    menu->addSeparator();
-    menu->addAction( M_show_launcher_dialog_act );
-#endif
 }
 
 /*-------------------------------------------------------------------*/
@@ -695,28 +523,9 @@ MainWindow::createMenuView()
             submenu->addAction( action );
         }
     }
-    menu->addAction( M_show_color_setting_dialog_act );
-    menu->addAction( M_show_font_setting_dialog_act );
-    menu->addAction( M_show_view_config_dialog_act );
+    menu->addAction( M_show_config_dialog_act );
 }
 
-/*-------------------------------------------------------------------*/
-/*!
-
- */
-void
-MainWindow::createMenuTool()
-{
-    QMenu * menu = menuBar()->addMenu( tr( "&Tool" ) );
-    menu->addAction( M_show_debug_message_window_act );
-
-    menu->addSeparator();
-    menu->addAction( M_toggle_debug_server_act );
-
-    menu->addSeparator();
-    menu->addAction( M_show_image_save_dialog_act );
-
-}
 /*-------------------------------------------------------------------*/
 /*!
 
@@ -872,35 +681,30 @@ MainWindow::createFieldCanvas()
 /*!
 
  */
-#if 0
 void
-MainWindow::createViewConfigDialog()
+MainWindow::createConfigDialog()
 {
-    if ( M_view_config_dialog )
+    if ( M_config_dialog )
     {
         return;
     }
 
-    M_view_config_dialog
-        = new ViewConfigDialog( this,
-                                M_main_data,
-                                M_main_data.getViewConfig() );
+    M_config_dialog = new ConfigDialog( this, M_main_data );
 
-    //M_view_config_dialog->setParent( this, Qt::Dialog );
-    M_view_config_dialog->hide();
+    M_config_dialog->hide();
 
-    connect( M_view_config_dialog, SIGNAL( configured() ),
+    connect( M_config_dialog, SIGNAL( configured() ),
              this, SIGNAL( viewUpdated() ) );
 
-    connect( M_view_config_dialog, SIGNAL( canvasResized( const QSize & ) ),
+    connect( M_config_dialog, SIGNAL( canvasResized( const QSize & ) ),
              this, SLOT( resizeCanvas( const QSize & ) ) );
 
     connect( M_field_canvas, SIGNAL( focusChanged( const QPoint & ) ),
-             M_view_config_dialog, SLOT( setFocusPoint( const QPoint & ) ) );
+             M_config_dialog, SLOT( setFocusPoint( const QPoint & ) ) );
 
-    connect( M_view_config_dialog, SIGNAL( configured() ),
+    connect( M_config_dialog, SIGNAL( configured() ),
              M_field_canvas, SLOT( setRedrawAllFlag()  ) );
-
+#if 0
     // register short cut keys
     {
         // z
@@ -908,7 +712,7 @@ MainWindow::createViewConfigDialog()
         act->setShortcut( Qt::Key_Z );
         this->addAction( act );
         connect( act, SIGNAL( triggered() ),
-                 M_view_config_dialog, SLOT( zoomIn() ) );
+                 M_config_dialog, SLOT( zoomIn() ) );
     }
     {
         // x
@@ -916,7 +720,7 @@ MainWindow::createViewConfigDialog()
         act->setShortcut( Qt::Key_X );
         this->addAction( act );
         connect( act, SIGNAL( triggered() ),
-                 M_view_config_dialog, SLOT( zoomOut() ) );
+                 M_config_dialog, SLOT( zoomOut() ) );
     }
     {
         // Ctrl + z
@@ -928,7 +732,7 @@ MainWindow::createViewConfigDialog()
 #endif
         this->addAction( act );
         connect( act, SIGNAL( triggered() ),
-                 M_view_config_dialog, SLOT( zoomOut() ) );
+                 M_config_dialog, SLOT( zoomOut() ) );
     }
     {
         // i
@@ -936,7 +740,7 @@ MainWindow::createViewConfigDialog()
         act->setShortcut( Qt::Key_I );
         this->addAction( act );
         connect( act, SIGNAL( triggered() ),
-                 M_view_config_dialog, SLOT( unzoom() ) );
+                 M_config_dialog, SLOT( unzoom() ) );
     }
     {
         // e
@@ -944,33 +748,7 @@ MainWindow::createViewConfigDialog()
         act->setShortcut( Qt::Key_E );
         this->addAction( act );
         connect( act, SIGNAL( triggered() ),
-                 M_view_config_dialog, SLOT( toggleEnlarge() ) );
-    }
-
-    // reverse mode
-    {
-        // Ctrl + r
-        QAction * act = new QAction( tr( "Reverse Side" ), this );
-#ifdef Q_WS_MAC
-        act->setShortcut( Qt::META + Qt::Key_R );
-#else
-        act->setShortcut( Qt::CTRL + Qt::Key_R );
-#endif
-        this->addAction( act );
-        connect( act, SIGNAL( triggered() ),
-                 M_view_config_dialog, SLOT( toggleReverseSide() ) );
-    }
-    {
-        // Ctrl + Shift + r
-        QAction * act = new QAction( tr( "Player Reverse Draw" ), this );
-#ifdef Q_WS_MAC
-        act->setShortcut( Qt::META + Qt::SHIFT + Qt::Key_R );
-#else
-        act->setShortcut( Qt::CTRL + Qt::SHIFT + Qt::Key_R );
-#endif
-        this->addAction( act );
-        connect( act, SIGNAL( triggered() ),
-                 M_view_config_dialog, SLOT( togglePlayerReverseDraw() ) );
+                 M_config_dialog, SLOT( toggleEnlarge() ) );
     }
 
     // field style
@@ -1174,8 +952,8 @@ MainWindow::createViewConfigDialog()
         connect( act, SIGNAL( triggered() ),
                  M_view_config_dialog, SLOT( setUnselect() ) );
     }
-}
 #endif
+}
 
 /*-------------------------------------------------------------------*/
 /*!
@@ -1199,10 +977,10 @@ MainWindow::resizeEvent( QResizeEvent * event )
 {
     event->accept();
 
-    if ( M_view_config_dialog
-         && M_view_config_dialog->isVisible() )
+    if ( M_config_dialog
+         && M_config_dialog->isVisible() )
     {
-        M_view_config_dialog->updateFieldScale();
+        M_config_dialog->updateFieldScale();
     }
 }
 
@@ -1301,12 +1079,9 @@ MainWindow::openRCG()
                         "All files (*)" ) );
 #endif
 
-    QString default_dir
-        = QString::fromStdString( Options::instance().gameLogDir() );
-
     QString file_path = QFileDialog::getOpenFileName( this,
                                                       tr( "Choose a game log file to open" ),
-                                                      default_dir,
+                                                      M_game_log_path,
                                                       filter );
 
     if ( file_path.isEmpty() )
@@ -1364,18 +1139,13 @@ MainWindow::openRCG( const QString & file_path )
         return;
     }
 
+    // update last opened file path
     QFileInfo file_info( file_path );
-
-    Options::instance().setGameLogDir( file_info.absoluteFilePath().toStdString() );
+    M_game_log_path = file_info.absoluteFilePath();
 
     if ( M_player_type_dialog )
     {
         M_player_type_dialog->updateData();
-    }
-
-    if ( M_debug_message_window )
-    {
-        M_debug_message_window->clearAll();
     }
 
     if ( M_view_config_dialog )
@@ -1383,19 +1153,15 @@ MainWindow::openRCG( const QString & file_path )
         M_view_config_dialog->unzoom();
     }
 
-    if ( ! M_main_data.viewConfig().anonymousMode() )
+    // set window title
+    QString name = file_info.fileName();
+    if ( name.length() > 128 )
     {
-        //this->setWindowTitle( file_info.baseName() + tr( " - "PACKAGE_NAME ) );
-        QString name = file_info.fileName();
-        if ( name.length() > 128 )
-        {
-            name.replace( 125, name.length() - 125, tr( "..." ) );
-        }
-        this->setWindowTitle( name + tr( " - "PACKAGE_NAME ) );
+        name.replace( 125, name.length() - 125, tr( "..." ) );
     }
+    this->setWindowTitle( name + tr( " - "PACKAGE_NAME ) );
 
     emit viewUpdated();
-
 }
 
 /*-------------------------------------------------------------------*/
@@ -1929,66 +1695,11 @@ MainWindow::changeStyle( bool checked )
 
  */
 void
-MainWindow::showColorSettingDialog()
-{
-    ColorSettingDialog dlg( this );
-
-    connect( &dlg, SIGNAL( colorChanged() ),
-             M_field_canvas, SLOT( redrawAll() ) );
-
-    dlg.exec();
-}
-
-/*-------------------------------------------------------------------*/
-/*!
-
- */
-void
-MainWindow::showFontSettingDialog()
-{
-    FontSettingDialog dlg( this );
-
-    connect( &dlg, SIGNAL( fontChanged() ),
-             M_field_canvas, SLOT( redrawAll() ) );
-
-    dlg.exec();
-}
-
-/*-------------------------------------------------------------------*/
-/*!
-
- */
-void
 MainWindow::showViewConfigDialog()
 {
     //std::cerr << "MainWindow::showViewConfigDialog()" << std::endl;
 
-    M_view_config_dialog->setVisible( ! M_view_config_dialog->isVisible() );
-}
-
-/*-------------------------------------------------------------------*/
-/*!
-
- */
-void
-MainWindow::showDebugMessageWindow()
-{
-    //std::cerr << "MainWindow::showDebugMessageWindow()" << std::endl;
-
-    if ( M_debug_message_window )
-    {
-        M_debug_message_window
-            ->setVisible( ! M_debug_message_window->isVisible() );
-    }
-    else
-    {
-        M_debug_message_window = new DebugMessageWindow( this,
-                                                         M_main_data );
-        connect( M_debug_message_window, SIGNAL( configured() ),
-                 this, SIGNAL( viewUpdated() ) );
-
-        M_debug_message_window->show();
-    }
+    //M_config_dialog->setVisible( ! M_config_dialog->isVisible() );
 }
 
 /*-------------------------------------------------------------------*/
