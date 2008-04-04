@@ -33,7 +33,12 @@
 #ifndef RCSSLOGPLAYER_OPTIONS_H
 #define RCSSLOGPLAYER_OPTIONS_H
 
+#include <QPointF>
+
+#include <rcsslogplayer/types.h>
+
 #include <string>
+#include <cmath>
 
 /*!
   \class Options
@@ -41,9 +46,47 @@
 */
 class Options {
 public:
-//     static const int MIN_SCORE_BOARD_HEIGHT;
-//     static const int MAX_SCORE_BOARD_HEIGHT;
 
+    enum PlayerSelectType {
+        SELECT_FIX,
+        SELECT_AUTO_LEFT,
+        SELECT_AUTO_RIGHT,
+        SELECT_AUTO_ALL,
+        SELECT_UNSELECT,
+    };
+
+    enum FocusType {
+        FOCUS_BALL,
+        FOCUS_PLAYER,
+        FOCUS_POINT, // include center
+    };
+
+    static const double PITCH_LENGTH;
+    static const double PITCH_WIDTH;
+    static const double PITCH_HALF_LENGTH;
+    static const double PITCH_HALF_WIDTH;
+    static const double PITCH_MARGIN;
+    static const double CENTER_CIRCLE_R;
+    static const double PENALTY_AREA_LENGTH;
+    static const double PENALTY_AREA_WIDTH;
+    static const double PENALTY_CIRCLE_R;
+    static const double PENALTY_SPOT_DIST;
+    static const double GOAL_WIDTH;
+    static const double GOAL_HALF_WIDTH;
+    static const double GOAL_AREA_LENGTH;
+    static const double GOAL_AREA_WIDTH;
+    static const double GOAL_DEPTH;
+    static const double CORNER_ARC_R;
+    static const double GOAL_POST_RADIUS;
+
+
+    //! minimum field scale
+    static const double MIN_FIELD_SCALE;
+    //! maximum field scale
+    static const double MAX_FIELD_SCALE;
+    //! zoom rate factor
+    static const double ZOOM_RATIO;
+    //! default logplayer timer step (ms).
     static const int DEFAULT_TIMER_INTERVAL;
 
 private:
@@ -55,8 +98,6 @@ private:
     std::string M_host;
     int M_port;
     int M_client_version;
-    int M_wait_seconds;
-    bool M_auto_quit_mode;
     bool M_time_shift_replay;
 
     //
@@ -86,12 +127,11 @@ private:
     //
     // view options
     //
-    //std::string M_field_grass_type;
-    //bool M_keepaway;
 
     bool M_anti_aliasing;
 
     bool M_show_score_board;
+    bool M_show_keepaway_area;
     bool M_show_team_logo;
     bool M_show_ball;
     bool M_show_player;
@@ -102,12 +142,43 @@ private:
     bool M_show_stamina;
     bool M_show_pointto;
 
+    bool M_enlarge;
     double M_ball_size; //!< fixed ball radius
     double M_player_size; //!< fixed player radius
 
     double M_grid_step;
     bool M_show_grid;
     bool M_show_grid_coord;
+
+    bool M_show_flag;
+    bool M_show_offside_line;
+
+    // zoom
+    double M_field_scale;
+    bool M_zoomed;
+    QPoint M_field_center; //!< field center point on the screen
+
+    // focus
+    FocusType M_focus_type; //!< focus type ID
+    QPointF M_focus_point; //!< real coordinates
+
+    // player selection
+    int M_selected_number; //!< selected player's uniform number.
+    PlayerSelectType M_player_select_type; //!< flag for player auto selection
+
+    // ball trace
+    int M_ball_trace_start;
+    int M_ball_trace_end;
+
+    // player trace
+    int M_player_trace_start;
+    int M_player_trace_end;
+
+    // trace type
+    bool M_line_trace;
+
+    // inertia movement
+    int M_ball_vel_cycle; //!< specify the cycle to draw ball future point
 
     //! private access for singleton
     Options();
@@ -129,6 +200,7 @@ public:
     bool parseCmdLine( int argc,
                        char ** argv );
 
+
     //
     // monitor options
     //
@@ -143,6 +215,10 @@ public:
       {
           return M_host;
       }
+    void setHost( const std::string & host )
+      {
+          M_host = host;
+      }
 
     int port() const
       {
@@ -154,16 +230,6 @@ public:
           return M_client_version;
       }
 
-    int waitSeconds() const
-      {
-          return M_wait_seconds;
-      }
-
-    bool autoQuitMode() const
-      {
-          return M_auto_quit_mode;
-      }
-
     //
     // logplayer options
     //
@@ -172,6 +238,10 @@ public:
     std::string & gameLogFile() const
       {
           return M_game_log_file;
+      }
+    void setGameLogFile( const std::string & path )
+      {
+          M_game_log_file = path;
       }
 
     bool timeShiftReplay() const
@@ -256,45 +326,117 @@ public:
       {
           return M_anti_aliasing;
       }
+    void toggleAntiAliasing()
+      {
+          M_anti_aliasing = ! M_anti_aliasing;
+      }
 
     bool showScoreBoard() const
       {
           return M_show_score_board;
+      }
+    void toggleShowScoreBoard()
+      {
+          M_show_score_board = ! M_show_score_board;
+      }
+
+    bool showKeepawayArea() const
+      {
+          return M_show_keepaway_area;
+      }
+    void toggleShowKeepawayArea()
+      {
+          M_show_keepaway_area = ! M_show_keepaway_area;
       }
 
     bool showTeamLogo() const
       {
           return M_show_team_logo;
       }
+    void toggleShowTeamLogo()
+      {
+          M_show_team_logo = ! M_show_team_logo;
+      }
+
+    bool showBall() const
+      {
+          return M_show_ball;
+      }
+    void toggleShowBall()
+      {
+          M_show_ball = ! M_show_ball;
+      }
+
+    bool showPlayer() const
+      {
+          return M_show_player;
+      }
+    void toggleShowPlayer()
+      {
+          M_show_player = ! M_show_player;
+      }
 
     bool showPlayerNumber() const
       {
           return M_show_player_number;
+      }
+    void toggleShowPlayerNumber()
+      {
+          M_show_player_number = ! M_show_player_number;
       }
 
     bool showPlayerType() const
       {
           return M_show_player_type;
       }
+    void toggleShowPlayerType()
+      {
+          M_show_player_type = ! M_show_player_type;
+      }
 
     bool showViewArea() const
       {
           return M_show_view_area;
       }
+    void toggleShowViewArea()
+      {
+          M_show_view_area = ! M_show_view_area;
+      }
 
-    bool showControlrea() const
+    bool showControlArea() const
       {
           return M_show_control_area;
+      }
+    void toggleShowControlArea()
+      {
+          M_show_control_area = ! M_show_control_area;
       }
 
     bool showStamina() const
       {
           return M_show_stamina;
       }
+    void toggleShowStamina()
+      {
+          M_show_stamina = ! M_show_stamina;
+      }
 
     bool showPointto() const
       {
           return M_show_pointto;
+      }
+    void toggleShowPointto()
+      {
+          M_show_pointto = ! M_show_pointto;
+      }
+
+    bool enlarge() const
+      {
+          return M_enlarge;
+      }
+    void toggleEnlarge()
+      {
+          M_enlarge = ! M_enlarge;
       }
 
     const
@@ -302,28 +444,238 @@ public:
       {
           return M_ball_size;
       }
+    void setBallSize( const double & value )
+      {
+          if ( value <= 0.001 ) return;
+          M_ball_size = value;
+      }
 
     const
     double & playerSize() const
       {
           return M_player_size;
       }
-
+    void setPlayerSize( const double & value )
+      {
+          if ( value < 0.0 ) return;
+          M_player_size = value;
+      }
 
     const
     double & gridStep() const
       {
           return M_grid_step;
       }
+    void setGridStep( const double & value )
+      {
+          M_grid_step = value;
+      }
 
     bool showGrid() const
       {
           return M_show_grid;
       }
+    void toggleShowGrid()
+      {
+          M_show_grid = ! M_show_grid;
+      }
 
     bool showGridCoord() const
       {
           return M_show_grid_coord;
+      }
+    void toggleShowGridCoord()
+      {
+          M_show_grid_coord = ! M_show_grid_coord;
+      }
+
+    bool showFlag() const
+      {
+          return M_show_flag;
+      }
+    void toggleShowFlag()
+      {
+          M_show_flag = ! M_show_flag;
+      }
+
+    bool showOffsideLine() const
+      {
+          return M_show_offside_line;
+      }
+    void toggleShowOffsideLine()
+      {
+          M_show_offside_line = ! M_show_offside_line;
+      }
+
+    // field scale
+
+    void updateFieldSize( const int canvas_width,
+                          const int canvas_height );
+
+    const
+    double & fieldScale() const
+      {
+          return M_field_scale;
+      }
+    void setFieldScale( const double & value );
+
+    bool zoomed() const
+      {
+          return M_zoomed;
+      }
+    void zoomIn();
+    void zoomOut();
+    void unzoom();
+
+    const
+    QPoint & fieldCenter() const
+      {
+          return M_field_center;
+      }
+
+    FocusType focusType() const
+      {
+          return M_focus_type;
+      }
+    void setFocusType( const Options::FocusType type )
+      {
+          M_focus_type = type;
+      }
+
+    const
+    QPointF & focusPoint() const
+      {
+          return M_focus_point;
+      }
+    void setFocusPoint( const int screen_x,
+                        const int screen_y );
+    void setFocusPointReal( const double & x,
+                            const double & y )
+      {
+          M_focus_point.setX( x );
+          M_focus_point.setY( y );
+      }
+
+    int scale( const double & len ) const
+      {
+          return static_cast< int >( ::rint( len * M_field_scale ) );
+      }
+
+    int screenX( const double & x ) const
+      {
+          return M_field_center.x() + scale( x );
+      }
+
+    int screenY( const double & y ) const
+      {
+          return M_field_center.y() + scale( y );
+      }
+
+    double fieldX( const int x ) const
+      {
+          return ( x - M_field_center.x() ) / M_field_scale;
+      }
+
+    double fieldY( const int y ) const
+      {
+          return ( y - M_field_center.y() ) / M_field_scale;
+      }
+
+
+    int selectedNumber() const
+      {
+          return M_selected_number;
+      }
+    void setSelectedNumber( const rcss::rcg::Side side,
+                            const int unum )
+      {
+          M_selected_number = ( side == rcss::rcg::LEFT ? unum : -unum );
+      }
+    bool isSelectedPlayer( const rcss::rcg::Side side,
+                           const int unum ) const
+      {
+          return ( M_selected_number
+                   == ( side == rcss::rcg::LEFT ? unum : -unum ) );
+      }
+
+    PlayerSelectType playerSelectType() const
+      {
+          return M_player_select_type;
+      }
+    bool playerAutoSelect() const
+      {
+          return ( M_player_select_type != SELECT_FIX
+                   && M_player_select_type != SELECT_UNSELECT );
+      }
+    void unselectPlayer();
+    void setPlayerSelectType( const Options::PlayerSelectType type );
+
+    // ball trace
+
+    bool showBallTrace() const
+      {
+          return ( M_ball_trace_start < M_ball_trace_end );
+      }
+    void setBallTraceStart( const int cycle )
+      {
+          if ( 0 <= cycle ) M_ball_trace_start = cycle;
+      }
+    int ballTraceStart() const
+      {
+          return M_ball_trace_start;
+      }
+    void setBallTraceEnd( const int cycle )
+      {
+          if ( 0 <= cycle ) M_ball_trace_end = cycle;
+      }
+    int ballTraceEnd() const
+      {
+          return M_ball_trace_end;
+      }
+
+    // player trace
+
+    bool showPlayerTrace() const
+      {
+          return ( M_player_trace_start < M_player_trace_end );
+      }
+    void setPlayerTraceStart( const int cycle )
+      {
+          if ( 0 <= cycle ) M_player_trace_start = cycle;
+      }
+    int playerTraceStart() const
+      {
+          return M_player_trace_start;
+      }
+    void setPlayerTraceEnd( const int cycle )
+      {
+          if ( 0 <= cycle ) M_player_trace_end = cycle;
+      }
+    int playerTraceEnd() const
+      {
+          return M_player_trace_end;
+      }
+
+    // trace type
+
+    bool lineTrace() const
+      {
+          return M_line_trace;
+      }
+    void toggleLineTrace()
+      {
+          M_line_trace = ! M_line_trace;
+      }
+
+    // ball move
+
+    int ballVelCycle() const
+      {
+          return M_ball_vel_cycle;
+      }
+    void setBallVelCycle( const int cycle )
+      {
+          if ( 0 <= cycle && cycle <= 100 ) M_ball_vel_cycle = cycle;
       }
 
 };

@@ -38,6 +38,9 @@
 
 #include "config_dialog.h"
 
+#include "options.h"
+#include "main_data.h"
+
 #include <iostream>
 #include <cassert>
 
@@ -45,10 +48,12 @@
 /*!
 
 */
-ConfigDialog::ConfigDialog( QWidget * parent )
+ConfigDialog::ConfigDialog( QWidget * parent,
+                            const MainData & main_data )
     : QDialog( parent )
+    , M_main_data( main_data )
 {
-    this->setWindowTitle( tr( "Preference" ) );
+    this->setWindowTitle( tr( "Config" ) );
 
     createWidgets();
 }
@@ -86,8 +91,6 @@ ConfigDialog::createWidgets()
                            0, Qt::AlignLeft );
         layout->addWidget( createCanvasSizeControls(),
                            0, Qt::AlignLeft );
-        layout->addWidget( createFieldStyleControls(),
-                           0, Qt::AlignLeft );
         layout->addWidget( createMiscControls(),
                            0, Qt::AlignLeft );
 
@@ -104,7 +107,7 @@ ConfigDialog::createWidgets()
 
         layout->addWidget( createShowControls(),
                            0, Qt::AlignLeft );
-        layout->addWidget( createPlayersDetailControls(),
+        layout->addWidget( createPlayerInfoControls(),
                            0, Qt::AlignLeft );
         layout->addWidget( createGridStepControls(),
                            0, Qt::AlignLeft );
@@ -112,7 +115,7 @@ ConfigDialog::createWidgets()
         frame->setLayout( layout );
         M_tab_widget->addTab( frame, tr( "Show" ) );
     }
-    // trace / future
+    // trace / move
     {
         QFrame * frame = new QFrame();
         QVBoxLayout * layout = new QVBoxLayout();
@@ -190,7 +193,8 @@ ConfigDialog::createZoomControls()
         layout->addSpacing( 2 );
 
         M_scale_slider = new QSlider( Qt::Horizontal );
-        M_scale_slider->setRange( 10, 4000 ); // [1.0, 400.0]
+        M_scale_slider->setRange( static_cast< int >( Options::MIN_FIELD_SCALE * 10.0 ),
+                                  static_cast< int >( Options::MAX_FIELD_SCALE * 10.0 ) );
         M_scale_slider->setValue( 80 );
         M_scale_slider->setSingleStep( 1 );
         M_scale_slider->setPageStep( 1 ); // set the minimal increment/decrement step
@@ -306,9 +310,9 @@ ConfigDialog::createCanvasSizeControls()
 
 */
 QWidget *
-ConfigDialog::createPlayersDetailControls()
+ConfigDialog::createPlayerInfoControls()
 {
-    QGroupBox * group_box = new QGroupBox( tr( "Players\' Detail" ) );
+    QGroupBox * group_box = new QGroupBox( tr( "Player Info" ) );
 
     QVBoxLayout * top_layout = new QVBoxLayout();
     top_layout->setMargin( 1 );
@@ -320,19 +324,19 @@ ConfigDialog::createPlayersDetailControls()
         layout->setSpacing( 0 );
 
         M_player_number_cb = new QCheckBox( tr( "Unum" ) );
-        M_player_number_cb->setChecked( M_view_config.isShownPlayerNumber() );
+        M_player_number_cb->setChecked( Options::instance().showPlayerNumber() );
         connect( M_player_number_cb, SIGNAL( clicked( bool ) ),
                  this, SLOT( clickShowPlayerNumber( bool ) ) );
         layout->addWidget( M_player_number_cb );
         //
-        M_hetero_number_cb = new QCheckBox( tr( "Type" ) );
-        M_hetero_number_cb->setChecked( M_view_config.isShownHeteroNumber() );
-        connect( M_hetero_number_cb, SIGNAL( clicked( bool ) ),
-                 this, SLOT( clickShowHeteroNumber( bool ) ) );
-        layout->addWidget( M_hetero_number_cb );
+        M_player_type_cb = new QCheckBox( tr( "Type" ) );
+        M_player_type_cb->setChecked( Options::instance().showPlayerType() );
+        connect( M_player_type_cb, SIGNAL( clicked( bool ) ),
+                 this, SLOT( clickShowPlayerType( bool ) ) );
+        layout->addWidget( M_player_type_cb );
         //
         M_stamina_cb = new QCheckBox( tr( "Stamina" ) );
-        M_stamina_cb->setChecked( M_view_config.isShownStamina() );
+        M_stamina_cb->setChecked( Options::instance().showStamina() );
         connect( M_stamina_cb, SIGNAL( clicked( bool ) ),
                  this, SLOT( clickShowStamina( bool ) ) );
         layout->addWidget( M_stamina_cb );
@@ -344,23 +348,23 @@ ConfigDialog::createPlayersDetailControls()
         layout->setMargin( 0 );
         layout->setSpacing( 0 );
 
-        M_view_cone_cb = new QCheckBox( tr( "View Cone" ) );
-        M_view_cone_cb->setChecked( M_view_config.isShownViewCone() );
-        connect( M_view_cone_cb, SIGNAL( clicked( bool ) ),
-                 this, SLOT( clickShowViewCone( bool ) ) );
-        layout->addWidget( M_view_cone_cb );
-        //
-        M_body_shadow_cb = new QCheckBox( tr( "Body Shadow" ) );
-        M_body_shadow_cb->setChecked( M_view_config.isShownBodyShadow() );
-        connect( M_body_shadow_cb, SIGNAL( clicked( bool ) ),
-                 this, SLOT( clickShowBodyShadow( bool ) ) );
-        layout->addWidget( M_body_shadow_cb );
+        M_view_area_cb = new QCheckBox( tr( "View Area" ) );
+        M_view_area_cb->setChecked( Options::instance().showViewArea() );
+        connect( M_view_area_cb, SIGNAL( clicked( bool ) ),
+                 this, SLOT( clickShowViewArea( bool ) ) );
+        layout->addWidget( M_view_area_cb );
         //
         M_control_area_cb = new QCheckBox( tr( "Control Area" ) );
-        M_control_area_cb->setChecked( M_view_config.isShownControlArea() );
+        M_control_area_cb->setChecked( Options::instance().showControlArea() );
         connect( M_control_area_cb, SIGNAL( clicked( bool ) ),
                  this, SLOT( clickShowControlArea( bool ) ) );
         layout->addWidget( M_control_area_cb );
+        //
+        M_pointto_cb = new QCheckBox( tr( "Pointto" ) );
+        M_pointto_cb->setChecked( Options::instance().showPointto() );
+        connect( M_pointto_cb, SIGNAL( clicked( bool ) ),
+                 this, SLOT( clickShowPointto( bool ) ) );
+        layout->addWidget( M_pointto_cb );
 
         top_layout->addLayout( layout );
     }
@@ -387,36 +391,29 @@ ConfigDialog::createShowControls()
         layout->setMargin( 0 );
         layout->setSpacing( 0 );
 
-        M_anonymous_mode_cb = new QCheckBox( tr( "Anonymous Mode" ) );
-        M_anonymous_mode_cb->setChecked( M_view_config.anonymousMode() );
-        connect( M_anonymous_mode_cb, SIGNAL( clicked( bool ) ),
-                 this, SLOT( clickAnonymousMode( bool ) ) );
-        layout->addWidget( M_anonymous_mode_cb );
-
-        top_layout->addLayout( layout );
-    }
-    {
-        QHBoxLayout * layout = new QHBoxLayout();
-        layout->setMargin( 0 );
-        layout->setSpacing( 0 );
-
         M_show_score_board_cb = new QCheckBox( tr( "Score Board" ) );
-        M_show_score_board_cb->setChecked( M_view_config.isShownScoreBoard() );
+        M_show_score_board_cb->setChecked( Options::instance().showScoreBoard() );
         connect( M_show_score_board_cb, SIGNAL( clicked( bool ) ),
                  this, SLOT( clickShowScoreBoard( bool ) ) );
         layout->addWidget( M_show_score_board_cb );
         //
+        M_show_keepaway_area_cb = new QCheckBox( tr( "Keepaway Area" ) );
+        M_show_keepaway_area_cb->setChecked( Options::instance().showKeepawayArea() );
+        connect( M_show_keepaway_area_cb, SIGNAL( clicked( bool ) ),
+                 this, SLOT( clickShowKeepawayArea( bool ) ) );
+        layout->addWidget( M_show_keepaway_area_cb );
+        //
         M_show_team_logo_cb = new QCheckBox( tr( "Team Logo" ) );
-        M_show_team_logo_cb->setChecked( M_view_config.isShownTeamLogo() );
+        M_show_team_logo_cb->setChecked( Options::instance().showTeamLogo() );
         connect( M_show_team_logo_cb, SIGNAL( clicked( bool ) ),
                  this, SLOT( clickShowTeamLogo( bool ) ) );
         layout->addWidget( M_show_team_logo_cb );
         //
-        M_show_flags_cb = new QCheckBox( tr( "Flag" ) );
-        M_show_flags_cb->setChecked( M_view_config.isShownFlags() );
-        connect( M_show_flags_cb, SIGNAL( clicked( bool ) ),
-                 this, SLOT( clickShowFlags( bool ) ) );
-        layout->addWidget( M_show_flags_cb );
+        M_show_flag_cb = new QCheckBox( tr( "Flag" ) );
+        M_show_flag_cb->setChecked( Options::instance().showFlag() );
+        connect( M_show_flag_cb, SIGNAL( clicked( bool ) ),
+                 this, SLOT( clickShowFlag( bool ) ) );
+        layout->addWidget( M_show_flag_cb );
 
         top_layout->addLayout( layout );
     }
@@ -426,19 +423,19 @@ ConfigDialog::createShowControls()
         layout->setSpacing( 0 );
 
         M_show_ball_cb = new QCheckBox( tr( "Ball" ) );
-        M_show_ball_cb->setChecked( M_view_config.isShownBall() );
+        M_show_ball_cb->setChecked( Options::instance().showBall() );
         connect( M_show_ball_cb, SIGNAL( clicked( bool ) ),
                  this, SLOT( clickShowBall( bool ) ) );
         layout->addWidget( M_show_ball_cb );
         //
-        M_show_players_cb = new QCheckBox( tr( "Player" ) );
-        M_show_players_cb->setChecked( M_view_config.isShownPlayers() );
-        connect( M_show_players_cb, SIGNAL( clicked( bool ) ),
-                 this, SLOT( clickShowPlayers( bool ) ) );
-        layout->addWidget( M_show_players_cb );
+        M_show_player_cb = new QCheckBox( tr( "Player" ) );
+        M_show_player_cb->setChecked( Options::instance().showPlayer() );
+        connect( M_show_player_cb, SIGNAL( clicked( bool ) ),
+                 this, SLOT( clickShowPlayer( bool ) ) );
+        layout->addWidget( M_show_player_cb );
         //
         M_show_offside_line_cb = new QCheckBox( tr( "Offside Line" ) );
-        M_show_offside_line_cb->setChecked( M_view_config.isShownOffsideLine() );
+        M_show_offside_line_cb->setChecked( Options::instance().showOffsideLine() );
         connect( M_show_offside_line_cb, SIGNAL( clicked( bool ) ),
                  this, SLOT( clickShowOffsideLine( bool ) ) );
         layout->addWidget( M_show_offside_line_cb );
@@ -577,37 +574,6 @@ ConfigDialog::createPlayerSelectionControls()
 
 */
 QWidget *
-ConfigDialog::createFieldStyleControls()
-{
-    QGroupBox * group_box = new QGroupBox( tr( "Field Style" ) );
-
-    QVBoxLayout * top_layout = new QVBoxLayout();
-    top_layout->setMargin( 1 );
-    top_layout->setSpacing( 0 );
-
-    QHBoxLayout * layout = new QHBoxLayout();
-    layout->setMargin( 1 );
-    layout->setSpacing( 0 );
-
-    {
-        M_keepaway_mode_cb = new QCheckBox( tr( "Keepaway" ) );
-        M_keepaway_mode_cb->setChecked( M_view_config.keepawayMode() );
-        connect( M_keepaway_mode_cb, SIGNAL( clicked( bool ) ),
-                 this, SLOT( clickKeepawayMode( bool ) ) );
-        layout->addWidget( M_keepaway_mode_cb );
-    }
-    top_layout->addLayout( layout );
-
-
-    group_box->setLayout( top_layout );
-    return group_box;
-}
-
-/*-------------------------------------------------------------------*/
-/*!
-
-*/
-QWidget *
 ConfigDialog::createMiscControls()
 {
     QGroupBox * group_box = new QGroupBox( tr( "Misc" ) );
@@ -617,7 +583,7 @@ ConfigDialog::createMiscControls()
 
     //
     M_anti_aliasing_cb = new QCheckBox( tr( "Anti Aliasing" ) );
-    M_anti_aliasing_cb->setChecked( M_view_config.antiAliasing() );
+    M_anti_aliasing_cb->setChecked( Options::instance().antiAliasing() );
     connect( M_anti_aliasing_cb, SIGNAL( toggled( bool ) ),
              this, SLOT( clickAntiAliasing( bool ) ) );
     top_layout->addWidget( M_anti_aliasing_cb );
@@ -639,7 +605,7 @@ ConfigDialog::createGridStepControls()
     top_layout->setSpacing( 0 );
 
     M_show_grid_coord_cb = new QCheckBox( tr( "Grid Coordinate" ) );
-    M_show_grid_coord_cb->setChecked( M_view_config.isShownGridCoord() );
+    M_show_grid_coord_cb->setChecked( Options::instance().showGridCoord() );
     connect( M_show_grid_coord_cb, SIGNAL( toggled( bool ) ),
              this, SLOT( clickShowGridCoord( bool ) ) );
     top_layout->addWidget( M_show_grid_coord_cb );
@@ -687,9 +653,6 @@ ConfigDialog::createTraceControls()
     top_layout->setMargin( 0 );
     top_layout->setSpacing( 0 );
 
-//     QHBoxLayout * first_layout = new QHBoxLayout();
-//     first_layout->setMargin( 0 );
-//     first_layout->setSpacing( 0 );
     {
         QGroupBox * ball_box = new QGroupBox( tr( "Ball" ) );
 
@@ -699,7 +662,7 @@ ConfigDialog::createTraceControls()
         layout->setSpacing( 0 );
 
         M_ball_trace_start = new QLineEdit( tr( "0" ) );
-        M_ball_trace_start->setValidator( new QIntValidator( 0, 20000, M_ball_trace_start ) );
+        M_ball_trace_start->setValidator( new QIntValidator( 0, 200000, M_ball_trace_start ) );
         M_ball_trace_start->setMaximumSize( 36, 24 );
         connect( M_ball_trace_start, SIGNAL( textEdited( const QString & ) ),
                  this, SLOT( editBallTraceStart( const QString & ) ) );
@@ -708,7 +671,7 @@ ConfigDialog::createTraceControls()
         layout->addWidget( new QLabel( tr( "-" ) ), 0, Qt::AlignVCenter );
 
         M_ball_trace_end = new QLineEdit( tr( "0" ) );
-        M_ball_trace_end->setValidator( new QIntValidator( 0, 20000, M_ball_trace_end ) );
+        M_ball_trace_end->setValidator( new QIntValidator( 0, 200000, M_ball_trace_end ) );
         M_ball_trace_end->setMaximumSize( 36, 24 );
         connect( M_ball_trace_end, SIGNAL( textEdited( const QString & ) ),
                  this, SLOT( editBallTraceEnd( const QString & ) ) );
@@ -721,17 +684,11 @@ ConfigDialog::createTraceControls()
                  this, SLOT( clickBallTraceAll() ) );
         layout->addWidget( all_btn, 0, Qt::AlignVCenter );
 
-        M_ball_trace_cb = new QCheckBox( tr( "Auto" ) );
-        M_ball_trace_cb->setChecked( false );
-        connect( M_ball_trace_cb, SIGNAL( clicked( bool ) ),
-                 this, SLOT( clickAutoBallTrace( bool ) ) );
-        layout->addWidget( M_ball_trace_cb, 0, Qt::AlignVCenter );
-
         ball_box->setLayout( layout );
         //first_layout->addWidget( ball_box );
         top_layout->addWidget( ball_box );
     }
-    //first_layout->addSpacing( 2 );
+
     top_layout->addSpacing( 2 );
     {
         QGroupBox * player_box = new QGroupBox( tr( "Player" ) );
@@ -742,7 +699,7 @@ ConfigDialog::createTraceControls()
         layout->setSpacing( 0 );
 
         M_player_trace_start = new QLineEdit( tr( "0" ) );
-        M_player_trace_start->setValidator( new QIntValidator( 0, 20000, M_player_trace_start ) );
+        M_player_trace_start->setValidator( new QIntValidator( 0, 200000, M_player_trace_start ) );
         M_player_trace_start->setMaximumSize( 36, 24 );
         connect( M_player_trace_start, SIGNAL( textEdited( const QString & ) ),
                  this, SLOT( editPlayerTraceStart( const QString & ) ) );
@@ -751,7 +708,7 @@ ConfigDialog::createTraceControls()
         layout->addWidget( new QLabel( tr( "-" ) ), 0, Qt::AlignVCenter );
 
         M_player_trace_end = new QLineEdit( tr( "0" ) );
-        M_player_trace_end->setValidator( new QIntValidator( 0, 20000, M_player_trace_end ) );
+        M_player_trace_end->setValidator( new QIntValidator( 0, 200000, M_player_trace_end ) );
         M_player_trace_end->setMaximumSize( 36, 24 );
         connect( M_ball_trace_end, SIGNAL( textEdited( const QString & ) ),
                  this, SLOT( editBallTraceEnd( const QString & ) ) );
@@ -764,84 +721,21 @@ ConfigDialog::createTraceControls()
                  this, SLOT( clickPlayerTraceAll() ) );
         layout->addWidget( all_btn, 0, Qt::AlignVCenter );
 
-        M_player_trace_cb =  new QCheckBox( tr( "Auto" ) );
-        M_player_trace_cb->setChecked( false );
-        connect( M_player_trace_cb, SIGNAL( clicked( bool ) ),
-                 this, SLOT( clickAutoPlayerTrace( bool ) ) );
-        layout->addWidget( M_player_trace_cb, 0, Qt::AlignVCenter );
-
         player_box->setLayout( layout );
         //first_layout->addWidget( player_box );
         top_layout->addWidget( player_box );
     }
 
-    //top_layout->addLayout( first_layout );
-    top_layout->addSpacing( 1 );
+    top_layout->addSpacing( 2 );
 
-    QHBoxLayout * second_layout = new QHBoxLayout();
-    second_layout->setMargin( 0 );
-    second_layout->setSpacing( 0 );
     {
-        QGroupBox * trace_box = new QGroupBox( tr( "Auto Trace Period" ) );
-
-        QHBoxLayout * layout = new QHBoxLayout();
-        layout->setMargin( 0 );
-        layout->setSpacing( 0 );
-
-        layout->addWidget( new QLabel( tr( "Start:" ) ), 0, Qt::AlignVCenter );
-
-        layout->addSpacing( 2 );
-
-        M_auto_trace_start = new QLineEdit( tr( "-10" ) );
-        M_auto_trace_start->setValidator( new QIntValidator( -20000, 20000, M_auto_trace_start ) );
-        M_auto_trace_start->setMinimumSize( 36, this->fontMetrics().height() + 4 );
-        M_auto_trace_start->setMaximumSize( 48, this->fontMetrics().height() + 4 );
-        connect( M_auto_trace_start, SIGNAL( textEdited( const QString & ) ),
-                 this, SLOT( editAutoTraceStart( const QString & ) ) );
-        layout->addWidget( M_auto_trace_start, 0, Qt::AlignVCenter );
-
-        layout->addSpacing( 6 );
-
-        layout->addWidget( new QLabel( tr( "Period:" ) ), 0, Qt::AlignVCenter );
-
-        layout->addSpacing( 2 );
-
-        M_auto_trace_period = new QSpinBox();
-        M_auto_trace_period->setValue( 10 );
-        M_auto_trace_period->setRange( 1, 12000 );
-        //M_auto_trace_period->setMaximumSize( 36, 24 );
-        connect( M_auto_trace_period, SIGNAL( valueChanged( int ) ),
-                 this, SLOT( changeAutoTracePeriod( int ) ) );
-        layout->addWidget( M_auto_trace_period, 0, Qt::AlignVCenter );
-
-        trace_box->setLayout( layout );
-
-        second_layout->addWidget( trace_box, 1 );
-    }
-
-    second_layout->addSpacing( 12 );
-    {
-//         QHBoxLayout * layout = new QHBoxLayout();
-//         layout->setMargin( 0 );
-//         layout->setSpacing( 0 );
-
-//         layout->addStretch( 1 );
-
         QPushButton * line_point_btn = new QPushButton( tr( "Line/Point" ) );
         line_point_btn->setMaximumSize( 80, this->fontMetrics().height() + 12 );
         connect( line_point_btn, SIGNAL( clicked() ),
                  this, SLOT( clickLinePointButton() ) );
 
-        second_layout->addWidget( line_point_btn, 0, Qt::AlignLeft );
-//         layout->addWidget( line_point_btn, 2 );
-
-//         layout->addStretch( 1 );
-
-//         second_layout->addLayout( layout, 1 );
+        top_layout->addWidget( line_point_btn, 0, Qt::AlignLeft );
     }
-    second_layout->addSpacing( 6 );
-
-    top_layout->addLayout( second_layout );
 
     group_box->setLayout( top_layout );
     return group_box;;
@@ -854,37 +748,23 @@ ConfigDialog::createTraceControls()
 QWidget *
 ConfigDialog::createInertiaMoveControls()
 {
-    QGroupBox * group_box = new QGroupBox( tr( "Inertia Move" ) );
+    QGroupBox * group_box = new QGroupBox( tr( "Ball Velocity" ) );
 
     QHBoxLayout * top_layout = new QHBoxLayout();
-    top_layout->setMargin( 0 );
+    top_layout->setMargin( 1 );
     top_layout->setSpacing( 0 );
 
-    top_layout->addWidget( new QLabel( tr( "Ball:" ) ) );
+    top_layout->addWidget( new QLabel( tr( "Cycle:" ) ) );
 
     top_layout->addSpacing( 2 );
 
-    M_ball_future = new QSpinBox();
-    //M_ball_future->setMinimumSize( 60, 24 );
-    M_ball_future->setValue( 0 );
-    M_ball_future->setRange( 0, 50 );
-    connect( M_ball_future, SIGNAL( valueChanged( int ) ),
-             this, SLOT( changeBallFutureCycle( int ) ) );
-    top_layout->addWidget( M_ball_future );
-
-    top_layout->addSpacing( 6 );
-
-    top_layout->addWidget( new QLabel( tr( "Player:" ) ) );
-
-    top_layout->addSpacing( 2 );
-
-    M_player_future = new QSpinBox();
-    //M_player_future->setMaximumSize( 60, 24 );
-    M_player_future->setValue( 0 );
-    M_player_future->setRange( 0, 10 );
-    connect( M_player_future, SIGNAL( valueChanged( int ) ),
-             this, SLOT( changePlayerFutureCycle( int ) ) );
-    top_layout->addWidget( M_player_future );
+    M_ball_vel_cycle = new QSpinBox();
+    //M_ball_vel_cycle->setMinimumSize( 60, 24 );
+    M_ball_vel_cycle->setValue( 0 );
+    M_ball_vel_cycle->setRange( 0, 50 );
+    connect( M_ball_vel_cycle, SIGNAL( valueChanged( int ) ),
+             this, SLOT( changeBallVelCycle( int ) ) );
+    top_layout->addWidget( M_ball_vel_cycle );
 
     group_box->setLayout( top_layout );
     return group_box;
@@ -910,46 +790,40 @@ ConfigDialog::updateAll()
 {
     const Options & opt = Options::instance();
 
-    M_enlarge_cb->setChecked( opt.isEnlarged() );
+    M_enlarge_cb->setChecked( opt.enlarge() );
     M_ball_size_text->setText( QString::number( opt.ballSize() ) );
     M_player_size_text->setText( QString::number( opt.playerSize() ) );
 
     updateFieldScale();
 
-    M_canvas_width_text
-        ->setText( QString::number( opt.canvasWidth() ) );
-
-    M_canvas_height_text
-        ->setText( QString::number( opt.canvasHeight() ) );
-
-    M_player_number_cb->setChecked( opt.isShownPlayerNumber() );
-    M_hetero_number_cb->setChecked( opt.isShownHeteroNumber() );
-    M_stamina_cb->setChecked( opt.isShownStamina() );
-    M_view_cone_cb->setChecked( opt.isShownViewCone() );
-    M_body_shadow_cb->setChecked( opt.isShownBodyShadow() );
-    M_control_area_cb->setChecked( opt.isShownControlArea() );
-
-    M_anonymous_mode_cb->setChecked( opt.anonymousMode() );
-    M_show_score_board_cb->setChecked( opt.isShownScoreBoard() );
-    M_show_team_logo_cb->setChecked( opt.isShownTeamLogo() );
-    M_show_ball_cb->setChecked( opt.isShownBall() );
-    M_show_players_cb->setChecked( opt.isShownPlayers() );
-    M_show_flags_cb->setChecked( opt.isShownFlags() );
-    M_show_offside_line_cb->setChecked( opt.isShownOffsideLine() );
-
-    M_keepaway_mode_cb->setChecked( opt.keepawayMode() );
+    M_canvas_width_text->setText( QString::number( opt.canvasWidth() ) );
+    M_canvas_height_text->setText( QString::number( opt.canvasHeight() ) );
 
     M_anti_aliasing_cb->setChecked( opt.antiAliasing() );
 
+    M_player_number_cb->setChecked( opt.showPlayerNumber() );
+    M_player_type_cb->setChecked( opt.showPlayerType() );
+    M_stamina_cb->setChecked( opt.showStamina() );
+    M_view_area_cb->setChecked( opt.showViewArea() );
+    M_control_area_cb->setChecked( opt.showControlArea() );
+    M_pointto_cb->setChecked( opt.showPointto() );
+
+    M_show_score_board_cb->setChecked( opt.showScoreBoard() );
+    M_show_keepaway_area_cb->setChecked( opt.showKeepawayArea() );
+    M_show_team_logo_cb->setChecked( opt.showTeamLogo() );
+    M_show_ball_cb->setChecked( opt.showBall() );
+    M_show_player_cb->setChecked( opt.showPlayer() );
+    M_show_flag_cb->setChecked( opt.showFlag() );
+    M_show_offside_line_cb->setChecked( opt.showOffsideLine() );
 
     switch( opt.focusType() ) {
-    case ViewConfig::FOCUS_BALL:
+    case Options::FOCUS_BALL:
         M_focus_ball_rb->setChecked( true );
         break;
-    case ViewConfig::FOCUS_PLAYER:
+    case Options::FOCUS_PLAYER:
         M_focus_player_rb->setChecked( true );
         break;
-    case ViewConfig::FOCUS_POINT:
+    case Options::FOCUS_POINT:
         M_focus_fix_rb->setChecked( true );
         break;
     default:
@@ -958,16 +832,16 @@ ConfigDialog::updateAll()
     }
 
     switch ( opt.playerSelectType() ) {
-    case ViewConfig::SELECT_AUTO_ALL:
+    case Options::SELECT_AUTO_ALL:
         M_select_all_rb->setChecked( true );
         break;
-    case ViewConfig::SELECT_AUTO_LEFT:
+    case Options::SELECT_AUTO_LEFT:
         M_select_left_rb->setChecked( true );
         break;
-    case ViewConfig::SELECT_AUTO_RIGHT:
+    case Options::SELECT_AUTO_RIGHT:
         M_select_right_rb->setChecked( true );
         break;
-    case ViewConfig::SELECT_UNSELECT:
+    case Options::SELECT_UNSELECT:
         M_unselect_rb->setChecked( true );
         break;
     default:
@@ -977,17 +851,11 @@ ConfigDialog::updateAll()
 
     M_ball_trace_start->setText( QString::number( opt.ballTraceStart() ) );
     M_ball_trace_end->setText( QString::number( opt.ballTraceEnd() ) );
-    M_ball_trace_cb->setChecked( opt.isBallAutoTrace() );
 
     M_player_trace_start->setText( QString::number( opt.playerTraceStart() ) );
     M_player_trace_end->setText( QString::number( opt.playerTraceEnd() ) );
-    M_player_trace_cb->setChecked( opt.isPlayerAutoTrace() );
 
-    M_auto_trace_start->setText( QString::number( opt.autoTraceStart() ) );
-    M_auto_trace_period->setValue( opt.autoTracePeriod() );
-
-    M_ball_future->setValue( opt.ballFutureCycle() );
-    M_player_future->setValue( opty.playerFutureCycle() );
+    M_ball_vel_cycle->setValue( opt.ballVelCycle() );
 }
 
 /*-------------------------------------------------------------------*/
@@ -1057,7 +925,7 @@ ConfigDialog::unzoom()
 void
 ConfigDialog::clickEnlarge( bool checked )
 {
-    if ( Options::instance().isEnlarged() != checked )
+    if ( Options::instance().enlarge() != checked )
     {
         Options::instance().toggleEnlarge();
         emit configured();
@@ -1072,7 +940,7 @@ void
 ConfigDialog::toggleEnlarge()
 {
     Options::instance().toggleEnlarge();
-    M_enlarge_cb->setChecked( Options::instance().isEnlarged() );
+    M_enlarge_cb->setChecked( Options::instance().enlarge() );
 
     emit configured();
 }
@@ -1120,12 +988,12 @@ ConfigDialog::editPlayerSize( const QString & text )
 void
 ConfigDialog::slideFieldScale( int value )
 {
+    std::cerr << "slideFieldScale " << value << std::endl;
     double scale = value * 0.1;
 
     if ( std::fabs( scale - Options::instance().fieldScale() ) >= 0.01 )
     {
         M_scale_text->setText( QString::number( scale ) );
-
         Options::instance().setFieldScale( scale );
 
         emit configured();
@@ -1147,7 +1015,6 @@ ConfigDialog::editFieldScale( const QString & text )
     {
         int ivalue = static_cast< int >( rint( value * 10.0 ) );
         M_scale_slider->setValue( ivalue );
-
         Options::instance().setFieldScale( value );
 
         emit configured();
@@ -1180,509 +1047,6 @@ ConfigDialog::applyCanvasSize()
 
 */
 void
-ConfigDialog::clickReverseSide( bool checked )
-{
-    if ( Options::instance().reverseSide() != checked )
-    {
-        Options::instance().toggleReverseSide();
-        emit configured();
-    }
-}
-
-/*-------------------------------------------------------------------*/
-/*!
-
-*/
-void
-ConfigDialog::toggleReverseSide()
-{
-    Options::instance().toggleReverseSide();
-    M_reverse_side_cb->setChecked( Options::instance().reverseSide() );
-
-    emit configured();
-}
-
-/*-------------------------------------------------------------------*/
-/*!
-
-*/
-void
-ConfigDialog::clickPlayerReverseDraw( bool checked )
-{
-    if ( Options::instance().playerReverseDraw() != checked )
-    {
-        Options::instance().togglePlayerReverseDraw();
-        emit configured();
-    }
-}
-
-/*-------------------------------------------------------------------*/
-/*!
-
-*/
-void
-ConfigDialog::togglePlayerReverseDraw()
-{
-    Options::instance().togglePlayerReverseDraw();
-    M_player_reverse_draw_cb->setChecked( Options::instance().playerReverseDraw() );
-
-    emit configured();
-}
-
-/*-------------------------------------------------------------------*/
-/*!
-
-*/
-void
-ConfigDialog::clickShowPlayerNumber( bool checked )
-{
-    if ( Options::instance().isShownPlayerNumber() != checked )
-    {
-        Options::instance().toggleShowPlayerNumber();
-        emit configured();
-    }
-}
-
-/*-------------------------------------------------------------------*/
-/*!
-
-*/
-void
-ConfigDialog::toggleShowPlayerNumber()
-{
-    Options::instance().toggleShowPlayerNumber();
-    M_player_number_cb->setChecked( Options::instance().isShownPlayerNumber() );
-
-    emit configured();
-}
-
-/*-------------------------------------------------------------------*/
-/*!
-
-*/
-void
-ConfigDialog::clickShowHeteroNumber( bool checked )
-{
-    if ( Options::instance().isShownHeteroNumber() != checked )
-    {
-        Options::instance().toggleShowHeteroNumber();
-        emit configured();
-    }
-}
-
-/*-------------------------------------------------------------------*/
-/*!
-
-*/
-void
-ConfigDialog::toggleShowHeteroNumber()
-{
-    Options::instance().toggleShowHeteroNumber();
-    M_hetero_number_cb->setChecked( Options::instance().isShownHeteroNumber() );
-
-    emit configured();
-}
-
-/*-------------------------------------------------------------------*/
-/*!
-
-*/
-void
-ConfigDialog::clickShowStamina( bool checked )
-{
-    if ( Options::instance().isShownStamina() != checked )
-    {
-        Options::instance().toggleShowStamina();
-        emit configured();
-    }
-}
-
-/*-------------------------------------------------------------------*/
-/*!
-
-*/
-void
-ConfigDialog::toggleShowStamina()
-{
-    Options::instance().toggleShowStamina();
-    M_stamina_cb->setChecked( Options::instance().isShownStamina() );
-
-    emit configured();
-}
-
-/*-------------------------------------------------------------------*/
-/*!
-
-*/
-void
-ConfigDialog::clickShowViewCone( bool checked )
-{
-    if ( Options::instance().isShownViewCone() != checked )
-    {
-        Options::instance().toggleShowViewCone();
-        emit configured();
-    }
-}
-
-/*-------------------------------------------------------------------*/
-/*!
-
-*/
-void
-ConfigDialog::toggleShowViewCone()
-{
-    Options::instance().toggleShowViewCone();
-    M_view_cone_cb->setChecked( Options::instance().isShownViewCone() );
-
-    emit configured();
-}
-
-/*-------------------------------------------------------------------*/
-/*!
-
-*/
-void
-ConfigDialog::clickShowBodyShadow( bool checked )
-{
-    if ( Options::instance().isShownBodyShadow() != checked )
-    {
-        Options::instance().toggleShowBodyShadow();
-        emit configured();
-    }
-}
-
-/*-------------------------------------------------------------------*/
-/*!
-
-*/
-void
-ConfigDialog::toggleShowBodyShadow()
-{
-    Options::instance().toggleShowBodyShadow();
-    M_body_shadow_cb->setChecked( Options::instance().isShownBodyShadow() );
-
-    emit configured();
-}
-
-/*-------------------------------------------------------------------*/
-/*!
-
-*/
-void
-ConfigDialog::clickShowControlArea( bool checked )
-{
-    if ( Options::instance().isShownControlArea() != checked )
-    {
-        Options::instance().toggleShowControlArea();
-        emit configured();
-    }
-}
-
-/*-------------------------------------------------------------------*/
-/*!
-
-*/
-void
-ConfigDialog::toggleShowControlArea()
-{
-    Options::instance().toggleShowControlArea();
-    M_control_area_cb->setChecked( Options::instance().isShownControlArea() );
-
-    emit configured();
-}
-
-/*-------------------------------------------------------------------*/
-/*!
-
-*/
-void
-ConfigDialog::clickAnonymousMode( bool checked )
-{
-    if ( Options::instance().anonymousMode() != checked )
-    {
-        Options::instance().toggleAnonymousMode();
-        emit configured();
-    }
-}
-
-/*-------------------------------------------------------------------*/
-/*!
-
-*/
-void
-ConfigDialog::toggleAnonymousMode()
-{
-    Options::instance().toggleAnonymousMode();
-    M_show_score_board_cb->setChecked( Options::instance().anonymousMode() );
-
-    emit configured();
-}
-
-/*-------------------------------------------------------------------*/
-/*!
-
-*/
-void
-ConfigDialog::clickShowScoreBoard( bool checked )
-{
-    if ( Options::instance().isShownScoreBoard() != checked )
-    {
-        Options::instance().toggleShowScoreBoard();
-        emit configured();
-    }
-}
-
-/*-------------------------------------------------------------------*/
-/*!
-
-*/
-void
-ConfigDialog::toggleShowScoreBoard()
-{
-    Options::instance().toggleShowScoreBoard();
-    M_show_score_board_cb->setChecked( Options::instance().isShownScoreBoard() );
-
-    emit configured();
-}
-
-/*-------------------------------------------------------------------*/
-/*!
-
-*/
-void
-ConfigDialog::clickShowTeamLogo( bool checked )
-{
-    if ( Options::instance().isShownTeamLogo() != checked )
-    {
-        Options::instance().toggleShowTeamLogo();
-        emit configured();
-    }
-}
-
-/*-------------------------------------------------------------------*/
-/*!
-
-*/
-void
-ConfigDialog::toggleShowTeamLogo()
-{
-    Options::instance().toggleShowTeamLogo();
-    M_show_score_board_cb->setChecked( Options::instance().isShownTeamLogo() );
-
-    emit configured();
-}
-
-/*-------------------------------------------------------------------*/
-/*!
-
-*/
-void
-ConfigDialog::clickShowBall( bool checked )
-{
-    if ( Options::instance().isShownBall() != checked )
-    {
-        Options::instance().toggleShowBall();
-        emit configured();
-    }
-}
-
-/*-------------------------------------------------------------------*/
-/*!
-
-*/
-void
-ConfigDialog::toggleShowBall()
-{
-    Options::instance().toggleShowBall();
-    M_show_ball_cb->setChecked( Options::instance().isShownBall() );
-
-    emit configured();
-}
-
-/*-------------------------------------------------------------------*/
-/*!
-
-*/
-void
-ConfigDialog::clickShowPlayers( bool checked )
-{
-    if ( Options::instance().isShownPlayers() != checked )
-    {
-        Options::instance().toggleShowPlayers();
-        emit configured();
-    }
-}
-
-/*-------------------------------------------------------------------*/
-/*!
-
-*/
-void
-ConfigDialog::toggleShowPlayers()
-{
-    Options::instance().toggleShowPlayers();
-    M_show_players_cb->setChecked( Options::instance().isShownPlayers() );
-
-    emit configured();
-}
-
-/*-------------------------------------------------------------------*/
-/*!
-
-*/
-void
-ConfigDialog::clickShowFlags( bool checked )
-{
-    if ( Options::instance().isShownFlags() != checked )
-    {
-        Options::instance().toggleShowFlags();
-        emit configured();
-    }
-}
-
-/*-------------------------------------------------------------------*/
-/*!
-
-*/
-void
-ConfigDialog::toggleShowFlags()
-{
-    Options::instance().toggleShowFlags();
-    M_show_flags_cb->setChecked( Options::instance().isShownFlags() );
-
-    emit configured();
-}
-
-/*-------------------------------------------------------------------*/
-/*!
-
-*/
-void
-ConfigDialog::clickShowOffsideLine( bool checked )
-{
-    if ( Options::instance().isShownOffsideLine() != checked )
-    {
-        Options::instance().toggleShowOffsideLine();
-        emit configured();
-    }
-}
-
-/*-------------------------------------------------------------------*/
-/*!
-
-*/
-void
-ConfigDialog::toggleShowOffsideLine()
-{
-    Options::instance().toggleShowOffsideLine();
-    M_show_offside_line_cb->setChecked( Options::instance().isShownOffsideLine() );
-
-    emit configured();
-}
-
-/*-------------------------------------------------------------------*/
-/*!
-
-*/
-void
-ConfigDialog::clickGrassNormal()
-{
-    if ( Options::instance().grassType() != ViewConfig::GRASS_NORMAL )
-    {
-        Options::instance().setGrassType( ViewConfig::GRASS_NORMAL );
-        emit configured();
-    }
-}
-
-/*-------------------------------------------------------------------*/
-/*!
-
-*/
-void
-ConfigDialog::clickGrassLine()
-{
-    if ( Options::instance().grassType() != ViewConfig::GRASS_LINES )
-    {
-        Options::instance().setGrassType( ViewConfig::GRASS_LINES );
-        emit configured();
-    }
-}
-
-/*-------------------------------------------------------------------*/
-/*!
-
-*/
-void
-ConfigDialog::clickGrassChecker()
-{
-    if ( Options::instance().grassType() != ViewConfig::GRASS_CHECKER )
-    {
-        Options::instance().setGrassType( ViewConfig::GRASS_CHECKER );
-        emit configured();
-    }
-}
-
-/*-------------------------------------------------------------------*/
-/*!
-
-*/
-void
-ConfigDialog::clickKeepawayMode( bool checked )
-{
-    if ( Options::instance().keepawayMode() != checked )
-    {
-        Options::instance().toggleKeepawayMode();
-        emit configured();
-    }
-}
-
-/*-------------------------------------------------------------------*/
-/*!
-
-*/
-void
-ConfigDialog::clickShowGridCoord( bool checked )
-{
-    if ( Options::instance().isShownGridCoord() != checked )
-    {
-        Options::instance().toggleShowGridCoord();
-        emit configured();
-    }
-}
-
-/*-------------------------------------------------------------------*/
-/*!
-
-*/
-void
-ConfigDialog::toggleKeepawayMode()
-{
-    Options::instance().toggleKeepawayMode();
-    M_keepaway_mode_cb->setChecked( Options::instance().keepawayMode() );
-
-    emit configured();
-}
-
-/*-------------------------------------------------------------------*/
-/*!
-
-*/
-void
-ConfigDialog::clickCursorHide( bool checked )
-{
-    if ( Options::instance().cursorHide() != checked )
-    {
-        Options::instance().toggleCursorHide();
-
-        //emit configured();
-    }
-}
-
-/*-------------------------------------------------------------------*/
-/*!
-
-*/
-void
 ConfigDialog::clickAntiAliasing( bool checked )
 {
     if ( Options::instance().antiAliasing() != checked )
@@ -1698,12 +1062,362 @@ ConfigDialog::clickAntiAliasing( bool checked )
 
 */
 void
-ConfigDialog::clickGradient( bool checked )
+ConfigDialog::clickShowPlayerNumber( bool checked )
 {
-    if ( Options::instance().gradient() != checked )
+    if ( Options::instance().showPlayerNumber() != checked )
     {
-        Options::instance().toggleGradient();
+        Options::instance().toggleShowPlayerNumber();
+        emit configured();
+    }
+}
 
+/*-------------------------------------------------------------------*/
+/*!
+
+*/
+void
+ConfigDialog::toggleShowPlayerNumber()
+{
+    Options::instance().toggleShowPlayerNumber();
+    M_player_number_cb->setChecked( Options::instance().showPlayerNumber() );
+
+    emit configured();
+}
+
+/*-------------------------------------------------------------------*/
+/*!
+
+*/
+void
+ConfigDialog::clickShowPlayerType( bool checked )
+{
+    if ( Options::instance().showPlayerType() != checked )
+    {
+        Options::instance().toggleShowPlayerType();
+        emit configured();
+    }
+}
+
+/*-------------------------------------------------------------------*/
+/*!
+
+*/
+void
+ConfigDialog::toggleShowPlayerType()
+{
+    Options::instance().toggleShowPlayerType();
+    M_player_type_cb->setChecked( Options::instance().showPlayerType() );
+
+    emit configured();
+}
+
+/*-------------------------------------------------------------------*/
+/*!
+
+*/
+void
+ConfigDialog::clickShowStamina( bool checked )
+{
+    if ( Options::instance().showStamina() != checked )
+    {
+        Options::instance().toggleShowStamina();
+        emit configured();
+    }
+}
+
+/*-------------------------------------------------------------------*/
+/*!
+
+*/
+void
+ConfigDialog::toggleShowStamina()
+{
+    Options::instance().toggleShowStamina();
+    M_stamina_cb->setChecked( Options::instance().showStamina() );
+
+    emit configured();
+}
+
+/*-------------------------------------------------------------------*/
+/*!
+
+*/
+void
+ConfigDialog::clickShowViewArea( bool checked )
+{
+    if ( Options::instance().showViewArea() != checked )
+    {
+        Options::instance().toggleShowViewArea();
+        emit configured();
+    }
+}
+
+/*-------------------------------------------------------------------*/
+/*!
+
+*/
+void
+ConfigDialog::toggleShowViewArea()
+{
+    Options::instance().toggleShowViewArea();
+    M_view_area_cb->setChecked( Options::instance().showViewArea() );
+
+    emit configured();
+}
+
+/*-------------------------------------------------------------------*/
+/*!
+
+*/
+void
+ConfigDialog::clickShowControlArea( bool checked )
+{
+    if ( Options::instance().showControlArea() != checked )
+    {
+        Options::instance().toggleShowControlArea();
+        emit configured();
+    }
+}
+
+/*-------------------------------------------------------------------*/
+/*!
+
+*/
+void
+ConfigDialog::toggleShowControlArea()
+{
+    Options::instance().toggleShowControlArea();
+    M_control_area_cb->setChecked( Options::instance().showControlArea() );
+
+    emit configured();
+}
+
+/*-------------------------------------------------------------------*/
+/*!
+
+*/
+void
+ConfigDialog::clickShowPointto( bool checked )
+{
+    if ( Options::instance().showPointto() != checked )
+    {
+        Options::instance().toggleShowPointto();
+        emit configured();
+    }
+}
+
+/*-------------------------------------------------------------------*/
+/*!
+
+*/
+void
+ConfigDialog::toggleShowPointto()
+{
+    Options::instance().toggleShowPointto();
+    M_control_area_cb->setChecked( Options::instance().showPointto() );
+
+    emit configured();
+}
+
+/*-------------------------------------------------------------------*/
+/*!
+
+*/
+void
+ConfigDialog::clickShowScoreBoard( bool checked )
+{
+    if ( Options::instance().showScoreBoard() != checked )
+    {
+        Options::instance().toggleShowScoreBoard();
+        emit configured();
+    }
+}
+
+/*-------------------------------------------------------------------*/
+/*!
+
+*/
+void
+ConfigDialog::toggleShowScoreBoard()
+{
+    Options::instance().toggleShowScoreBoard();
+    M_show_score_board_cb->setChecked( Options::instance().showScoreBoard() );
+
+    emit configured();
+}
+
+/*-------------------------------------------------------------------*/
+/*!
+
+*/
+void
+ConfigDialog::clickShowTeamLogo( bool checked )
+{
+    if ( Options::instance().showTeamLogo() != checked )
+    {
+        Options::instance().toggleShowTeamLogo();
+        emit configured();
+    }
+}
+
+/*-------------------------------------------------------------------*/
+/*!
+
+*/
+void
+ConfigDialog::toggleShowTeamLogo()
+{
+    Options::instance().toggleShowTeamLogo();
+    M_show_score_board_cb->setChecked( Options::instance().showTeamLogo() );
+
+    emit configured();
+}
+
+/*-------------------------------------------------------------------*/
+/*!
+
+*/
+void
+ConfigDialog::clickShowBall( bool checked )
+{
+    if ( Options::instance().showBall() != checked )
+    {
+        Options::instance().toggleShowBall();
+        emit configured();
+    }
+}
+
+/*-------------------------------------------------------------------*/
+/*!
+
+*/
+void
+ConfigDialog::toggleShowBall()
+{
+    Options::instance().toggleShowBall();
+    M_show_ball_cb->setChecked( Options::instance().showBall() );
+
+    emit configured();
+}
+
+/*-------------------------------------------------------------------*/
+/*!
+
+*/
+void
+ConfigDialog::clickShowPlayer( bool checked )
+{
+    if ( Options::instance().showPlayer() != checked )
+    {
+        Options::instance().toggleShowPlayer();
+        emit configured();
+    }
+}
+
+/*-------------------------------------------------------------------*/
+/*!
+
+*/
+void
+ConfigDialog::toggleShowPlayer()
+{
+    Options::instance().toggleShowPlayer();
+    M_show_player_cb->setChecked( Options::instance().showPlayer() );
+
+    emit configured();
+}
+
+/*-------------------------------------------------------------------*/
+/*!
+
+*/
+void
+ConfigDialog::clickShowFlag( bool checked )
+{
+    if ( Options::instance().showFlag() != checked )
+    {
+        Options::instance().toggleShowFlag();
+        emit configured();
+    }
+}
+
+/*-------------------------------------------------------------------*/
+/*!
+
+*/
+void
+ConfigDialog::toggleShowFlag()
+{
+    Options::instance().toggleShowFlag();
+    M_show_flag_cb->setChecked( Options::instance().showFlag() );
+
+    emit configured();
+}
+
+/*-------------------------------------------------------------------*/
+/*!
+
+*/
+void
+ConfigDialog::clickShowOffsideLine( bool checked )
+{
+    if ( Options::instance().showOffsideLine() != checked )
+    {
+        Options::instance().toggleShowOffsideLine();
+        emit configured();
+    }
+}
+
+/*-------------------------------------------------------------------*/
+/*!
+
+*/
+void
+ConfigDialog::toggleShowOffsideLine()
+{
+    Options::instance().toggleShowOffsideLine();
+    M_show_offside_line_cb->setChecked( Options::instance().showOffsideLine() );
+
+    emit configured();
+}
+
+/*-------------------------------------------------------------------*/
+/*!
+
+*/
+void
+ConfigDialog::clickShowKeepawayArea( bool checked )
+{
+    if ( Options::instance().showKeepawayArea() != checked )
+    {
+        Options::instance().toggleShowKeepawayArea();
+        emit configured();
+    }
+}
+
+/*-------------------------------------------------------------------*/
+/*!
+
+*/
+void
+ConfigDialog::toggleShowKeepawayArea()
+{
+    Options::instance().toggleShowKeepawayArea();
+    M_show_keepaway_area_cb->setChecked( Options::instance().showKeepawayArea() );
+
+    emit configured();
+}
+
+/*-------------------------------------------------------------------*/
+/*!
+
+*/
+void
+ConfigDialog::clickShowGridCoord( bool checked )
+{
+    if ( Options::instance().showGridCoord() != checked )
+    {
+        Options::instance().toggleShowGridCoord();
         emit configured();
     }
 }
@@ -1745,90 +1459,11 @@ ConfigDialog::editGridStep( const QString & text )
 
 */
 void
-ConfigDialog::selectDrawType( int index )
-{
-    if ( static_cast< int >( Options::instance().drawType() ) != index )
-    {
-        Options::instance().setDrawType( static_cast< ViewConfig::DrawType >( index ) );
-        emit configured();
-    }
-}
-
-/*-------------------------------------------------------------------*/
-/*!
-
-*/
-void
-ConfigDialog::clickShowVoronoiDiagram( bool checked )
-{
-    if ( Options::instance().isShownVoronoiDiagram() != checked )
-    {
-        Options::instance().toggleShowVoronoiDiagram();
-        emit configured();
-    }
-}
-
-/*-------------------------------------------------------------------*/
-/*!
-
-*/
-void
-ConfigDialog::clickShowDelaunayTrianglation( bool checked )
-{
-    if ( Options::instance().isShownDelaunayTrianglation() != checked )
-    {
-        Options::instance().toggleShowDelaunayTrianglation();
-        emit configured();
-    }
-}
-
-/*-------------------------------------------------------------------*/
-/*!
-
-*/
-void
-ConfigDialog::selectCompGeomSide( int index )
-{
-    switch ( index ) {
-    case 0:
-        if ( Options::instance().voronoiTarget() != rcsc::NEUTRAL )
-        {
-            Options::instance().setVoronoiTarget( rcsc::NEUTRAL );
-            emit configured();
-        }
-        break;
-    case 1:
-        if ( Options::instance().voronoiTarget() != rcsc::LEFT )
-        {
-            Options::instance().setVoronoiTarget( rcsc::LEFT );
-            emit configured();
-        }
-        break;
-    case 2:
-        if ( Options::instance().voronoiTarget() != rcsc::RIGHT )
-        {
-            Options::instance().setVoronoiTarget( rcsc::RIGHT );
-            emit configured();
-        }
-        break;
-    default:
-        std::cerr << "ConfigDialog::selectCompGeomSide() unsupported index "
-                  << index
-                  << std::endl;
-        break;
-    }
-}
-
-/*-------------------------------------------------------------------*/
-/*!
-
-*/
-void
 ConfigDialog::clickFocusBall()
 {
-    if ( Options::instance().focusType() != ViewConfig::FOCUS_BALL )
+    if ( Options::instance().focusType() != Options::FOCUS_BALL )
     {
-        Options::instance().setFocusType( ViewConfig::FOCUS_BALL );
+        Options::instance().setFocusType( Options::FOCUS_BALL );
         emit configured();
     }
 }
@@ -1840,13 +1475,13 @@ ConfigDialog::clickFocusBall()
 void
 ConfigDialog::toggleFocusBall()
 {
-    if ( Options::instance().focusType() == ViewConfig::FOCUS_BALL )
+    if ( Options::instance().focusType() == Options::FOCUS_BALL )
     {
         setFocusFix();
     }
     else
     {
-        Options::instance().setFocusType( ViewConfig::FOCUS_BALL );
+        Options::instance().setFocusType( Options::FOCUS_BALL );
         M_focus_ball_rb->setChecked( true );
 
         emit configured();
@@ -1860,9 +1495,9 @@ ConfigDialog::toggleFocusBall()
 void
 ConfigDialog::clickFocusPlayer()
 {
-    if ( Options::instance().focusType() != ViewConfig::FOCUS_PLAYER )
+    if ( Options::instance().focusType() != Options::FOCUS_PLAYER )
     {
-        Options::instance().setFocusType( ViewConfig::FOCUS_PLAYER );
+        Options::instance().setFocusType( Options::FOCUS_PLAYER );
         emit configured();
     }
 }
@@ -1874,13 +1509,13 @@ ConfigDialog::clickFocusPlayer()
 void
 ConfigDialog::toggleFocusPlayer()
 {
-    if ( Options::instance().focusType() == ViewConfig::FOCUS_PLAYER )
+    if ( Options::instance().focusType() == Options::FOCUS_PLAYER )
     {
         setFocusFix();
     }
     else
     {
-        Options::instance().setFocusType( ViewConfig::FOCUS_PLAYER );
+        Options::instance().setFocusType( Options::FOCUS_PLAYER );
         M_focus_player_rb->setChecked( true );
 
         emit configured();
@@ -1894,9 +1529,9 @@ ConfigDialog::toggleFocusPlayer()
 void
 ConfigDialog::setFocusFix()
 {
-    if ( Options::instance().focusType() != ViewConfig::FOCUS_POINT )
+    if ( Options::instance().focusType() != Options::FOCUS_POINT )
     {
-        Options::instance().setFocusType( ViewConfig::FOCUS_POINT );
+        Options::instance().setFocusType( Options::FOCUS_POINT );
         M_focus_fix_rb->setChecked( true );
 
         emit configured();
@@ -1923,9 +1558,9 @@ ConfigDialog::setFocusPoint( const QPoint & point )
 void
 ConfigDialog::clickSelectAutoAll()
 {
-    if ( Options::instance().playerSelectType() != ViewConfig::SELECT_AUTO_ALL )
+    if ( Options::instance().playerSelectType() != Options::SELECT_AUTO_ALL )
     {
-        Options::instance().setPlayerSelectType( ViewConfig::SELECT_AUTO_ALL );
+        Options::instance().setPlayerSelectType( Options::SELECT_AUTO_ALL );
         emit configured();
     }
 }
@@ -1937,13 +1572,13 @@ ConfigDialog::clickSelectAutoAll()
 void
 ConfigDialog::toggleSelectAutoAll()
 {
-    if ( Options::instance().playerSelectType() == ViewConfig::SELECT_AUTO_ALL )
+    if ( Options::instance().playerSelectType() == Options::SELECT_AUTO_ALL )
     {
         setUnselect();
     }
     else
     {
-        Options::instance().setPlayerSelectType( ViewConfig::SELECT_AUTO_ALL );
+        Options::instance().setPlayerSelectType( Options::SELECT_AUTO_ALL );
         M_select_all_rb->setChecked( true );
 
         emit configured();
@@ -1957,13 +1592,9 @@ ConfigDialog::toggleSelectAutoAll()
 void
 ConfigDialog::clickSelectAutoLeft()
 {
-    ViewConfig::PlayerSelectType type = ( Options::instance().reverseSide()
-                                          ? ViewConfig::SELECT_AUTO_RIGHT
-                                          : ViewConfig::SELECT_AUTO_LEFT );
-
-    if ( Options::instance().playerSelectType() != type )
+    if ( Options::instance().playerSelectType() != Options::SELECT_AUTO_LEFT )
     {
-        Options::instance().setPlayerSelectType( type );
+        Options::instance().setPlayerSelectType( Options::SELECT_AUTO_LEFT );
         emit configured();
     }
 }
@@ -1975,17 +1606,13 @@ ConfigDialog::clickSelectAutoLeft()
 void
 ConfigDialog::toggleSelectAutoLeft()
 {
-    ViewConfig::PlayerSelectType type = ( Options::instance().reverseSide()
-                                          ? ViewConfig::SELECT_AUTO_RIGHT
-                                          : ViewConfig::SELECT_AUTO_LEFT );
-
-    if ( Options::instance().playerSelectType() == type )
+    if ( Options::instance().playerSelectType() == Options::SELECT_AUTO_LEFT )
     {
         setUnselect();
     }
     else
     {
-        Options::instance().setPlayerSelectType( type );
+        Options::instance().setPlayerSelectType( Options::SELECT_AUTO_LEFT );
         M_select_left_rb->setChecked( true );
 
         emit configured();
@@ -1999,13 +1626,9 @@ ConfigDialog::toggleSelectAutoLeft()
 void
 ConfigDialog::clickSelectAutoRight()
 {
-    ViewConfig::PlayerSelectType type = ( Options::instance().reverseSide()
-                                          ? ViewConfig::SELECT_AUTO_LEFT
-                                          : ViewConfig::SELECT_AUTO_RIGHT );
-
-    if ( Options::instance().playerSelectType() != type )
+    if ( Options::instance().playerSelectType() != Options::SELECT_AUTO_RIGHT )
     {
-        Options::instance().setPlayerSelectType( type );
+        Options::instance().setPlayerSelectType( Options::SELECT_AUTO_RIGHT );
         emit configured();
     }
 }
@@ -2017,17 +1640,13 @@ ConfigDialog::clickSelectAutoRight()
 void
 ConfigDialog::toggleSelectAutoRight()
 {
-    ViewConfig::PlayerSelectType type = ( Options::instance().reverseSide()
-                                          ? ViewConfig::SELECT_AUTO_LEFT
-                                          : ViewConfig::SELECT_AUTO_RIGHT );
-
-    if ( Options::instance().playerSelectType() == type )
+    if ( Options::instance().playerSelectType() == Options::SELECT_AUTO_RIGHT )
     {
         setUnselect();
     }
     else
     {
-        Options::instance().setPlayerSelectType( type );
+        Options::instance().setPlayerSelectType( Options::SELECT_AUTO_RIGHT );
         M_select_right_rb->setChecked( true );
 
         emit configured();
@@ -2041,9 +1660,9 @@ ConfigDialog::toggleSelectAutoRight()
 void
 ConfigDialog::clickSelectFix()
 {
-    if ( Options::instance().playerSelectType() != ViewConfig::SELECT_FIX )
+    if ( Options::instance().playerSelectType() != Options::SELECT_FIX )
     {
-        Options::instance().setPlayerSelectType( ViewConfig::SELECT_AUTO_RIGHT );
+        Options::instance().setPlayerSelectType( Options::SELECT_AUTO_RIGHT );
         emit configured();
     }
 }
@@ -2055,13 +1674,13 @@ ConfigDialog::clickSelectFix()
 void
 ConfigDialog::toggleSelectFix()
 {
-    if ( Options::instance().playerSelectType() == ViewConfig::SELECT_FIX )
+    if ( Options::instance().playerSelectType() == Options::SELECT_FIX )
     {
         setUnselect();
     }
     else
     {
-        Options::instance().setPlayerSelectType( ViewConfig::SELECT_FIX );
+        Options::instance().setPlayerSelectType( Options::SELECT_FIX );
         M_select_fix_rb->setChecked( true );
 
         emit configured();
@@ -2099,31 +1718,17 @@ ConfigDialog::selectPlayer( int number )
         return;
     }
 
-    int orig_number = number;
-
-    if ( Options::instance().reverseSide() )
-    {
-        if ( number <= 11 )
-        {
-            number += 11;
-        }
-        else
-        {
-            number -= 11;
-        }
-    }
-
-    Options::instance().setPlayerSelectType( ViewConfig::SELECT_FIX );
+    Options::instance().setPlayerSelectType( Options::SELECT_FIX );
     if ( number <= 11 )
     {
-        Options::instance().setSelectedNumber( rcsc::LEFT, number );
+        Options::instance().setSelectedNumber( rcss::rcg::LEFT, number );
     }
     else
     {
-        Options::instance().setSelectedNumber( rcsc::RIGHT, number - 11 );
+        Options::instance().setSelectedNumber( rcss::rcg::RIGHT, number - 11 );
     }
 
-    M_player_choice->setCurrentIndex( orig_number );
+    M_player_choice->setCurrentIndex( number );
     M_select_fix_rb->setChecked( true );
 
     emit configured();
@@ -2136,32 +1741,19 @@ ConfigDialog::selectPlayer( int number )
 void
 ConfigDialog::choicePlayer( int number )
 {
-    int orig_number = number;
-    if ( Options::instance().reverseSide() )
-    {
-        if ( number <= 11 )
-        {
-            number += 11;
-        }
-        else
-        {
-            number -= 11;
-        }
-    }
-
     if ( number <= 11
-         && Options::instance().isSelectedPlayer( rcsc::LEFT, number ) )
+         && Options::instance().isSelectedPlayer( rcss::rcg::LEFT, number ) )
     {
         return;
     }
 
     if ( number > 11
-         && Options::instance().isSelectedPlayer( rcsc::RIGHT, number - 11 ) )
+         && Options::instance().isSelectedPlayer( rcss::rcg::RIGHT, number - 11 ) )
     {
         return;
     }
 
-    selectPlayer( orig_number );
+    selectPlayer( number );
 }
 
 /*-------------------------------------------------------------------*/
@@ -2280,15 +1872,12 @@ ConfigDialog::editBallTraceEnd( const QString & text )
 void
 ConfigDialog::clickBallTraceAll()
 {
-    const std::vector< MonitorViewPtr > & view
-        = M_main_data.viewHolder().monitorViewCont();
+    const std::vector< DispPtr > & cont = M_main_data.dispHolder().dispInfoCont();
 
-    if ( ! view.empty() )
+    if ( ! cont.empty() )
     {
-        M_ball_trace_cb->setChecked( false );
-
-        if ( Options::instance().ballTraceStart() == view.front()->cycle()
-             && Options::instance().ballTraceEnd() == view.back()->cycle() )
+        if ( Options::instance().ballTraceStart() == cont.front()->show_.time_
+             && Options::instance().ballTraceEnd() == cont.back()->show_.time_ )
         {
             M_ball_trace_start->setText( QString::number( 0 ) );
             M_ball_trace_end->setText( QString::number( 0 ) );
@@ -2298,32 +1887,12 @@ ConfigDialog::clickBallTraceAll()
         }
         else
         {
-            M_ball_trace_start->setText( QString::number( view.front()->cycle() ) );
-            M_ball_trace_end->setText( QString::number( view.back()->cycle() ) );
+            M_ball_trace_start->setText( QString::number( cont.front()->show_.time_ ) );
+            M_ball_trace_end->setText( QString::number( cont.back()->show_.time_ ) );
 
-            Options::instance().setBallTraceStart( view.front()->cycle() );
-            Options::instance().setBallTraceEnd( view.back()->cycle() );
+            Options::instance().setBallTraceStart( cont.front()->show_.time_ );
+            Options::instance().setBallTraceEnd( cont.back()->show_.time_ );
         }
-
-        if ( Options::instance().isBallAutoTrace() )
-        {
-            Options::instance().toggleBallAutoTrace();
-        }
-
-        emit configured();
-    }
-}
-
-/*-------------------------------------------------------------------*/
-/*!
-
-*/
-void
-ConfigDialog::clickAutoBallTrace( bool checked )
-{
-    if ( Options::instance().isBallAutoTrace() != checked )
-    {
-        Options::instance().toggleBallAutoTrace();
 
         emit configured();
     }
@@ -2372,15 +1941,11 @@ ConfigDialog::editPlayerTraceEnd( const QString & text )
 void
 ConfigDialog::clickPlayerTraceAll()
 {
-    const std::vector< MonitorViewPtr > & view
-        = M_main_data.viewHolder().monitorViewCont();
-    if ( ! view.empty() )
+    const std::vector< DispPtr > & cont = M_main_data.dispHolder().dispInfoCont();
+    if ( ! cont.empty() )
     {
-        M_player_trace_cb->setChecked( false );
-
-
-        if ( Options::instance().playerTraceStart() == view.front()->cycle()
-             && Options::instance().playerTraceEnd() == view.back()->cycle() )
+        if ( Options::instance().playerTraceStart() == cont.front()->show_.time_
+             && Options::instance().playerTraceEnd() == cont.back()->show_.time_ )
         {
             M_player_trace_start->setText( QString::number( 0 ) );
             M_player_trace_end->setText( QString::number( 0 ) );
@@ -2390,65 +1955,12 @@ ConfigDialog::clickPlayerTraceAll()
         }
         else
         {
-            M_player_trace_start->setText( QString::number( view.front()->cycle() ) );
-            M_player_trace_end->setText( QString::number( view.back()->cycle() ) );
+            M_player_trace_start->setText( QString::number( cont.front()->show_.time_ ) );
+            M_player_trace_end->setText( QString::number( cont.back()->show_.time_ ) );
 
-            Options::instance().setPlayerTraceStart( view.front()->cycle() );
-            Options::instance().setPlayerTraceEnd( view.back()->cycle() );
+            Options::instance().setPlayerTraceStart( cont.front()->show_.time_ );
+            Options::instance().setPlayerTraceEnd( cont.back()->show_.time_ );
         }
-
-        if ( Options::instance().isPlayerAutoTrace() )
-        {
-            Options::instance().togglePlayerAutoTrace();
-        }
-
-        emit configured();
-    }
-}
-
-/*-------------------------------------------------------------------*/
-/*!
-
-*/
-void
-ConfigDialog::clickAutoPlayerTrace( bool checked )
-{
-    if ( Options::instance().isPlayerAutoTrace() != checked )
-    {
-        Options::instance().togglePlayerAutoTrace();
-
-        emit configured();
-    }
-}
-
-/*-------------------------------------------------------------------*/
-/*!
-
-*/
-void
-ConfigDialog::editAutoTraceStart( const QString & text )
-{
-    bool ok = true;
-    long value = text.toLong( & ok );
-
-    if ( ok )
-    {
-        Options::instance().setAutoTraceStart( value );
-
-        emit configured();
-    }
-}
-
-/*-------------------------------------------------------------------*/
-/*!
-
-*/
-void
-ConfigDialog::changeAutoTracePeriod( int value )
-{
-    if ( value >= 1 )
-    {
-        Options::instance().setAutoTracePeriod( value );
 
         emit configured();
     }
@@ -2471,21 +1983,9 @@ ConfigDialog::clickLinePointButton()
 
 */
 void
-ConfigDialog::changeBallFutureCycle( int value )
+ConfigDialog::changeBallVelCycle( int value )
 {
-    Options::instance().setBallFutureCycle( value );
-
-    emit configured();
-}
-
-/*-------------------------------------------------------------------*/
-/*!
-
-*/
-void
-ConfigDialog::changePlayerFutureCycle( int value )
-{
-    Options::instance().setPlayerFutureCycle( value );
+    Options::instance().setBallVelCycle( value );
 
     emit configured();
 }

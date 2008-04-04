@@ -205,21 +205,24 @@ DispHolder::doHandleMsgInfo( const int,
 void
 DispHolder::doHandlePlayMode( const rcss::rcg::PlayMode pmode )
 {
-    if ( pmode == rcss::rcg::PM_PenaltyScore_Left
-         || pmode == rcss::rcg::PM_PenaltyMiss_Right )
+    if ( M_playmode != pmode )
     {
-        int cycle = ( M_last_disp
-                      ? M_last_disp->show_.time_
-                      : 0 );
-        M_penalty_scores_left.push_back( std::make_pair( cycle, pmode ) );
-    }
-    else if ( pmode == rcss::rcg::PM_PenaltyScore_Right
-              || pmode == rcss::rcg::PM_PenaltyMiss_Right )
-    {
-        int cycle = ( M_last_disp
-                      ? M_last_disp->show_.time_
-                      : 0 );
-        M_penalty_scores_right.push_back( std::make_pair( cycle, pmode ) );
+        if ( pmode == rcss::rcg::PM_PenaltyScore_Left
+             || pmode == rcss::rcg::PM_PenaltyMiss_Left )
+        {
+            int cycle = ( M_last_disp
+                          ? M_last_disp->show_.time_
+                          : 0 );
+            M_penalty_scores_left.push_back( std::make_pair( cycle, pmode ) );
+        }
+        else if ( pmode == rcss::rcg::PM_PenaltyScore_Right
+                  || pmode == rcss::rcg::PM_PenaltyMiss_Right )
+        {
+            int cycle = ( M_last_disp
+                          ? M_last_disp->show_.time_
+                          : 0 );
+            M_penalty_scores_right.push_back( std::make_pair( cycle, pmode ) );
+        }
     }
 
     M_playmode = pmode;

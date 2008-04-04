@@ -66,6 +66,8 @@
 
 #include <unistd.h> // fork, execlp
 #include <sys/time.h> // itimerval, setitimer
+#include <sys/wait.h> // wait
+#include <sys/types.h> // wait
 
 #ifdef HAVE_NETINET_IN_H
 #include <netinet/in.h>
@@ -410,13 +412,6 @@ Player::quit()
 {
     M_out_strm.flush();
     M_out_strm.close();
-
-//     if ( M_monitor_child > 0 )
-//     {
-//         ::kill( M_monitor_child, SIGINT );
-//         std::cout << "Killing " << M_monitor_child << std::endl;
-//         M_monitor_child = 0;
-//     }
 
     std::exit( 0 );
 }

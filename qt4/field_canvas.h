@@ -34,8 +34,7 @@
 #define RCSSLOGPLAYER_FIELD_CANVAS_H
 
 #include <QWidget>
-#include <QPoint>
-#include <QPointF>
+#include <QPen>
 #include <QFont>
 
 #include "mouse_state.h"
@@ -74,11 +73,6 @@ private:
     //! 0: left, 1: middle, 2: right
     MouseState M_mouse_state[3];
 
-    double M_field_scale; //!< scaling factor
-    bool M_zoomed; //!< zoom flag
-    QPoint M_field_center; //!< field center point on the screen
-    QPointF M_focus_point; //!< the current focus point
-
     QPen M_measure_line_pen;
     QPen M_measure_mark_pen;
     QPen M_measure_font_pen;
@@ -104,42 +98,6 @@ public:
 
     void draw( QPainter & painter );
 
-    const
-    QPoint & fieldCenter() const
-      {
-          return M_field_center;
-      }
-
-    const
-    QPointF & focusPoint() const
-      {
-          return M_focus_point;
-      }
-
-    int scale( const double & len ) const
-      {
-          return static_cast< int >( ::rint( len * M_field_scale ) );
-      }
-
-    int screenX( const double & x ) const
-      {
-          return M_field_center.x() + scale( x );
-      }
-
-    int screenY( const double & y ) const
-      {
-          return M_field_center.y() + scale( y );
-      }
-
-    double fieldX( const int x ) const
-      {
-          return ( x - M_field_center.x() ) / M_field_scale;
-      }
-
-    double fieldY( const int y ) const
-      {
-          return ( y - M_field_center.y() ) / M_field_scale;
-      }
 
 private:
 
@@ -148,7 +106,7 @@ private:
 
     void drawMouseMeasure( QPainter & painter );
 
-    void updateScale();
+    void updateFocus();
 
 protected:
 
@@ -160,9 +118,6 @@ protected:
     void paintEvent( QPaintEvent * );
 
 public slots:
-
-    void setRedrawAllFlag();
-    void redrawAll();
 
     void dropBall();
     void freeKickLeft();

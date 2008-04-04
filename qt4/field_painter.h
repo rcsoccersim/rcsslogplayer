@@ -38,33 +38,12 @@
 #include <QPen>
 #include <QBrush>
 
-class FieldCanvas;
 class MainData;
 
 class FieldPainter
     : public PainterInterface {
-public:
-    static const double PITCH_LENGTH;
-    static const double PITCH_WIDTH;
-    static const double PITCH_HALF_LENGTH;
-    static const double PITCH_HALF_WIDTH;
-    static const double PITCH_MARGIN;
-    static const double CENTER_CIRCLE_R;
-    static const double PENALTY_AREA_LENGTH;
-    static const double PENALTY_AREA_WIDTH;
-    static const double PENALTY_CIRCLE_R;
-    static const double PENALTY_SPOT_DIST;
-    static const double GOAL_WIDTH;
-    static const double GOAL_HALF_WIDTH;
-    static const double GOAL_AREA_LENGTH;
-    static const double GOAL_AREA_WIDTH;
-    static const double GOAL_DEPTH;
-    static const double CORNER_ARC_R;
-    static const double GOAL_POST_RADIUS;
-
 private:
 
-    const FieldCanvas & M_canvas;
     const MainData & M_main_data;
 
     QBrush M_field_brush;
@@ -77,8 +56,7 @@ private:
 public:
 
 
-    FieldPainter( const FieldCanvas & canvas,
-                  const MainData & main_data );
+    FieldPainter( const MainData & main_data );
     ~FieldPainter();
 
     void draw( QPainter & painter );

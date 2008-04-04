@@ -1,3 +1,52 @@
+2008-04-05  Hidehisa Akiyama  <akky@users.sourceforge.jp>
+
+	* icons/next_score.xpm:
+	* icons/prev_score.xpm:
+	* qt4/Makefile.am:
+	* qt4/angle_deg.cpp:
+	* qt4/angle_deg.h:
+	* qt4/detail_dialog.cpp:
+	* qt4/detail_dialog.h:
+	* qt4/log_player.cpp:
+	* qt4/log_player.h:
+	* qt4/log_player_tool_bar.cpp:
+	* qt4/log_player_tool_bar.h:
+	* qt4/monitor_client.cpp:
+	* qt4/monitor_client.h:
+	* qt4/player_type_dialog.cpp:
+	* qt4/player_type_dialog.h:
+	* qt4/vector_2d.cpp:
+	* qt4/vector_2d.h:
+	* qt4/ball_painter.cpp:
+	* qt4/ball_painter.h:
+	* qt4/config_dialog.cpp:
+	* qt4/config_dialog.h:
+	* qt4/disp_holder.cpp:
+	* qt4/disp_holder.h:
+	* qt4/field_canvas.cpp:
+	* qt4/field_canvas.h:
+	* qt4/field_painter.cpp:
+	* qt4/field_painter.h:
+	* qt4/main_data.cpp:
+	* qt4/main_data.h:
+	* qt4/main_window.cpp:
+	* qt4/main_window.h:
+	* qt4/options.cpp:
+	* qt4/options.h:
+	* qt4/player_painter.cpp:
+	* qt4/player_painter.h:
+	* qt4/score_board_painter.cpp:
+	* qt4/score_board_painter.h:
+	- implemented new Qt4 based logplayer.
+
+	* rcsslogplayer/parser.cpp:
+	* rcsslogplayer/types.h:
+	- added new intervfaces for the convenience.
+
+	* classic/logplayer.cpp:
+	* configure.ac:
+	- tested wait().
+
 2008-04-04  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 
 	* configure.ac:

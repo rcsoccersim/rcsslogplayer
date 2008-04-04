@@ -35,13 +35,11 @@
 
 #include "painter_interface.h"
 
-class FieldCanvas;
 class MainData;
 
 class BallPainter
     : public PainterInterface {
 private:
-    const FieldCanvas & M_canvas;
     const MainData & M_main_data;
 
     QPen M_ball_pen;
@@ -54,8 +52,7 @@ private:
     const BallPainter & operator=( const BallPainter & );
 public:
 
-    BallPainter( const FieldCanvas & canvas,
-                 const MainData & main_data );
+    BallPainter( const MainData & main_data );
     ~BallPainter();
 
     void draw( QPainter & painter );
@@ -66,7 +63,8 @@ private:
     void readSettings();
     void writeSettings();
 
-    void drawFutureState( QPainter & painter ) const;
+    void drawVelocity( QPainter & painter ) const;
+    void drawTrace( QPainter & painter ) const;
 
 };
 

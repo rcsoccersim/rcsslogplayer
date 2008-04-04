@@ -33,25 +33,18 @@
 #ifndef RCSSLOGPLAYER_PLAYER_PAINTER_H
 #define RCSSLOGPLAYER_PLAYER_PAINTER_H
 
+#include <QPen>
+#include <QBrush>
+#include <QFont>
+
 #include "painter_interface.h"
 
 #include <rcsslogplayer/types.h>
-
-#include <boost/shared_ptr.hpp>
-
-namespace rcss {
-namespace rcg {
-class PlayerTypeT;
-class ServerParamT;
-}
-}
 
 class QPainter;
 class QPixmap;
 
 class MainData;
-class Ball;
-class Player;
 
 class PlayerPainter
     : public PainterInterface {
@@ -60,26 +53,16 @@ private:
     struct Param {
         int x_; //!< screen X coordinates
         int y_; //!< screen Y coordinates
-        double body_;
-        double head_;
         int body_radius_; //!< pixel body radius
         int kick_radius_; //!< pixel kick area radius
         int draw_radius_; //!< pixel main draw radius.
         bool have_full_effort_; //!< flag to check effort value
-        const Player & player_;
-        const Ball & ball_;
+        const rcss::rcg::PlayerT & player_;
+        const rcss::rcg::BallT & ball_;
         const rcss::rcg::PlayerTypeT & player_type_;
 
-        /*!
-          \brief constructor
-          \param p reference to parent class
-          \param draw_param set of draw parameters
-          \param sparam server parameters
-          \param ptypes set of player type parameters
-         */
-        Param( const Player & player,
-               const Ball & ball,
-               const ViewConfig & view_conf,
+        Param( const rcss::rcg::PlayerT & player,
+               const rcss::rcg::BallT & ball,
                const rcss::rcg::ServerParamT & sparam,
                const rcss::rcg::PlayerTypeT & ptype );
     private:
@@ -88,24 +71,26 @@ private:
     };
 
 
-    const FieldCanvas & M_canvas;
     const MainData & M_main_data;
 
     QFont M_player_font;
 
     QPen M_player_pen;
     QPen M_left_team_pen;
-    QPen M_left_team_brush;
-    QPen M_left_goalei_brush;
+    QBrush M_left_team_brush;
+    QPen M_left_goalie_pen;
+    QBrush M_left_goalie_brush;
     QPen M_right_team_pen;
-    QPen M_right_team_brush;
-    QPen M_right_goalie_brush;
+    QBrush M_right_team_brush;
+    QPen M_right_goalie_pen;
+    QBrush M_right_goalie_brush;
 
     QPen M_player_number_pen;
     QPen M_player_stamina_pen;
 
     QPen M_neck_pen;
     QPen M_view_area_pen;
+    QPen M_large_view_area_pen;
     QBrush M_ball_collide_brush;
     QBrush M_player_collide_brush;
     QPen M_kick_pen;
@@ -115,6 +100,7 @@ private:
     QPen M_tackle_pen;
     QBrush M_tackle_brush;
     QBrush M_tackle_fault_brush;
+    QPen M_pointto_pen;
 
     // not used
     PlayerPainter();
@@ -122,8 +108,7 @@ private:
     const PlayerPainter operator=( const PlayerPainter & );
 public:
 
-    PlayerPainter( const FieldCanvas & canvas;
-                   const MainData & main_data );
+    PlayerPainter( const MainData & main_data );
 
     ~PlayerPainter();
 
@@ -136,23 +121,26 @@ private:
 
 
     void drawAll( QPainter & painter,
-                  const Player & player,
-                  const Ball & ball ) const;
+                  const rcss::rcg::PlayerT & player,
+                  const rcss::rcg::BallT & ball ) const;
     void drawBody( QPainter & painter,
                    const PlayerPainter::Param & param ) const;
-    void drawEdge( QPainter & painter,
-                   const PlayerPainter::Param & param ) const;
+    void drawDir( QPainter & painter,
+                  const PlayerPainter::Param & param ) const;
     void drawViewArea( QPainter & painter,
                        const PlayerPainter::Param & param ) const;
     void drawControlArea( QPainter & painter,
                           const PlayerPainter::Param & param ) const;
     void drawPointto( QPainter & painter,
                       const PlayerPainter::Param & param ) const;
+    void drawTrace( QPainter & painter,
+                    const PlayerPainter::Param & param ) const;
     void drawText( QPainter & painter,
                    const PlayerPainter::Param & param ) const;
 
+    void drawOffsideLine( QPainter & painter,
+                          const rcss::rcg::ShowInfoT & show ) const;
 
-    void drawOffsideLine( QPainter & painter ) const;
 };
 
 #endif

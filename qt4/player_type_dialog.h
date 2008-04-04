@@ -1,15 +1,15 @@
 // -*-c++-*-
 
 /*!
-  \file score_board_painter.h
-  \brief score board painter class Header File.
+  \file player_type_dialog.h
+  \brief player type list dialog class Header File.
 */
 
 /*
  *Copyright:
 
  Copyright (C) The RoboCup Soccer Server Maintenance Group.
- Hidehisa Akiyama
+ Hidehisa AKIYAMA
 
  This code is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
@@ -30,43 +30,55 @@
 
 /////////////////////////////////////////////////////////////////////
 
-#ifndef RCSSLOGPLAYER_SCORE_BOARD_PAINTER_RCSS_H
-#define RCSSLOGPLAYER_SCORE_BOARD_PAINTER_RCSS_H
+#ifndef RCSSLOGPLAYER_PLAYER_TYPE_DIALOG_H
+#define RCSSLOGPLAYER_PLAYER_TYPE_DIALOG_H
 
-#include "painter_interface.h"
+#include <QDialog>
 
-#include <QPen>
-#include <QBrush>
-#include <QFont>
+class QAbstractItemModel;
+class QShowEvent;
+class QStandardItemModel;
+class QTableView;
 
 class MainData;
 
-class ScoreBoardPainter
-    : public PainterInterface {
+//! movable objects detail info dialog
+class PlayerTypeDialog
+    : public QDialog {
+
+    Q_OBJECT
+
 private:
 
     const MainData & M_main_data;
 
-    QPen M_pen;
-    QBrush M_brush;
-    QFont M_font;
+    QStandardItemModel * M_model;
+    QTableView * M_item_view;
 
     // not used
-    ScoreBoardPainter();
-    ScoreBoardPainter( const ScoreBoardPainter & );
-    const ScoreBoardPainter & operator=( const ScoreBoardPainter & );
+    PlayerTypeDialog();
+    PlayerTypeDialog( const PlayerTypeDialog & );
+    const PlayerTypeDialog & operator=( const PlayerTypeDialog & );
+
 public:
+    //! constructor
+    PlayerTypeDialog( QWidget * parent,
+                      const MainData & data );
 
-    ScoreBoardPainter( const MainData & main_data );
-    ~ScoreBoardPainter();
-
-    void draw( QPainter & painter );
+    ~PlayerTypeDialog();
 
 private:
 
-    void readSettings();
-    void writeSettings();
+    void createTable();
+    void createModel();
 
+protected:
+
+    void showEvent( QShowEvent * event );
+
+public slots:
+
+    void updateData();
 
 };
 

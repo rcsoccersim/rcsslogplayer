@@ -55,7 +55,7 @@ class FieldCanvas;
 class LogPlayer;
 class LogPlayerToolBar;
 class MonitorServer;
-//class MonitorClient;
+class MonitorClient;
 class PlayerTypeDialog;
 
 class MainWindow
@@ -71,18 +71,19 @@ private:
     QString M_game_log_path; //!< file path to the last opened game log
 
     FieldCanvas * M_field_canvas;
-    //LogPlayer * M_log_player;
-    //LogPlayerToolBar * M_log_player_tool_bar;
-    //ConfigDialog * M_config_dialog;
+    LogPlayer * M_log_player;
+    LogPlayerToolBar * M_log_player_tool_bar;
+    ConfigDialog * M_config_dialog;
+    DetailDialog * M_detail_dialog;
+    PlayerTypeDialog * M_player_type_dialog;
 
     QLabel * M_position_label;
 
     //boost::shared_ptr< MonitorServer > M_monitor_server;
-    //boost::shared_ptr< MonitorClient > M_monitor_client;
+    boost::shared_ptr< MonitorClient > M_monitor_client;
 
     // file actions
     QAction * M_open_act;
-    //QAction * M_save_rcg_act;
     QAction * M_exit_act;
 
     // monitor actions
@@ -91,7 +92,6 @@ private:
     QAction * M_connect_monitor_act;
     QAction * M_connect_monitor_to_act;
     QAction * M_disconnect_monitor_act;
-    QAction * M_toggle_drag_move_mode_act;
 
     // view actions
     QAction * M_toggle_menu_bar_act;
@@ -170,7 +170,7 @@ private slots:
     void disconnectMonitor();
 
     // view menu actions slots
-    //void toggleMenuBar();
+    void toggleMenuBar();
     void toggleToolBar();
     void toggleStatusBar();
     void toggleFullScreen();
@@ -179,19 +179,10 @@ private slots:
     void changeStyle( bool checked );
     void showConfigDialog();
 
-    // tool menu actions slots
-    void showDebugMessageWindow();
-    void toggleDebugServer( bool on );
-    void startDebugServer();
-    void stopDebugServer();
-    void showImageSaveDialog();
-
     // help menu actions slots
     void about();
 
     void resizeCanvas( const QSize & size );
-
-    void saveImageAndQuit();
 
 public slots:
 
@@ -199,13 +190,9 @@ public slots:
 
     void updatePositionLabel( const QPoint & point );
 
-    void dropBallThere();
     void dropBall( const QPoint & pos );
     void freeKickLeft( const QPoint & pos );
     void freeKickRight( const QPoint & pos );
-
-    void movePlayer( const QPoint & point );
-    void moveObjects();
 
 signals:
 

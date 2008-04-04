@@ -218,7 +218,7 @@ parse_param_line( const int n_line,
             }
 
 
-            std::cerr << n_line << ": waring: cannot find any parameter in "
+            std::cerr << n_line << ": warning: cannot find any parameter in "
                       << message_name
                       << ". param_name=" << name_str
                       << " value=" << value_str

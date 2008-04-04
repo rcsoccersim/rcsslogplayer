@@ -659,6 +659,14 @@ struct BallT {
         , vx_( 0.0 )
         , vy_( 0.0 )
       { }
+
+
+    bool hasVelocity() const
+      {
+          return vx_ != SHOWINFO_SCALE2F
+              && vy_ != SHOWINFO_SCALE2F;
+      }
+
 };
 
 /*!
@@ -717,16 +725,16 @@ struct PlayerT {
         , state_( 0 )
         , x_( 0.0f )
         , y_( 0.0f )
-        , vx_( 0.0f )
-        , vy_( 0.0f )
+        , vx_( SHOWINFO_SCALE2F )
+        , vy_( SHOWINFO_SCALE2F )
         , body_( 0.0f )
-        , neck_( 0.0f )
+        , neck_( SHOWINFO_SCALE2F )
         , point_x_( SHOWINFO_SCALE2F )
         , point_y_( SHOWINFO_SCALE2F )
-        , view_width_( 0.0f )
-        , stamina_( -1.0f )
-        , effort_( 0.0f )
-        , recovery_( 0.0f )
+        , view_width_( SHOWINFO_SCALE2F )
+        , stamina_( SHOWINFO_SCALE2F )
+        , effort_( SHOWINFO_SCALE2F )
+        , recovery_( SHOWINFO_SCALE2F )
         , kick_count_( 0 )
         , dash_count_( 0 )
         , turn_count_( 0 )
@@ -766,6 +774,89 @@ struct PlayerT {
                    : side_ == 'r' ? RIGHT
                    : NEUTRAL );
       }
+
+    bool hasVelocity() const
+      {
+          return vx_ != SHOWINFO_SCALE2F
+              && vy_ != SHOWINFO_SCALE2F;
+      }
+
+    bool hasNeck() const
+      {
+          return neck_ != SHOWINFO_SCALE2F;
+      }
+
+    bool hasView() const
+      {
+          return view_width_ != SHOWINFO_SCALE2F;
+      }
+
+    bool hasStamina() const
+      {
+          return stamina_ != SHOWINFO_SCALE2F;
+      }
+
+    bool isAlive() const
+      {
+          return state_ != 0;
+      }
+
+    bool isKicking() const
+      {
+          return state_ & KICK;
+      }
+
+    bool isKickingFault() const
+      {
+          return state_ & KICK_FAULT;
+      }
+
+    bool isGoalie() const
+      {
+          return state_ & GOALIE;
+      }
+
+    bool isCatching() const
+      {
+          return state_ & CATCH;
+      }
+
+    bool isCatchingFault() const
+      {
+          return state_ & CATCH_FAULT;
+      }
+
+    bool isTackling() const
+      {
+          return state_ & TACKLE;
+      }
+
+    bool isTacklingFault() const
+      {
+          return state_ & TACKLE_FAULT;
+      }
+
+    bool isPointing() const
+      {
+          return point_x_ != SHOWINFO_SCALE2F
+              && point_y_ != SHOWINFO_SCALE2F;
+      }
+
+    bool isFocusing() const
+      {
+          return side_ != 'n';
+      }
+
+    bool isCollidedBall() const
+      {
+          return state_ & BALL_COLLIDE;
+      }
+
+    bool isCollidedPlayer() const
+      {
+          return state_ & PLAYER_COLLIDE;
+      }
+
 };
 
 /*!

@@ -38,9 +38,8 @@
 
 #include "score_board_painter.h"
 
-#include "options.h"
 #include "main_data.h"
-#include "monitor_view_data.h"
+#include "options.h"
 
 #include <iostream>
 
@@ -49,12 +48,10 @@
 /*!
 
 */
-ScoreBoardPainter::ScoreBoardPainter( const FieldCanvas & canvas,
-                                      const MainData & main_data )
-    : M_canvas( canvas )
-    , M_main_data( main_data )
+ScoreBoardPainter::ScoreBoardPainter( const MainData & main_data )
+    : M_main_data( main_data )
+    , M_pen( QColor( 255, 255, 255 ), 0, Qt::SolidLine )
     , M_brush( QColor( 0, 0, 0 ), Qt::SolidPattern )
-    , M_font_pen( QColor( 255, 255, 255 ), 0, Qt::SolidLine )
     , M_font( "6x13bold", 9, QFont::Bold )
 {
     M_font.setPointSize( 9 );
@@ -80,7 +77,7 @@ ScoreBoardPainter::~ScoreBoardPainter()
 
  */
 void
-FieldPainter::readSettings()
+ScoreBoardPainter::readSettings()
 {
     QSettings settings( QDir::homePath() + "/.rcsslogplayer",
                         QSettings::IniFormat );
@@ -89,14 +86,14 @@ FieldPainter::readSettings()
 
     QVariant val;
 
+    val = settings.value( "score_board_pen" );
+    if ( val.isValid() ) M_pen.setColor( val.toString() );
+
     val = settings.value( "score_board_brush" );
     if ( val.isValid() ) M_brush.setColor( val.toString() );
 
-    val = settings.value( "score_board_pen" );
-    if ( val.isValid() ) M_font_pen.setColor( val.toString() );
-
     val = settings.value( "score_board_font" );
-    if ( val.isValid() ) M_score_board_font.fromString( val.toString() );
+    if ( val.isValid() ) M_font.fromString( val.toString() );
 
     settings.endGroup();
 }
@@ -106,15 +103,15 @@ FieldPainter::readSettings()
 
  */
 void
-FieldPainter::readSettings()
+ScoreBoardPainter::writeSettings()
 {
     QSettings settings( QDir::homePath() + "/.rcsslogplayer",
                         QSettings::IniFormat );
 
     settings.beginGroup( "ScoreBoardPainter" );
 
+    settings.setValue( "score_board_pen", M_pen.color().name() );
     settings.setValue( "score_board_brush", M_brush.color().name() );
-    settings.setValue( "score_board_pen", M_font_pen.color().name() );
     settings.setValue( "score_board_font", M_font.toString() );
 
     settings.endGroup();
@@ -125,8 +122,10 @@ FieldPainter::readSettings()
 
 */
 void
-ScoreBoardPainterRCSS::draw( QPainter & painter )
+ScoreBoardPainter::draw( QPainter & painter )
 {
+    static const std::string s_playmode_strings[] = PLAYMODE_STRINGS;
+
     const Options & opt = Options::instance();
 
     if ( ! opt.showScoreBoard() )
@@ -134,39 +133,42 @@ ScoreBoardPainterRCSS::draw( QPainter & painter )
         return;
     }
 
-    MonitorViewConstPtr view = M_main_data.getViewData( M_main_data.viewIndex() );
+    DispConstPtr disp = M_main_data.getDispInfo( M_main_data.index() );
 
-    if ( ! view )
+    if ( ! disp )
     {
         return;
     }
 
-    const Team & left_team = view->leftTeam();
+    const int current_time = disp->show_.time_;
 
-    const Team & right_team = view->rightTeam();
+    const rcss::rcg::TeamT & team_l = disp->team_[0];
+    const rcss::rcg::TeamT & team_r = disp->team_[1];
 
-    const std::vector< std::pair< int, rcss::rcg::PlayMode > > & pen_scores_left
-        = M_main_data.viewHolder().penaltyScoresLeft();
-    const std::vector< std::pair< int, rcss::rcg::PlayMode > > & pen_scores_right
-        = M_main_data.viewHolder().penaltyScoresRight();
+    const rcss::rcg::PlayMode pmode = disp->pmode_;
+
+    const std::vector< std::pair< int, rcss::rcg::PlayMode > > & pen_scores_l
+        = M_main_data.dispHolder().penaltyScoresLeft();
+    const std::vector< std::pair< int, rcss::rcg::PlayMode > > & pen_scores_r
+        = M_main_data.dispHolder().penaltyScoresRight();
 
     bool show_pen_score = true;
 
-    if ( pen_scores_left.empty()
-         && pen_scores_right.empty() )
+    if ( pen_scores_l.empty()
+         && pen_scores_r.empty() )
     {
         show_pen_score = false;
     }
-    else if ( ( ! pen_scores_left.empty()
-                && view->cycle() < pen_scores_left.front().first )
-              && ( ! pen_scores_right.empty()
-                   && view->cycle() < pen_scores_right.front().first )
-              && view->playmode().mode() != rcss::rcg::::PM_PenaltySetup_Left
-              && view->playmode().mode() != rcss::rcg::PM_PenaltySetup_Right
-              && view->playmode().mode() != rcss::rcg::PM_PenaltyReady_Left
-              && view->playmode().mode() != rcss::rcg::PM_PenaltyReady_Right
-              && view->playmode().mode() != rcss::rcg::PM_PenaltyTaken_Left
-              && view->playmode().mode() != rcss::rcg::PM_PenaltyTaken_Right )
+    else if ( ( ! pen_scores_l.empty()
+                && current_time < pen_scores_l.front().first )
+              && ( ! pen_scores_r.empty()
+                   && current_time < pen_scores_r.front().first )
+              && pmode != rcss::rcg::PM_PenaltySetup_Left
+              && pmode != rcss::rcg::PM_PenaltySetup_Right
+              && pmode != rcss::rcg::PM_PenaltyReady_Left
+              && pmode != rcss::rcg::PM_PenaltyReady_Right
+              && pmode != rcss::rcg::PM_PenaltyTaken_Left
+              && pmode != rcss::rcg::PM_PenaltyTaken_Right )
     {
         show_pen_score = false;
     }
@@ -174,80 +176,73 @@ ScoreBoardPainterRCSS::draw( QPainter & painter )
 
     QString main_buf;
 
-    std::string mode_str = view->playmode().name();
-
     if ( ! show_pen_score )
     {
-        main_buf.sprintf( " %10s %d:%d %-10s %16s %6ld    ",
-                          ( left_team.name().empty()
-                            || left_team.name() == "null"
+        main_buf.sprintf( " %10s %d:%d %-10s %16s %6d    ",
+                          ( team_l.name_.empty() || team_l.name_ == "null" )
                           ? ""
-                          : left_team.name().c_str(),
-                          left_team.score(),
-                          right_team.score(),
-                          ( right_team.name().empty()
-                            || right_team.name() == "null" )
+                          : team_l.name_.c_str(),
+                          team_l.score_,
+                          team_r.score_,
+                          ( team_r.name_.empty() || team_r.name_ == "null" )
                           ? ""
-                          : right_team.name().c_str(),
-                          mode_str.c_str(),
-                          view->cycle() );
+                          : team_r.name_.c_str(),
+                          s_playmode_strings[pmode].c_str(),
+                          current_time );
     }
     else
     {
-        int left_pen_score = 0;
-        int left_pen_miss = 0;
-        int right_pen_score = 0;
-        int right_pen_miss = 0;
+        std::string left_penalty; left_penalty.reserve( 10 );
+        std::string right_penalty; right_penalty.reserve( 10 );
 
-        for ( std::vector< std::pair< long, rcss::rcg::PlayMode > >::const_iterator it = pen_scores_left.begin();
-              it != pen_scores_left.end();
+        for ( std::vector< std::pair< int, rcss::rcg::PlayMode > >::const_iterator it = pen_scores_l.begin();
+              it != pen_scores_l.end();
               ++it )
         {
-            if ( it->first > view->cycle() ) break;
+            if ( it->first > current_time ) break;
 
             if ( it->second == rcss::rcg::PM_PenaltyScore_Left
                  || it->second == rcss::rcg::PM_PenaltyScore_Right )
             {
-                ++left_pen_score;
+                left_penalty += 'o';
             }
             else if ( it->second == rcss::rcg::PM_PenaltyMiss_Left
                       || it->second == rcss::rcg::PM_PenaltyMiss_Right )
             {
-                ++left_pen_miss;
+                left_penalty += 'x';
             }
         }
 
-        for ( std::vector< std::pair< long, rcss::rcg::PlayMode > >::const_iterator it = pen_scores_right.begin();
-              it != pen_scores_right.end();
+        for ( std::vector< std::pair< int, rcss::rcg::PlayMode > >::const_iterator it = pen_scores_r.begin();
+              it != pen_scores_r.end();
               ++it )
         {
-            if ( it->first > view->cycle() ) break;
+            if ( it->first > current_time ) break;
 
             if ( it->second == rcss::rcg::PM_PenaltyScore_Left
                  || it->second == rcss::rcg::PM_PenaltyScore_Right )
             {
-                ++right_pen_score;
+                right_penalty += 'o';
             }
             else if ( it->second == rcss::rcg::PM_PenaltyMiss_Left
                       || it->second == rcss::rcg::PM_PenaltyMiss_Right )
             {
-                ++right_pen_miss;
+                right_penalty += 'x';
             }
         }
 
-        main_buf.sprintf( " %10s %d(%d/%d):%d(%d/%d) %-10s %16s %6ld",
-                          ( left_team.name().empty()
-                            || left_team.name() == "null" )
+        main_buf.sprintf( " %10s %d:%d |%-5s:%-5s| %-10s %16s %6d",
+                          ( team_l.name_.empty() || team_l.name_ == "null" )
                           ? ""
-                          : left_team.name().c_str(),
-                          left_team.score(), left_pen_score, left_pen_score + left_pen_miss,
-                          right_team.score(), right_pen_score, right_pen_score + right_pen_miss,
-                          ( right_team.name().empty()
-                            || right_team.name() == "null" )
+                          : team_l.name_.c_str(),
+                          team_l.score_, team_r.score_,
+                          left_penalty.c_str(),
+                          right_penalty.c_str(),
+                          ( team_r.name_.empty() || team_r.name_ == "null" )
                           ? ""
-                          : right_team.name().c_str(),
-                          mode_str.c_str(),
-                          view->cycle() );
+                          : team_r.name_.c_str(),
+                          s_playmode_strings[pmode].c_str(),
+                          current_time );
     }
 
     painter.setFont( M_font );
@@ -260,7 +255,7 @@ ScoreBoardPainterRCSS::draw( QPainter & painter )
 
     painter.fillRect( rect, M_brush );
 
-    painter.setPen( M_font_pen );
+    painter.setPen( M_pen );
     painter.setBrush( Qt::NoBrush );
 
     painter.drawText( rect,

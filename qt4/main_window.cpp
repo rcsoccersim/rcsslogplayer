@@ -40,15 +40,15 @@
 
 //#include "color_setting_dialog.h"
 //#include "image_save_dialog.h"
-//#include "detail_dialog.h"
+#include "detail_dialog.h"
 //#include "font_setting_dialog.h"
 //#include "monitor_move_dialog.h"
-//#include "player_type_dialog.h"
+#include "player_type_dialog.h"
 #include "config_dialog.h"
 #include "field_canvas.h"
-//#include "monitor_client.h"
-//#include "log_player.h"
-//#include "log_player_tool_bar.h"
+#include "monitor_client.h"
+#include "log_player.h"
+#include "log_player_tool_bar.h"
 #include "options.h"
 
 #include <string>
@@ -71,6 +71,7 @@ MainWindow::MainWindow()
     : M_window_style( "plastique" )
     , M_game_log_path()
     , M_log_player( new LogPlayer( M_main_data, this ) )
+    , M_config_dialog( static_cast< ConfigDialog * >( 0 ) )
     , M_detail_dialog( static_cast< DetailDialog * >( 0 ) )
     , M_player_type_dialog( static_cast< PlayerTypeDialog * >( 0 ) )
 //, M_monitor_client( static_cast< MonitorClient * >( 0 ) )
@@ -86,8 +87,8 @@ MainWindow::MainWindow()
     // control dialogs
     createConfigDialog();
 
-    //     connect( M_log_player, SIGNAL( updated() ),
-    //              this, SIGNAL( viewUpdated() ) );
+    connect( M_log_player, SIGNAL( updated() ),
+             this, SIGNAL( viewUpdated() ) );
 
     this->setWindowIcon( QIcon( QPixmap( rcss_xpm ) ) );
     this->setWindowTitle( tr( PACKAGE_NAME ) );
@@ -112,7 +113,7 @@ MainWindow::MainWindow()
 
     if ( Options::instance().hideToolBar() )
     {
-        //M_log_player_tool_bar->hide();
+        M_log_player_tool_bar->hide();
         //M_monitor_tool_bar->hide();
     }
 
@@ -300,7 +301,11 @@ MainWindow::createActionsMonitor()
     this->addAction( M_set_live_mode_act );
     //
     M_connect_monitor_act = new QAction( tr( "&Connect" ), this );
-    M_connect_monitor_act->setShortcut( Qt::Key_C );
+#ifdef Q_WS_MAC
+    M_connect_monitor_act->setShortcut( tr( "Meta+C" ) );
+#else
+    M_connect_monitor_act->setShortcut( tr( "Ctrl+C" ) );
+#endif
     M_connect_monitor_act
         ->setStatusTip( "Connect to the rcssserver on localhost" );
     M_connect_monitor_act->setEnabled( true );
@@ -322,17 +327,6 @@ MainWindow::createActionsMonitor()
     connect( M_disconnect_monitor_act, SIGNAL( triggered() ),
              this, SLOT( disconnectMonitor() ) );
     this->addAction( M_disconnect_monitor_act );
-    //
-    M_toggle_drag_move_mode_act = new QAction( //QIcon( QPixmap( monitor_move_player_xpm ) ),
-                                               tr( "Drag Move Mode." ),
-                                               this );
-    M_toggle_drag_move_mode_act->setStatusTip( tr( "Toggle drag move mode." ) );
-    M_toggle_drag_move_mode_act->setEnabled( false );
-    M_toggle_drag_move_mode_act->setCheckable( true );
-    M_toggle_drag_move_mode_act->setChecked( false );
-    connect( M_toggle_drag_move_mode_act, SIGNAL( toggled( bool ) ),
-             this, SLOT( toggleDragMoveMode( bool ) ) );
-    this->addAction( M_toggle_drag_move_mode_act );
 }
 
 /*-------------------------------------------------------------------*/
@@ -421,13 +415,13 @@ MainWindow::createActionsView()
                  this, SLOT( changeStyle( bool ) ) );
     }
     //
-    M_show_config_dialog_act = new QAction( tr( "&Preference" ), this );
+    M_show_config_dialog_act = new QAction( tr( "&Config" ), this );
 #ifdef Q_WS_MAC
-    M_show_config_dialog_act->setShortcut( tr( "Meta+P" ) );
+    M_show_config_dialog_act->setShortcut( tr( "Meta+V" ) );
 #else
-    M_show_config_dialog_act->setShortcut( tr( "Ctrl+P" ) );
+    M_show_config_dialog_act->setShortcut( tr( "Ctrl+V" ) );
 #endif
-    M_show_config_dialog_act->setStatusTip( tr( "Show preference dialog" ) );
+    M_show_config_dialog_act->setStatusTip( tr( "Show config dialog" ) );
     connect( M_show_config_dialog_act, SIGNAL( triggered() ),
              this, SLOT( showConfigDialog() ) );
     this->addAction( M_show_config_dialog_act );
@@ -455,7 +449,7 @@ void
 MainWindow::createMenus()
 {
     createMenuFile();
-    createMenuMonitor();
+    //createMenuMonitor();
     createMenuView();
     createMenuHelp();
 }
@@ -492,8 +486,6 @@ MainWindow::createMenuMonitor()
     menu->addAction( M_connect_monitor_to_act );
     menu->addAction( M_disconnect_monitor_act );
 
-    menu->addSeparator();
-    menu->addAction( M_toggle_drag_move_mode_act );
 }
 
 /*-------------------------------------------------------------------*/
@@ -550,37 +542,34 @@ MainWindow::createMenuHelp()
 void
 MainWindow::createToolBars()
 {
-    //     M_log_player_tool_bar = new LogPlayerToolBar( M_log_player,
-    //                                                   M_main_data,
-    //                                                   this );
+    M_log_player_tool_bar = new LogPlayerToolBar( M_log_player,
+                                                  M_main_data,
+                                                  this );
 
-    //     M_log_player_tool_bar->addSeparator();
+    //M_log_player_tool_bar->addSeparator();
+    //M_log_player_tool_bar->addAction( M_set_live_mode_act );
+    {
+        QFrame * dummy_frame = new QFrame;
+        QHBoxLayout * layout = new QHBoxLayout;
+        //layout->addSpacing( 10 );
+        layout->addStretch( 1 );
+        dummy_frame->setLayout( layout );
+        M_log_player_tool_bar->addWidget( dummy_frame );
+    }
+    {
+        QFrame * dummy_frame = new QFrame;
+        QVBoxLayout * layout = new QVBoxLayout;
+        //layout->addSpacing( 10 );
+        layout->addStretch( 1 );
+        dummy_frame->setLayout( layout );
+        M_log_player_tool_bar->addWidget( dummy_frame );
+    }
 
-    //     M_log_player_tool_bar->addAction( M_set_live_mode_act );
-    //     M_log_player_tool_bar->addAction( M_toggle_drag_move_mode_act );
-    //     M_log_player_tool_bar->addAction( M_toggle_debug_server_act );
-    //     {
-    //         QFrame * dummy_frame = new QFrame;
-    //         QHBoxLayout * layout = new QHBoxLayout;
-    //         //layout->addSpacing( 10 );
-    //         layout->addStretch( 1 );
-    //         dummy_frame->setLayout( layout );
-    //         M_log_player_tool_bar->addWidget( dummy_frame );
-    //     }
-    //     {
-    //         QFrame * dummy_frame = new QFrame;
-    //         QVBoxLayout * layout = new QVBoxLayout;
-    //         //layout->addSpacing( 10 );
-    //         layout->addStretch( 1 );
-    //         dummy_frame->setLayout( layout );
-    //         M_log_player_tool_bar->addWidget( dummy_frame );
-    //     }
-
-    //     connect( this,  SIGNAL( viewUpdated() ),
-    //              M_log_player_tool_bar, SLOT( updateSlider() ) );
+    connect( this,  SIGNAL( viewUpdated() ),
+             M_log_player_tool_bar, SLOT( updateSlider() ) );
 
 
-    //     this->addToolBar( Qt::TopToolBarArea, M_log_player_tool_bar );
+    this->addToolBar( Qt::TopToolBarArea, M_log_player_tool_bar );
 }
 
 /*-------------------------------------------------------------------*/
@@ -611,14 +600,12 @@ void
 MainWindow::createFieldCanvas()
 {
     M_field_canvas = new FieldCanvas( M_main_data );
-    //M_field_canvas->setParent( this );
     this->setCentralWidget( M_field_canvas );
 
     M_field_canvas->setFocus();
 
     connect( this, SIGNAL( viewUpdated() ),
              M_field_canvas, SLOT( update() ) );
-    //M_field_canvas, SLOT( repaint() ) );
 
     connect( M_field_canvas, SIGNAL( mouseMoved( const QPoint & ) ),
              this, SLOT( updatePositionLabel( const QPoint & ) ) );
@@ -630,51 +617,35 @@ MainWindow::createFieldCanvas()
     connect( M_field_canvas, SIGNAL( freeKickRight( const QPoint & ) ),
              this, SLOT( freeKickRight( const QPoint & ) ) );
 
-    connect( M_field_canvas, SIGNAL( playerMoved( const QPoint & ) ),
-             this, SLOT( movePlayer( const QPoint & ) ) );
-
     // create & set context menus
+    {
+        QMenu * menu = new QMenu( M_field_canvas );
+        menu->addAction( M_open_act );
+        //menu->addAction( M_connect_monitor_act );
+
+        M_field_canvas->setNormalMenu( menu );
+    }
     {
         QMenu * menu = new QMenu( M_field_canvas );
         menu->addAction( M_open_act );
         menu->addAction( M_connect_monitor_act );
 
-        M_field_canvas->setNormalMenu( menu );
+        M_field_canvas->setSystemMenu( menu );
     }
-    //     {
-    //         QMenu * menu = new QMenu( M_field_canvas );
-    //         menu->addAction( M_open_act );
-    //         menu->addAction( M_connect_monitor_act );
-    // #ifndef Q_WS_WIN
-    //         menu->addSeparator();
-    //         menu->addAction( M_kill_server_act );
-    //         menu->addAction( M_restart_server_act );
-    // #endif
+    {
+        QMenu * menu = new QMenu( M_field_canvas );
+        menu->addAction( M_kick_off_act );
+        menu->addSeparator();
+        menu->addAction( tr( "Drop Ball" ),
+                         M_field_canvas, SLOT( dropBall() ) );
+        menu->addAction( tr( "Free Kick Left" ),
+                         M_field_canvas, SLOT( freeKickLeft() ) );
+        menu->addAction( tr( "Free Kick Right" ),
+                         M_field_canvas, SLOT( freeKickRight() ) );
+        menu->addSeparator();
 
-    //         M_field_canvas->setSystemMenu( menu );
-    //     }
-    //     {
-    //         QMenu * menu = new QMenu( M_field_canvas );
-    //         menu->addAction( M_kick_off_act );
-    //         menu->addSeparator();
-    //         menu->addAction( tr( "Drop Ball" ),
-    //                          M_field_canvas, SLOT( dropBall() ) );
-    //         menu->addAction( tr( "Free Kick Left" ),
-    //                          M_field_canvas, SLOT( freeKickLeft() ) );
-    //         menu->addAction( tr( "Free Kick Right" ),
-    //                          M_field_canvas, SLOT( freeKickRight() ) );
-    //         menu->addSeparator();
-
-    //         QAction * drop_ball_there
-    //             = new QAction( tr( "Drop Ball There" ), this );
-    //         drop_ball_there->setStatusTip( tr( "Drop ball at the current ball position." ) );
-    //         connect( drop_ball_there, SIGNAL( triggered() ),
-    //                  this, SLOT( dropBallThere() ) );
-    //         menu->addAction( drop_ball_there );
-
-    //         M_field_canvas->setMonitorMenu( menu );
-    //     }
-
+        M_field_canvas->setMonitorMenu( menu );
+    }
 }
 
 /*-------------------------------------------------------------------*/
@@ -702,9 +673,6 @@ MainWindow::createConfigDialog()
     connect( M_field_canvas, SIGNAL( focusChanged( const QPoint & ) ),
              M_config_dialog, SLOT( setFocusPoint( const QPoint & ) ) );
 
-    connect( M_config_dialog, SIGNAL( configured() ),
-             M_field_canvas, SLOT( setRedrawAllFlag()  ) );
-#if 0
     // register short cut keys
     {
         // z
@@ -754,11 +722,11 @@ MainWindow::createConfigDialog()
     // field style
     {
         // k
-        QAction * act = new QAction( tr( "Toggle Keepaway" ), this );
+        QAction * act = new QAction( tr( "Show Keepaway Area" ), this );
         act->setShortcut( Qt::Key_K );
         this->addAction( act );
         connect( act, SIGNAL( triggered() ),
-                 M_view_config_dialog, SLOT( toggleKeepawayMode() ) );
+                 M_config_dialog, SLOT( toggleShowKeepawayArea() ) );
     }
 
     // player detail
@@ -768,15 +736,15 @@ MainWindow::createConfigDialog()
         act->setShortcut( Qt::Key_N );
         this->addAction( act );
         connect( act, SIGNAL( triggered() ),
-                 M_view_config_dialog, SLOT( toggleShowPlayerNumber() ) );
+                 M_config_dialog, SLOT( toggleShowPlayerNumber() ) );
     }
     {
         // h
-        QAction * act = new QAction( tr( "Show Hetero Number" ), this );
+        QAction * act = new QAction( tr( "Show Player Type Id" ), this );
         act->setShortcut( Qt::Key_H );
         this->addAction( act );
         connect( act, SIGNAL( triggered() ),
-                 M_view_config_dialog, SLOT( toggleShowHeteroNumber() ) );
+                 M_config_dialog, SLOT( toggleShowPlayerType() ) );
     }
     {
         // s
@@ -784,23 +752,15 @@ MainWindow::createConfigDialog()
         act->setShortcut( Qt::Key_S );
         this->addAction( act );
         connect( act, SIGNAL( triggered() ),
-                 M_view_config_dialog, SLOT( toggleShowStamina() ) );
+                 M_config_dialog, SLOT( toggleShowStamina() ) );
     }
     {
         // v
-        QAction * act = new QAction( tr( "Show View Cone" ), this );
+        QAction * act = new QAction( tr( "Show View Area" ), this );
         act->setShortcut( Qt::Key_V );
         this->addAction( act );
         connect( act, SIGNAL( triggered() ),
-                 M_view_config_dialog, SLOT( toggleShowViewCone() ) );
-    }
-    {
-        // d
-        QAction * act = new QAction( tr( "Show Body Shadow" ), this );
-        act->setShortcut( Qt::Key_D );
-        this->addAction( act );
-        connect( act, SIGNAL( triggered() ),
-                 M_view_config_dialog, SLOT( toggleShowBodyShadow() ) );
+                 M_config_dialog, SLOT( toggleShowViewArea() ) );
     }
     {
         // c
@@ -808,7 +768,7 @@ MainWindow::createConfigDialog()
         act->setShortcut( Qt::Key_C );
         this->addAction( act );
         connect( act, SIGNAL( triggered() ),
-                 M_view_config_dialog, SLOT( toggleShowControlArea() ) );
+                 M_config_dialog, SLOT( toggleShowControlArea() ) );
     }
 
     // show/hide
@@ -818,7 +778,7 @@ MainWindow::createConfigDialog()
         act->setShortcut( Qt::Key_T );
         this->addAction( act );
         connect( act, SIGNAL( triggered() ),
-                 M_view_config_dialog, SLOT( toggleShowScoreBoard() ) );
+                 M_config_dialog, SLOT( toggleShowScoreBoard() ) );
     }
     {
         // Ctrl + b
@@ -830,7 +790,7 @@ MainWindow::createConfigDialog()
 #endif
         this->addAction( act );
         connect( act, SIGNAL( triggered() ),
-                 M_view_config_dialog, SLOT( toggleShowBall() ) );
+                 M_config_dialog, SLOT( toggleShowBall() ) );
     }
     {
         // Ctrl + p
@@ -842,7 +802,7 @@ MainWindow::createConfigDialog()
 #endif
         this->addAction( act );
         connect( act, SIGNAL( triggered() ),
-                 M_view_config_dialog, SLOT( toggleShowPlayers() ) );
+                 M_config_dialog, SLOT( toggleShowPlayer() ) );
     }
     {
         // f
@@ -850,7 +810,7 @@ MainWindow::createConfigDialog()
         act->setShortcut( Qt::Key_F );
         this->addAction( act );
         connect( act, SIGNAL( triggered() ),
-                 M_view_config_dialog, SLOT( toggleShowFlags() ) );
+                 M_config_dialog, SLOT( toggleShowFlag() ) );
     }
     {
         // o
@@ -858,7 +818,7 @@ MainWindow::createConfigDialog()
         act->setShortcut( Qt::Key_O );
         this->addAction( act );
         connect( act, SIGNAL( triggered() ),
-                 M_view_config_dialog, SLOT( toggleShowOffsideLine() ) );
+                 M_config_dialog, SLOT( toggleShowOffsideLine() ) );
     }
 
     // number 1-10
@@ -869,7 +829,7 @@ MainWindow::createConfigDialog()
             act->setShortcut( Qt::Key_0 + i );
             this->addAction( act );
             connect( act, SIGNAL( triggered() ),
-                     M_view_config_dialog, SLOT( selectPlayerWithKey() ) );
+                     M_config_dialog, SLOT( selectPlayerWithKey() ) );
         }
         {
             QAction * act = new QAction( QString( "Selct Right %1" ).arg( i ), this );
@@ -880,7 +840,7 @@ MainWindow::createConfigDialog()
 #endif
             this->addAction( act );
             connect( act, SIGNAL( triggered() ),
-                     M_view_config_dialog, SLOT( selectPlayerWithKey() ) );
+                     M_config_dialog, SLOT( selectPlayerWithKey() ) );
         }
     }
     // number 11
@@ -890,7 +850,7 @@ MainWindow::createConfigDialog()
             act->setShortcut( Qt::Key_Minus );
             this->addAction( act );
             connect( act, SIGNAL( triggered() ),
-                     M_view_config_dialog, SLOT( selectPlayerWithKey() ) );
+                     M_config_dialog, SLOT( selectPlayerWithKey() ) );
         }
         {
             QAction * act = new QAction( tr( "Selct Right 11" ), this );
@@ -901,7 +861,7 @@ MainWindow::createConfigDialog()
 #endif
             this->addAction( act );
             connect( act, SIGNAL( triggered() ),
-                     M_view_config_dialog, SLOT( selectPlayerWithKey() ) );
+                     M_config_dialog, SLOT( selectPlayerWithKey() ) );
         }
     }
     // b
@@ -910,7 +870,7 @@ MainWindow::createConfigDialog()
         act->setShortcut( Qt::Key_B );
         this->addAction( act );
         connect( act, SIGNAL( triggered() ),
-                 M_view_config_dialog, SLOT( toggleFocusBall() ) );
+                 M_config_dialog, SLOT( toggleFocusBall() ) );
     }
     // p
     {
@@ -918,7 +878,7 @@ MainWindow::createConfigDialog()
         act->setShortcut( Qt::Key_P );
         this->addAction( act );
         connect( act, SIGNAL( triggered() ),
-                 M_view_config_dialog, SLOT( toggleFocusPlayer() ) );
+                 M_config_dialog, SLOT( toggleFocusPlayer() ) );
     }
     // a
     {
@@ -926,7 +886,7 @@ MainWindow::createConfigDialog()
         act->setShortcut( Qt::Key_A );
         this->addAction( act );
         connect( act, SIGNAL( triggered() ),
-                 M_view_config_dialog, SLOT( toggleSelectAutoAll() ) );
+                 M_config_dialog, SLOT( toggleSelectAutoAll() ) );
     }
     // l
     {
@@ -934,7 +894,7 @@ MainWindow::createConfigDialog()
         act->setShortcut( Qt::Key_L );
         this->addAction( act );
         connect( act, SIGNAL( triggered() ),
-                 M_view_config_dialog, SLOT( toggleSelectAutoLeft() ) );
+                 M_config_dialog, SLOT( toggleSelectAutoLeft() ) );
     }
     // r
     {
@@ -942,7 +902,7 @@ MainWindow::createConfigDialog()
         act->setShortcut( Qt::Key_R );
         this->addAction( act );
         connect( act, SIGNAL( triggered() ),
-                 M_view_config_dialog, SLOT( toggleSelectAutoRight() ) );
+                 M_config_dialog, SLOT( toggleSelectAutoRight() ) );
     }
     // u
     {
@@ -950,9 +910,8 @@ MainWindow::createConfigDialog()
         act->setShortcut( Qt::Key_U );
         this->addAction( act );
         connect( act, SIGNAL( triggered() ),
-                 M_view_config_dialog, SLOT( setUnselect() ) );
+                 M_config_dialog, SLOT( setUnselect() ) );
     }
-#endif
 }
 
 /*-------------------------------------------------------------------*/
@@ -1071,7 +1030,7 @@ MainWindow::dropEvent( QDropEvent * event )
 void
 MainWindow::openRCG()
 {
-#ifdef HAVE_LIBRCSC_GZ
+#ifdef HAVE_LIBZ
     QString filter( tr( "Game Log files (*.rcg *.rcg.gz);;"
                         "All files (*)" ) );
 #else
@@ -1113,7 +1072,7 @@ MainWindow::openRCG( const QString & file_path )
     disconnectMonitor();
     M_log_player->stop();
 
-    if ( ! M_main_data.openRCG( file_path.toStdString() ) )
+    if ( ! M_main_data.openRCG( file_path ) )
     {
         QString err_msg = tr( "Failed to read [" );
         err_msg += file_path;
@@ -1126,7 +1085,7 @@ MainWindow::openRCG( const QString & file_path )
         return;
     }
 
-    if ( M_main_data.viewHolder().monitorViewCont().empty() )
+    if ( M_main_data.dispHolder().dispInfoCont().empty() )
     {
         QString err_msg = tr( "Empty log file [" );
         err_msg += file_path;
@@ -1148,9 +1107,9 @@ MainWindow::openRCG( const QString & file_path )
         M_player_type_dialog->updateData();
     }
 
-    if ( M_view_config_dialog )
+    if ( M_config_dialog )
     {
-        M_view_config_dialog->unzoom();
+        M_config_dialog->unzoom();
     }
 
     // set window title
@@ -1164,192 +1123,114 @@ MainWindow::openRCG( const QString & file_path )
     emit viewUpdated();
 }
 
-/*-------------------------------------------------------------------*/
-/*!
+// /*-------------------------------------------------------------------*/
+// /*!
 
- */
-void
-MainWindow::saveRCG()
-{
-    if ( M_main_data.viewHolder().monitorViewCont().empty() )
-    {
-        QMessageBox::warning( this,
-                              tr( "Error" ),
-                              tr( "No Monitor View Data!" ) );
-        return;
-    }
+//  */
+// void
+// MainWindow::saveRCG()
+// {
+//     if ( M_main_data.viewHolder().monitorViewCont().empty() )
+//     {
+//         QMessageBox::warning( this,
+//                               tr( "Error" ),
+//                               tr( "No Monitor View Data!" ) );
+//         return;
+//     }
 
-    QString default_file_name;
-    {
-        const MonitorViewConstPtr latest = M_main_data.viewHolder().latestViewData();
+//     QString default_file_name;
+//     {
+//         const MonitorViewConstPtr latest = M_main_data.viewHolder().latestViewData();
 
-        if ( latest )
-        {
-            default_file_name
-                = QDateTime::currentDateTime().toString( "yyyyMMddhhmm-" );
+//         if ( latest )
+//         {
+//             default_file_name
+//                 = QDateTime::currentDateTime().toString( "yyyyMMddhhmm-" );
 
-            QString left_team = QString::fromStdString( latest->leftTeam().name() );
-            QString left_score = QString::number( latest->leftTeam().score() );
+//             QString left_team = QString::fromStdString( latest->leftTeam().name() );
+//             QString left_score = QString::number( latest->leftTeam().score() );
 
-            QString right_team = QString::fromStdString( latest->rightTeam().name() );
-            QString right_score = QString::number( latest->rightTeam().score() );
+//             QString right_team = QString::fromStdString( latest->rightTeam().name() );
+//             QString right_score = QString::number( latest->rightTeam().score() );
 
-            default_file_name += left_team;
-            default_file_name += tr( "_" );
-            default_file_name += left_score;
-            default_file_name += tr( "-" );
-            default_file_name += right_team;
-            default_file_name += tr( "_" );
-            default_file_name += right_score;
+//             default_file_name += left_team;
+//             default_file_name += tr( "_" );
+//             default_file_name += left_score;
+//             default_file_name += tr( "-" );
+//             default_file_name += right_team;
+//             default_file_name += tr( "_" );
+//             default_file_name += right_score;
 
-            default_file_name += tr( ".rcg" );
-        }
-    }
+//             default_file_name += tr( ".rcg" );
+//         }
+//     }
 
-#ifdef HAVE_LIBRCSC_GZ
-    QString filter( tr( "Game Log files (*.rcg *.rcg.gz);;"
-                        "All files (*)" ) );
-#else
-    QString filter( tr( "Game Log files (*.rcg);;"
-                        "All files (*)" ) );
-#endif
+// #ifdef HAVE_LIBRCSC_GZ
+//     QString filter( tr( "Game Log files (*.rcg *.rcg.gz);;"
+//                         "All files (*)" ) );
+// #else
+//     QString filter( tr( "Game Log files (*.rcg);;"
+//                         "All files (*)" ) );
+// #endif
 
-    QString default_dir
-        = QString::fromStdString( Options::instance().gameLogDir() );
-    if ( ! default_file_name.isEmpty() )
-    {
-        default_dir += tr( "/" );
-        default_dir += default_file_name;
-    }
+//     QString default_dir
+//         = QString::fromStdString( Options::instance().gameLogDir() );
+//     if ( ! default_file_name.isEmpty() )
+//     {
+//         default_dir += tr( "/" );
+//         default_dir += default_file_name;
+//     }
 
-    QString file_path = QFileDialog::getSaveFileName( this,
-                                                      tr( "Save a game log file as" ),
-                                                      default_dir,
-                                                      filter );
+//     QString file_path = QFileDialog::getSaveFileName( this,
+//                                                       tr( "Save a game log file as" ),
+//                                                       default_dir,
+//                                                       filter );
 
-    if ( file_path.isEmpty() )
-    {
-        std::cerr << "MainWindow::saveRCG() empty file path" << std::endl;
-        return;
-    }
+//     if ( file_path.isEmpty() )
+//     {
+//         std::cerr << "MainWindow::saveRCG() empty file path" << std::endl;
+//         return;
+//     }
 
-    std::string file_path_std = file_path.toStdString();
+//     std::string file_path_std = file_path.toStdString();
 
-    std::cerr << "save game log data to the file = [" << file_path_std
-              << ']' << std::endl;
+//     std::cerr << "save game log data to the file = [" << file_path_std
+//               << ']' << std::endl;
 
-    // update game log dir
-    QFileInfo file_info( file_path );
-    Options::instance().setGameLogDir( file_info.absolutePath().toStdString() );
+//     // update game log dir
+//     QFileInfo file_info( file_path );
+//     Options::instance().setGameLogDir( file_info.absolutePath().toStdString() );
 
-    // check gzip usability
-    bool is_gzip = false;
-    if ( file_path_std.length() > 3
-         && file_path_std.compare( file_path_std.length() - 3, 3, ".gz" ) == 0 )
-    {
-#ifdef HAVE_LIBRCSC_GZ
-        if ( file_path_std.length() <= 7
-             || file_path_std.compare( file_path_std.length() - 4, 4, ".rcg.gz" ) != 0 )
-        {
-            file_path_std == ".rcg.gz";
-        }
-        is_gzip = true;
-#else
-        // erase '.gz'
-        file_path_std.erase( file_path_std.length() - 3 );
-#endif
-    }
+//     // check gzip usability
+//     bool is_gzip = false;
+//     if ( file_path_std.length() > 3
+//          && file_path_std.compare( file_path_std.length() - 3, 3, ".gz" ) == 0 )
+//     {
+// #ifdef HAVE_LIBRCSC_GZ
+//         if ( file_path_std.length() <= 7
+//              || file_path_std.compare( file_path_std.length() - 4, 4, ".rcg.gz" ) != 0 )
+//         {
+//             file_path_std == ".rcg.gz";
+//         }
+//         is_gzip = true;
+// #else
+//         // erase '.gz'
+//         file_path_std.erase( file_path_std.length() - 3 );
+// #endif
+//     }
 
-    // check the extention string
-    if ( ! is_gzip )
-    {
-        if ( file_path_std.length() <= 4
-             || file_path_std.compare( file_path_std.length() - 4, 4, ".rcg" ) != 0 )
-        {
-            file_path_std += ".rcg";
-        }
-    }
+//     // check the extention string
+//     if ( ! is_gzip )
+//     {
+//         if ( file_path_std.length() <= 4
+//              || file_path_std.compare( file_path_std.length() - 4, 4, ".rcg" ) != 0 )
+//         {
+//             file_path_std += ".rcg";
+//         }
+//     }
 
-    M_main_data.saveRCG( file_path_std );
-}
-
-/*-------------------------------------------------------------------*/
-/*!
-
- */
-void
-MainWindow::openDebugView()
-{
-    std::cerr << "MainWindow::openDebugView()" << std::endl;
-
-    QString default_dir
-        = QString::fromStdString( Options::instance().debugLogDir() );
-#if 0
-    QString dir_path
-        = QFileDialog::getExistingDirectory( this,
-                                             tr( "Choose a debug view log directory" ),
-                                             default_dir );
-#endif
-    DirSelector selector( this,
-                          tr( "Choose a debug view log directory" ),
-                          default_dir );
-
-    if ( ! selector.exec() )
-    {
-        std::cerr << "MainWindow::openDebugView() canceled" << std::endl;
-        return;
-    }
-
-    QString dir_path = selector.dirPath();
-
-    if ( dir_path.isEmpty() )
-    {
-        std::cerr << "MainWindow::openDebugView() empty dir path" << std::endl;
-        return;
-    }
-
-    std::cerr << "open debug view. dir = [" << dir_path.toStdString() << std::endl;
-
-    M_main_data.getViewHolder().openDebugView( dir_path.toStdString() );
-}
-
-/*-------------------------------------------------------------------*/
-/*!
-
- */
-void
-MainWindow::saveDebugView()
-{
-    std::cerr << "MainWindow::saveDebugView()" << std::endl;
-#if 0
-    QString dir_path
-        = QFileDialog::getExistingDirectory( this,
-                                             tr( "Choose a directory to save a debug view logs" ) );
-
-#endif
-    DirSelector selector( this,
-                          tr( "Choose a debug view log directory" ),
-                          QDir::currentPath() );
-
-    if ( ! selector.exec() )
-    {
-        std::cerr << "MainWindow::openDebugView() canceled" << std::endl;
-        return;
-    }
-
-    QString dir_path = selector.dirPath();
-
-    if ( dir_path.isEmpty() )
-    {
-        std::cerr << "MainWindow::openDebugView() empty dir path" << std::endl;
-        return;
-    }
-
-    std::cerr << "save debug view. dir = [" << dir_path.toStdString() << std::endl;
-
-
-    M_main_data.viewHolder().saveDebugView( dir_path.toStdString() );
-}
+//     M_main_data.saveRCG( file_path_std );
+// }
 
 /*-------------------------------------------------------------------*/
 /*!
@@ -1390,7 +1271,7 @@ void
 MainWindow::connectMonitor()
 {
     std::cerr << "MainWindow::connectMonitor()" << std::endl;
-    connectMonitorTo( "localhost" );
+    connectMonitorTo( "127.0.0.1" );
 }
 
 /*-------------------------------------------------------------------*/
@@ -1402,9 +1283,10 @@ MainWindow::connectMonitorTo()
 {
     std::cerr << "MainWindow::connectMonitorTo()" << std::endl;
 
-    if ( M_last_connected_host.isEmpty() )
+    QString host = QString::fromStdString( Options::instance().host() );
+    if ( host.isEmpty() )
     {
-        M_last_connected_host = "127.0.0.1";
+        host = "127.0.0.1";
     }
 
     bool ok = true;
@@ -1412,7 +1294,7 @@ MainWindow::connectMonitorTo()
                                           tr( "Input sserver host name" ),
                                           tr( "Host name: "),
                                           QLineEdit::Normal,
-                                          M_last_connected_host,
+                                          host,
                                           & ok );
     if ( ok
          && ! text.isEmpty() )
@@ -1438,7 +1320,7 @@ MainWindow::connectMonitorTo( const char * hostname )
 
     M_monitor_client
         = boost::shared_ptr< MonitorClient >
-        ( new MonitorClient( M_main_data.getViewHolder(),
+        ( new MonitorClient( M_main_data.dispHolder(),
                              hostname,
                              Options::instance().port(),
                              Options::instance().clientVersion() ) );
@@ -1450,8 +1332,6 @@ MainWindow::connectMonitorTo( const char * hostname )
         return;
     }
 
-    M_last_connected_host = hostname;
-
     // reset all data
     M_main_data.clear();
 
@@ -1460,39 +1340,19 @@ MainWindow::connectMonitorTo( const char * hostname )
         M_player_type_dialog->hide();
     }
 
-    if ( M_debug_message_window )
+    if ( M_config_dialog )
     {
-        M_debug_message_window->clearAll();
+        M_config_dialog->unzoom();
     }
 
-    if ( M_view_config_dialog )
-    {
-        M_view_config_dialog->unzoom();
-    }
-
-    if ( M_debug_server )
-    {
-        M_debug_server.reset();
-        startDebugServer();
-    }
-
-    Options::instance().setMonitorClientMode( true );
-
-    M_save_rcg_act->setEnabled( false );
+    //Options::instance().setMonitorClientMode( true );
+    Options::instance().setHost( hostname );
 
     M_kick_off_act->setEnabled( true );
     M_set_live_mode_act->setEnabled( true );
     M_connect_monitor_act->setEnabled( false );
     M_connect_monitor_to_act->setEnabled( false );
     M_disconnect_monitor_act->setEnabled( true );
-#ifndef Q_WS_WIN
-    M_kill_server_act->setEnabled( true );
-#endif
-    M_toggle_drag_move_mode_act->setEnabled( true );
-    //M_show_monitor_move_dialog_act->setEnabled( true );
-
-    M_toggle_debug_server_act->setEnabled( true );
-    M_show_image_save_dialog_act->setEnabled( false );
 
     connect( M_monitor_client.get(), SIGNAL( received() ),
              this, SLOT( receiveMonitorPacket() ) );
@@ -1532,39 +1392,24 @@ MainWindow::disconnectMonitor()
         M_monitor_client.reset();
     }
 
-    if ( M_debug_server )
-    {
-        M_debug_server.reset();
-    }
-
-    Options::instance().setMonitorClientMode( false );
-
-    M_save_rcg_act->setEnabled( true );
+    //Options::instance().setMonitorClientMode( false );
 
     M_kick_off_act->setEnabled( false );
     M_set_live_mode_act->setEnabled( false );
     M_connect_monitor_act->setEnabled( true );
     M_connect_monitor_to_act->setEnabled( true );
     M_disconnect_monitor_act->setEnabled( false );
-#ifndef Q_WS_WIN
-    M_kill_server_act->setEnabled( false );
-#endif
-    M_toggle_drag_move_mode_act->setEnabled( false );
-    //M_show_monitor_move_dialog_act->setEnabled( false );
-
-    M_toggle_debug_server_act->setEnabled( false );
-    M_show_image_save_dialog_act->setEnabled( true );
 }
 
 /*-------------------------------------------------------------------*/
 /*!
 
  */
-// void
-// MainWindow::toggleMenuBar()
-// {
-//     this->menuBar()->setVisible( ! this->menuBar()->isVisible() );
-// }
+void
+MainWindow::toggleMenuBar()
+{
+    this->menuBar()->setVisible( ! this->menuBar()->isVisible() );
+}
 
 /*-------------------------------------------------------------------*/
 /*!
@@ -1629,30 +1474,6 @@ MainWindow::showPlayerTypeDialog()
 
  */
 void
-MainWindow::showMonitorMoveDialog()
-{
-    if ( M_monitor_move_dialog )
-    {
-        M_monitor_move_dialog->setVisible( ! M_monitor_move_dialog->isVisible() );
-    }
-    else
-    {
-        M_monitor_move_dialog
-            = new MonitorMoveDialog( this,
-                                     M_main_data,
-                                     M_main_data.getTrainerData() );
-        connect( M_monitor_move_dialog, SIGNAL( executed() ),
-                 this, SLOT( moveObjects() ) );
-
-        M_monitor_move_dialog->show();
-    }
-}
-
-/*-------------------------------------------------------------------*/
-/*!
-
- */
-void
 MainWindow::showDetailDialog()
 {
     //std::cerr << "MainWindow::showDetailDialog()" << std::endl;
@@ -1695,11 +1516,11 @@ MainWindow::changeStyle( bool checked )
 
  */
 void
-MainWindow::showViewConfigDialog()
+MainWindow::showConfigDialog()
 {
     //std::cerr << "MainWindow::showViewConfigDialog()" << std::endl;
 
-    //M_config_dialog->setVisible( ! M_config_dialog->isVisible() );
+    M_config_dialog->setVisible( ! M_config_dialog->isVisible() );
 }
 
 /*-------------------------------------------------------------------*/
@@ -1710,8 +1531,8 @@ void
 MainWindow::about()
 {
     QString msg( tr( PACKAGE_NAME"-"VERSION"\n\n" ) );
-    msg += tr( "The RoboCup Soccer Simulator LogPlayer(rcsslogplayer)\n"
-               "is a game log replay tool for the RoboCup Soccer Siulator"
+    msg += tr( "The RoboCup Soccer Simulator LogPlayer (rcsslogplayer) is\n"
+               "a game log replay tool for the RoboCup Soccer Siulator\n"
                "Server (rcssserver).\n"
                "the RoboCup Soccer Simulator.\n"
                "  http://sserver.sourceforge.net/\n"
@@ -1792,34 +1613,7 @@ MainWindow::receiveMonitorPacket()
     }
     else
     {
-        std::cerr << "receive monitor packet  no live" << std::endl;
         M_log_player_tool_bar->updateSlider();
-    }
-
-
-    if ( Options::instance().autoQuitMode() )
-    {
-        if ( M_main_data.viewHolder().lastPlayMode() == rcsc::PM_TimeOver )
-        {
-            static QDateTime s_game_end_time;
-
-            if ( ! s_game_end_time.isValid() )
-            {
-                s_game_end_time = QDateTime::currentDateTime();
-            }
-            else
-            {
-                if ( s_game_end_time.secsTo( QDateTime::currentDateTime() )
-                     >= Options::instance().waitSeconds() )
-                {
-                    std::cerr << "Elapsed " << Options::instance().waitSeconds()
-                              << " seconds after game end\n"
-                              << "Exit..."
-                              << std::endl;
-                    qApp->quit();
-                }
-            }
-        }
     }
 }
 
@@ -1836,8 +1630,8 @@ MainWindow::updatePositionLabel( const QPoint & point )
          && statusBar()->isVisible()
          )
     {
-        double x = M_field_canvas->fieldX( point.x() );
-        double y = M_field_canvas->fieldY( point.y() );
+        double x = Options::instance().fieldX( point.x() );
+        double y = Options::instance().fieldY( point.y() );
 
         char buf[32];
         std::snprintf( buf, 32,
@@ -1853,40 +1647,14 @@ MainWindow::updatePositionLabel( const QPoint & point )
 
  */
 void
-MainWindow::dropBallThere()
-{
-    if ( M_monitor_client
-         && M_monitor_client->isConnected() )
-    {
-        MonitorViewConstPtr view = M_main_data.viewHolder().latestViewData();
-        if ( view )
-        {
-            std::cerr << "drop ball at current position "
-                      << std::endl;
-            M_monitor_client->sendDropBall( view->ball().x(),
-                                            view->ball().y() );
-        }
-    }
-}
-
-/*-------------------------------------------------------------------*/
-/*!
-
- */
-void
 MainWindow::dropBall( const QPoint & point )
 {
     if ( M_monitor_client
          && M_monitor_client->isConnected() )
     {
-        double x = M_main_data.viewConfig().fieldX( point.x() );
-        double y = M_main_data.viewConfig().fieldY( point.y() );
+        double x = Options::instance().fieldX( point.x() );
+        double y = Options::instance().fieldY( point.y() );
 
-        if ( M_main_data.viewConfig().reverseSide() )
-        {
-            x = -x;
-            y = -y;
-        }
         std::cerr << "drop ball to ("
                   << x << ", " << y << ")"
                   << std::endl;
@@ -1904,22 +1672,13 @@ MainWindow::freeKickLeft( const QPoint & point )
     if ( M_monitor_client
          && M_monitor_client->isConnected() )
     {
-        double x = M_main_data.viewConfig().fieldX( point.x() );
-        double y = M_main_data.viewConfig().fieldY( point.y() );
+        double x = Options::instance().fieldX( point.x() );
+        double y = Options::instance().fieldY( point.y() );
 
-        if ( M_main_data.viewConfig().reverseSide() )
-        {
-            x = -x;
-            y = -y;
-            M_monitor_client->sendFreeKickRight( x, y );
-        }
-        else
-        {
-            //std::cerr << "free kick left at ("
-            //          << x << ", " << y << ")"
-            //          << std::endl;
-            M_monitor_client->sendFreeKickLeft( x, y );
-        }
+        std::cerr << "free kick left at ("
+                  << x << ", " << y << ")"
+                  << std::endl;
+        M_monitor_client->sendFreeKickLeft( x, y );
     }
 }
 
@@ -1933,134 +1692,12 @@ MainWindow::freeKickRight( const QPoint & point )
     if ( M_monitor_client
          && M_monitor_client->isConnected() )
     {
-        double x = M_main_data.viewConfig().fieldX( point.x() );
-        double y = M_main_data.viewConfig().fieldY( point.y() );
+        double x = Options::instance().fieldX( point.x() );
+        double y = Options::instance().fieldY( point.y() );
 
-        if ( M_main_data.viewConfig().reverseSide() )
-        {
-            x = -x;
-            y = -y;
-            M_monitor_client->sendFreeKickLeft( x, y );
-        }
-        else
-        {
-            //std::cerr << "free kick right at ("
-            //          << x << ", " << y << ")"
-            //          << std::endl;
-            M_monitor_client->sendFreeKickRight( x, y );
-        }
+        std::cerr << "free kick right at ("
+                  << x << ", " << y << ")"
+                  << std::endl;
+        M_monitor_client->sendFreeKickRight( x, y );
     }
-}
-
-/*-------------------------------------------------------------------*/
-/*!
-
- */
-void
-MainWindow::movePlayer( const QPoint & point )
-{
-    if ( M_monitor_client
-         && M_monitor_client->isConnected() )
-    {
-        rcsc::SideID side = M_main_data.trainerData().draggedPlayerSide();
-        int unum = M_main_data.trainerData().draggedPlayerNumber();
-
-        if ( side != rcsc::NEUTRAL
-             && unum != 0 )
-        {
-            double x = M_main_data.viewConfig().fieldX( point.x() );
-            double y = M_main_data.viewConfig().fieldY( point.y() );
-            if ( M_main_data.viewConfig().reverseSide() )
-            {
-                x = -x;
-                y = -y;
-            }
-
-            //std::cerr << "move player to " << x << ' ' << y << std::endl;
-            M_main_data.getTrainerData().unsetDrag();
-            M_monitor_client->sendMove( side, unum, x, y, 0.0 );
-        }
-    }
-}
-
-/*-------------------------------------------------------------------*/
-/*!
-
- */
-void
-MainWindow::moveObjects()
-{
-    if ( ! M_monitor_client
-         || ! M_monitor_client->isConnected() )
-    {
-        return;
-    }
-
-    TrainerData & data = M_main_data.getTrainerData();
-
-    // ball
-    if ( data.ballPos().valid() )
-    {
-        if ( rcsc::ServerParam::i().coachMode()
-             || rcsc::ServerParam::i().coachWithRefereeMode() )
-        {
-            if ( data.ballVel().valid() )
-            {
-                M_monitor_client->sendTrainerMoveBall( data.ballPos().x,
-                                                       data.ballPos().y,
-                                                       data.ballVel().x,
-                                                       data.ballVel().y );
-            }
-            else
-            {
-                M_monitor_client->sendTrainerMoveBall( data.ballPos().x,
-                                                       data.ballPos().y );
-            }
-        }
-        else
-        {
-            if ( data.playMode() == rcsc::PM_FreeKick_Left )
-            {
-                M_monitor_client->sendFreeKickLeft( data.ballPos().x,
-                                                    data.ballPos().y );
-            }
-            else if ( data.playMode() == rcsc::PM_FreeKick_Right )
-            {
-                M_monitor_client->sendFreeKickRight( data.ballPos().x,
-                                                     data.ballPos().y );
-            }
-            else
-            {
-                M_monitor_client->sendDropBall( data.ballPos().x,
-                                                data.ballPos().y );
-            }
-        }
-    }
-
-    // left
-    for ( int unum = 1; unum <= 11; ++unum )
-    {
-        rcsc::Vector2D pos = data.playerMovePos( rcsc::LEFT, unum );
-        rcsc::AngleDeg body = data.playerBody( rcsc::LEFT, unum );
-        if ( pos.valid() )
-        {
-            M_monitor_client->sendMove( rcsc::LEFT, unum,
-                                        pos.x, pos.y,
-                                        body.degree() );
-        }
-    }
-
-    // right
-    for ( int unum = 1; unum <= 11; ++unum )
-    {
-        rcsc::Vector2D pos = data.playerMovePos( rcsc::RIGHT, unum );
-        rcsc::AngleDeg body = data.playerBody( rcsc::RIGHT, unum );
-        if ( pos.valid() )
-        {
-            M_monitor_client->sendMove( rcsc::RIGHT, unum,
-                                        pos.x, pos.y,
-                                        body.degree() );
-        }
-    }
-
 }

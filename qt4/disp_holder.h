@@ -45,7 +45,7 @@ typedef boost::shared_ptr< rcss::rcg::DispInfoT > DispPtr;
 typedef boost::shared_ptr< const rcss::rcg::DispInfoT > DispConstPtr;
 
 class DispHolder
-    : rcss::rcg::Handler {
+    : public rcss::rcg::Handler {
 private:
 
     int M_log_version;
@@ -80,6 +80,17 @@ public:
 
     DispConstPtr getDispInfo( const std::size_t idx ) const;
     std::size_t getIndexOf( const int time ) const;
+
+    DispConstPtr lastDispInfo() const
+      {
+          return M_last_disp;
+      }
+
+    const
+    std::vector< DispPtr > & dispInfoCont() const
+      {
+          return M_dispinfo_cont;
+      }
 
     const
     rcss::rcg::ServerParamT & serverParam() const

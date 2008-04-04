@@ -35,6 +35,8 @@
 
 #include "disp_holder.h"
 
+class QString;
+
 class MainData {
 private:
 
@@ -50,11 +52,17 @@ public:
     MainData();
     ~MainData();
 
+    void clear();
+
     std::size_t index() const
       {
           return M_index;
       }
 
+    DispHolder & dispHolder()
+      {
+          return M_disp_holder;
+      }
     const
     DispHolder & dispHolder() const
       {
@@ -89,6 +97,21 @@ public:
       {
           return M_disp_holder.playerType( id );
       }
+
+
+    bool openRCG( const QString & file_path );
+
+
+public:
+
+    bool setIndexFirst();
+    bool setIndexLast();
+
+    bool setIndexStepBack();
+    bool setIndexStepForward();
+
+    bool setIndex( const int index );
+    bool setCycle( const int cycle );
 
 };
 

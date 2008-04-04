@@ -43,12 +43,14 @@ AC_C_INLINE
 #AC_TYPE_INT32_T
 #AC_TYPE_UINT16_T
 AC_TYPE_SIZE_T
+AC_TYPE_SIGNAL
 AC_HEADER_TIME
 
 # Checks for library functions.
 AC_HEADER_STDC
+AC_FUNC_FORK
 AC_FUNC_SELECT_ARGTYPES
-AC_CHECK_FUNCS([memset rint select socket strerror])
+AC_CHECK_FUNCS([memset pow rint select socket sqrt strerror])
 
 # ----------------------------------------------------------
 # check boost

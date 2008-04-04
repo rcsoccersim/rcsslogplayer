@@ -47,6 +47,7 @@ class QSlider;
 class QSpinBox;
 class QTabWidget;
 
+class MainData;
 
 class ConfigDialog
     : public QDialog {
@@ -54,6 +55,8 @@ class ConfigDialog
     Q_OBJECT
 
 private:
+
+    const MainData & M_main_data;
 
     QTabWidget * M_tab_widget;
 
@@ -73,29 +76,22 @@ private:
     // misc options
     QCheckBox * M_anti_aliasing_cb;
 
-    // reverse mode control
-    QCheckBox * M_reverse_side_cb;
-    QCheckBox * M_player_reverse_draw_cb;
-
-    // player detail control
+    // player info control
     QCheckBox * M_player_number_cb;
-    QCheckBox * M_hetero_number_cb;
+    QCheckBox * M_player_type_cb;
     QCheckBox * M_stamina_cb;
-    QCheckBox * M_view_cone_cb;
-    QCheckBox * M_body_shadow_cb;
+    QCheckBox * M_view_area_cb;
     QCheckBox * M_control_area_cb;
+    QCheckBox * M_pointto_cb;
 
     // show/hide control
-    QCheckBox * M_anonymous_mode_cb;
     QCheckBox * M_show_score_board_cb;
+    QCheckBox * M_show_keepaway_area_cb;
     QCheckBox * M_show_team_logo_cb;
     QCheckBox * M_show_ball_cb;
-    QCheckBox * M_show_players_cb;
-    QCheckBox * M_show_flags_cb;
+    QCheckBox * M_show_player_cb;
+    QCheckBox * M_show_flag_cb;
     QCheckBox * M_show_offside_line_cb;
-
-    // firld style
-    QCheckBox * M_keepaway_mode_cb;
 
     QCheckBox * M_show_grid_coord_cb;
     QSlider * M_grid_step_slider;
@@ -118,21 +114,16 @@ private:
     // trace control
     QLineEdit * M_ball_trace_start;
     QLineEdit * M_ball_trace_end;
-    QCheckBox * M_ball_trace_cb;
     QLineEdit * M_player_trace_start;
     QLineEdit * M_player_trace_end;
-    QCheckBox * M_player_trace_cb;
-
-    QLineEdit * M_auto_trace_start;
-    QSpinBox * M_auto_trace_period;
 
     // inertia movement control
-    QSpinBox * M_ball_future;
-    QSpinBox * M_player_future;
+    QSpinBox * M_ball_vel_cycle;
 
 public:
 
-    ConfigDialog( QWidget * parent );
+    ConfigDialog( QWidget * parent,
+                  const MainData & main_data );
     ~ConfigDialog();
 private:
 
@@ -141,7 +132,7 @@ private:
     QWidget * createZoomControls();
     QWidget * createObjectSizeControls();
     QWidget * createCanvasSizeControls();
-    QWidget * createPlayersDetailControls();
+    QWidget * createPlayerInfoControls();
     QWidget * createShowControls();
     QWidget * createFieldStyleControls();
     QWidget * createMiscControls();
@@ -172,25 +163,19 @@ private slots:
     void editFieldScale( const QString & );
 
     void clickShowPlayerNumber( bool checked );
-    void clickShowHeteroNumber( bool checked );
+    void clickShowPlayerType( bool checked );
     void clickShowStamina( bool checked );
-    void clickShowViewCone( bool checked );
-    void clickShowBodyShadow( bool checked );
+    void clickShowViewArea( bool checked );
     void clickShowControlArea( bool checked );
+    void clickShowPointto( bool checked );
 
-    void clickAnonymousMode( bool checked );
     void clickShowScoreBoard( bool checked );
+    void clickShowKeepawayArea( bool checked );
     void clickShowTeamLogo( bool checked );
     void clickShowBall( bool checked );
-    void clickShowPlayers( bool checked );
-    void clickShowFlags( bool checked );
+    void clickShowPlayer( bool checked );
+    void clickShowFlag( bool checked );
     void clickShowOffsideLine( bool checked );
-
-    void clickGrassNormal();
-    void clickGrassLine();
-    void clickGrassChecker();
-
-    void clickKeepawayMode( bool checked );
 
     void clickShowGridCoord( bool checked );
     void slideGridStep( int value );
@@ -212,20 +197,14 @@ private slots:
     void editBallTraceStart( const QString & text );
     void editBallTraceEnd( const QString & text );
     void clickBallTraceAll();
-    void clickAutoBallTrace( bool checked );
 
     void editPlayerTraceStart( const QString & text );
     void editPlayerTraceEnd( const QString & text );
     void clickPlayerTraceAll();
-    void clickAutoPlayerTrace( bool checked );
-
-    void editAutoTraceStart( const QString & text );
-    void changeAutoTracePeriod( int value );
 
     void clickLinePointButton();
 
-    void changeBallFutureCycle( int value );
-    void changePlayerFutureCycle( int value );
+    void changeBallVelCycle( int value );
 
 public slots:
 
@@ -245,22 +224,19 @@ public slots:
 
     void applyCanvasSize();
 
-    void toggleReverseSide();
-    void togglePlayerReverseDraw();
-
     void toggleShowPlayerNumber();
-    void toggleShowHeteroNumber();
+    void toggleShowPlayerType();
     void toggleShowStamina();
-    void toggleShowViewCone();
-    void toggleShowBodyShadow();
+    void toggleShowViewArea();
     void toggleShowControlArea();
+    void toggleShowPointto();
 
-    void toggleAnonymousMode();
     void toggleShowScoreBoard();
+    void toggleShowKeepawayArea();
     void toggleShowTeamLogo();
-    void toggleShowPlayers();
+    void toggleShowPlayer();
     void toggleShowBall();
-    void toggleShowFlags();
+    void toggleShowFlag();
     void toggleShowOffsideLine();
 
     void toggleFocusBall();
@@ -276,13 +252,10 @@ public slots:
 
     void selectPlayerWithKey();
 
-    void toggleKeepawayMode();
-
 signals:
 
     void configured();
     void canvasResized( const QSize & size );
-
 };
 
 #endif
