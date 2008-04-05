@@ -66,8 +66,6 @@
 
 #include <unistd.h> // fork, execlp
 #include <sys/time.h> // itimerval, setitimer
-#include <sys/wait.h> // wait
-#include <sys/types.h> // wait
 
 #ifdef HAVE_NETINET_IN_H
 #include <netinet/in.h>
@@ -191,12 +189,12 @@ Player::run( int argc, char ** argv )
         return;
     }
 
-    if ( ! openGameLog() )
+    if ( ! openSavedLog() )
     {
         return;
     }
 
-    if ( ! openSavedLog() )
+    if ( ! openGameLog() )
     {
         return;
     }
@@ -790,7 +788,7 @@ Player::writeLog( const std::size_t index )
             s_teams[0] = disp->team_[0];
             s_teams[1] = disp->team_[1];
 
-            M_out_strm << " (team " << disp->show_.time_
+            M_out_strm << "(team " << disp->show_.time_
                        << ' ' << ( s_teams[0].name_.empty() ? "null" : s_teams[0].name_.c_str() )
                        << ' ' << ( s_teams[1].name_.empty() ? "null" : s_teams[1].name_.c_str() )
                        << ' ' << s_teams[0].score_
@@ -803,7 +801,7 @@ Player::writeLog( const std::size_t index )
                            << ' ' << s_teams[0].pen_score_
                            << ' ' << s_teams[0].pen_miss_;
             }
-            M_out_strm << "\n";
+            M_out_strm << ")\n";
         }
 
         std::string msg;
@@ -1091,7 +1089,7 @@ Player::serializeDisp( const rcss::rcg::DispInfoT & disp,
     ostr << "(show " << disp.show_.time_;
     if ( disp_mode )
     {
-        ostr << " (pm " << disp.pmode_ << ")";
+        ostr << " (pm " << disp.pmode_ << ')';
         ostr << " (tm"
              << ' ' << ( disp.team_[0].name_.empty() ? "null" : disp.team_[0].name_.c_str() )
              << ' ' << ( disp.team_[1].name_.empty() ? "null" : disp.team_[1].name_.c_str() )
@@ -1119,8 +1117,7 @@ Player::serializeDisp( const rcss::rcg::DispInfoT & disp,
     {
         const rcss::rcg::PlayerT & p = disp.show_.player_[i];
 
-        ostr << " ("
-             << '(' << p.side_ << ' ' << p.unum_ << ')'
+        ostr << " ((" << p.side_ << ' ' << p.unum_ << ')'
              << ' ' << p.type_
              << ' ' << std::hex << std::showbase << p.state_ << std::dec << std::noshowbase;
         ostr << ' ' << quantize( p.x_, PREC )
@@ -1154,6 +1151,7 @@ Player::serializeDisp( const rcss::rcg::DispInfoT & disp,
              << p.attentionto_count_ << ')';
         ostr << ')';
     }
+    ostr << ')';
 
     msg = ostr.str();
 }

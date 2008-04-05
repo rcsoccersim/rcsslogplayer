@@ -1,5 +1,8 @@
 2008-04-05  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 
+	* classic/logplayer.cpp:
+	- fixed a bug in the save log initialization.
+
 	* qt4/monitor_server.cpp:
 	* qt4/monitor_server.h:
 	* qt4/remote_monitor.cpp:
