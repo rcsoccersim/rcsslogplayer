@@ -112,7 +112,6 @@ MainWindow::MainWindow()
     if ( Options::instance().hideToolBar() )
     {
         M_log_player_tool_bar->hide();
-        //M_monitor_tool_bar->hide();
     }
 
     if ( Options::instance().hideStatusBar() )
@@ -281,7 +280,8 @@ MainWindow::createActionsMonitor()
     M_kick_off_act->setShortcut( Qt::Key_S );
     M_kick_off_act->setStatusTip( tr( "Start the game" ) );
     M_kick_off_act->setEnabled( false );
-    connect( M_kick_off_act, SIGNAL( triggered() ), this, SLOT( kickOff() ) );
+//     connect( M_kick_off_act, SIGNAL( triggered() ),
+//              this, SLOT( kickOff() ) );
     this->addAction( M_kick_off_act );
     //
     M_set_live_mode_act = new QAction( //QIcon( QPixmap( logplayer_live_mode_xpm ) ),
@@ -294,8 +294,8 @@ MainWindow::createActionsMonitor()
 #endif
     M_set_live_mode_act->setStatusTip( tr( "set monitor to live mode" ) );
     M_set_live_mode_act->setEnabled( false );
-    connect( M_set_live_mode_act, SIGNAL( triggered() ),
-             this, SLOT( setLiveMode() ) );
+//     connect( M_set_live_mode_act, SIGNAL( triggered() ),
+//              this, SLOT( setLiveMode() ) );
     this->addAction( M_set_live_mode_act );
     //
     M_connect_monitor_act = new QAction( tr( "&Connect" ), this );
@@ -307,23 +307,23 @@ MainWindow::createActionsMonitor()
     M_connect_monitor_act
         ->setStatusTip( "Connect to the rcssserver on localhost" );
     M_connect_monitor_act->setEnabled( true );
-    connect( M_connect_monitor_act, SIGNAL( triggered() ),
-             this, SLOT( connectMonitor() ) );
+//     connect( M_connect_monitor_act, SIGNAL( triggered() ),
+//              this, SLOT( connectMonitor() ) );
     this->addAction( M_connect_monitor_act );
     //
     M_connect_monitor_to_act = new QAction( tr( "Connect &to ..." ), this );
     M_connect_monitor_to_act
         ->setStatusTip( tr( "Connect to the rcssserver on other host" ) );
     M_connect_monitor_to_act->setEnabled( true );
-    connect( M_connect_monitor_to_act, SIGNAL( triggered() ),
-             this, SLOT( connectMonitorTo() ) );
+//     connect( M_connect_monitor_to_act, SIGNAL( triggered() ),
+//              this, SLOT( connectMonitorTo() ) );
     this->addAction( M_connect_monitor_to_act );
     //
     M_disconnect_monitor_act = new QAction( tr( "&Disconnect" ), this );
     M_disconnect_monitor_act->setStatusTip( tr( "Disonnect from rcssserver" ) );
     M_disconnect_monitor_act->setEnabled( false );
-    connect( M_disconnect_monitor_act, SIGNAL( triggered() ),
-             this, SLOT( disconnectMonitor() ) );
+//     connect( M_disconnect_monitor_act, SIGNAL( triggered() ),
+//              this, SLOT( disconnectMonitor() ) );
     this->addAction( M_disconnect_monitor_act );
 }
 
@@ -386,9 +386,9 @@ MainWindow::createActionsView()
     //
     M_show_detail_dialog_act = new QAction( tr( "&Object Detail" ), this );
 #ifdef Q_WS_MAC
-    M_show_detail_dialog_act->setShortcut( tr( "Meta+I" ) );
+    M_show_detail_dialog_act->setShortcut( tr( "Meta+D" ) );
 #else
-    M_show_detail_dialog_act->setShortcut( tr( "Ctrl+I" ) );
+    M_show_detail_dialog_act->setShortcut( tr( "Ctrl+D" ) );
 #endif
     M_show_detail_dialog_act
         ->setStatusTip( tr( "Show detail information dialog" ) );
@@ -471,6 +471,7 @@ MainWindow::createMenuFile()
 /*!
 
  */
+#if 0
 void
 MainWindow::createMenuMonitor()
 {
@@ -483,8 +484,8 @@ MainWindow::createMenuMonitor()
     menu->addAction( M_connect_monitor_act );
     menu->addAction( M_connect_monitor_to_act );
     menu->addAction( M_disconnect_monitor_act );
-
 }
+#endif
 
 /*-------------------------------------------------------------------*/
 /*!
@@ -526,10 +527,6 @@ MainWindow::createMenuHelp()
     QMenu * menu = menuBar()->addMenu( tr( "&Help" ) );
     menu->addAction( M_about_act );
 
-    //     QAction * act = new QAction( tr( "About Qt" ), this );
-    //     act->setStatusTip( tr( "Show about Qt." ) );
-    //     connect( act, SIGNAL( triggered() ), qApp, SLOT( aboutQt() ) );
-    //     menu->addAction( act );
     menu->addAction( tr( "About Qt" ), qApp, SLOT( aboutQt() ) );
 }
 
@@ -619,14 +616,14 @@ MainWindow::createFieldCanvas()
     {
         QMenu * menu = new QMenu( M_field_canvas );
         menu->addAction( M_open_act );
-        //menu->addAction( M_connect_monitor_act );
+//        menu->addAction( M_connect_monitor_act );
 
         M_field_canvas->setNormalMenu( menu );
     }
     {
         QMenu * menu = new QMenu( M_field_canvas );
         menu->addAction( M_open_act );
-        menu->addAction( M_connect_monitor_act );
+//        menu->addAction( M_connect_monitor_act );
 
         M_field_canvas->setSystemMenu( menu );
     }
@@ -942,7 +939,6 @@ MainWindow::closeEvent( QCloseEvent * event )
 {
     event->ignore();
 
-    //QCoreApplication::instance()->quit();
     qApp->quit();
 }
 
@@ -1049,7 +1045,7 @@ MainWindow::dropEvent( QDropEvent * event )
 void
 MainWindow::openRCG()
 {
-#ifdef HAVE_LIBZ
+#ifdef HAVE_LIBRCSSGZ
     QString filter( tr( "Game Log files (*.rcg *.rcg.gz);;"
                         "All files (*)" ) );
 #else
@@ -1145,115 +1141,6 @@ MainWindow::openRCG( const QString & file_path )
     emit viewUpdated();
 }
 
-// /*-------------------------------------------------------------------*/
-// /*!
-
-//  */
-// void
-// MainWindow::saveRCG()
-// {
-//     if ( M_main_data.viewHolder().monitorViewCont().empty() )
-//     {
-//         QMessageBox::warning( this,
-//                               tr( "Error" ),
-//                               tr( "No Monitor View Data!" ) );
-//         return;
-//     }
-
-//     QString default_file_name;
-//     {
-//         const MonitorViewConstPtr latest = M_main_data.viewHolder().latestViewData();
-
-//         if ( latest )
-//         {
-//             default_file_name
-//                 = QDateTime::currentDateTime().toString( "yyyyMMddhhmm-" );
-
-//             QString left_team = QString::fromStdString( latest->leftTeam().name() );
-//             QString left_score = QString::number( latest->leftTeam().score() );
-
-//             QString right_team = QString::fromStdString( latest->rightTeam().name() );
-//             QString right_score = QString::number( latest->rightTeam().score() );
-
-//             default_file_name += left_team;
-//             default_file_name += tr( "_" );
-//             default_file_name += left_score;
-//             default_file_name += tr( "-" );
-//             default_file_name += right_team;
-//             default_file_name += tr( "_" );
-//             default_file_name += right_score;
-
-//             default_file_name += tr( ".rcg" );
-//         }
-//     }
-
-// #ifdef HAVE_LIBRCSC_GZ
-//     QString filter( tr( "Game Log files (*.rcg *.rcg.gz);;"
-//                         "All files (*)" ) );
-// #else
-//     QString filter( tr( "Game Log files (*.rcg);;"
-//                         "All files (*)" ) );
-// #endif
-
-//     QString default_dir
-//         = QString::fromStdString( Options::instance().gameLogDir() );
-//     if ( ! default_file_name.isEmpty() )
-//     {
-//         default_dir += tr( "/" );
-//         default_dir += default_file_name;
-//     }
-
-//     QString file_path = QFileDialog::getSaveFileName( this,
-//                                                       tr( "Save a game log file as" ),
-//                                                       default_dir,
-//                                                       filter );
-
-//     if ( file_path.isEmpty() )
-//     {
-//         std::cerr << "MainWindow::saveRCG() empty file path" << std::endl;
-//         return;
-//     }
-
-//     std::string file_path_std = file_path.toStdString();
-
-//     std::cerr << "save game log data to the file = [" << file_path_std
-//               << ']' << std::endl;
-
-//     // update game log dir
-//     QFileInfo file_info( file_path );
-//     Options::instance().setGameLogDir( file_info.absolutePath().toStdString() );
-
-//     // check gzip usability
-//     bool is_gzip = false;
-//     if ( file_path_std.length() > 3
-//          && file_path_std.compare( file_path_std.length() - 3, 3, ".gz" ) == 0 )
-//     {
-// #ifdef HAVE_LIBRCSC_GZ
-//         if ( file_path_std.length() <= 7
-//              || file_path_std.compare( file_path_std.length() - 4, 4, ".rcg.gz" ) != 0 )
-//         {
-//             file_path_std == ".rcg.gz";
-//         }
-//         is_gzip = true;
-// #else
-//         // erase '.gz'
-//         file_path_std.erase( file_path_std.length() - 3 );
-// #endif
-//     }
-
-//     // check the extention string
-//     if ( ! is_gzip )
-//     {
-//         if ( file_path_std.length() <= 4
-//              || file_path_std.compare( file_path_std.length() - 4, 4, ".rcg" ) != 0 )
-//         {
-//             file_path_std += ".rcg";
-//         }
-//     }
-
-//     M_main_data.saveRCG( file_path_std );
-// }
-
 /*-------------------------------------------------------------------*/
 /*!
 
@@ -1261,7 +1148,6 @@ MainWindow::openRCG( const QString & file_path )
 void
 MainWindow::kickOff()
 {
-    std::cerr << "MainWindow::kickOff()" << std::endl;
     if ( M_monitor_client
          && M_monitor_client->isConnected() )
     {
@@ -1276,8 +1162,6 @@ MainWindow::kickOff()
 void
 MainWindow::setLiveMode()
 {
-    std::cerr << "MainWindow::setLiveMode()" << std::endl;
-
     if ( M_monitor_client
          && M_monitor_client->isConnected() )
     {
@@ -1292,7 +1176,6 @@ MainWindow::setLiveMode()
 void
 MainWindow::connectMonitor()
 {
-    std::cerr << "MainWindow::connectMonitor()" << std::endl;
     connectMonitorTo( "127.0.0.1" );
 }
 
@@ -1303,8 +1186,6 @@ MainWindow::connectMonitor()
 void
 MainWindow::connectMonitorTo()
 {
-    std::cerr << "MainWindow::connectMonitorTo()" << std::endl;
-
     QString host = QString::fromStdString( Options::instance().serverHost() );
     if ( host.isEmpty() )
     {
@@ -1442,7 +1323,6 @@ void
 MainWindow::toggleToolBar()
 {
     M_log_player_tool_bar->setVisible( ! M_log_player_tool_bar->isVisible() );
-    //M_monitor_tool_bar->setVisible( ! M_monitor_tool_bar->isVisible() );
 }
 
 /*-------------------------------------------------------------------*/
@@ -1479,8 +1359,6 @@ MainWindow::toggleFullScreen()
 void
 MainWindow::showPlayerTypeDialog()
 {
-    //std::cerr << "MainWindow::showPlayerTypeDialog()" << std::endl;
-
     if ( M_player_type_dialog )
     {
         M_player_type_dialog->setVisible( ! M_player_type_dialog->isVisible() );
@@ -1499,8 +1377,6 @@ MainWindow::showPlayerTypeDialog()
 void
 MainWindow::showDetailDialog()
 {
-    //std::cerr << "MainWindow::showDetailDialog()" << std::endl;
-
     if ( M_detail_dialog )
     {
         M_detail_dialog->setVisible( ! M_detail_dialog->isVisible() );
@@ -1541,8 +1417,6 @@ MainWindow::changeStyle( bool checked )
 void
 MainWindow::showConfigDialog()
 {
-    //std::cerr << "MainWindow::showViewConfigDialog()" << std::endl;
-
     M_config_dialog->setVisible( ! M_config_dialog->isVisible() );
 }
 
@@ -1554,10 +1428,10 @@ void
 MainWindow::about()
 {
     QString msg( tr( PACKAGE_NAME"-"VERSION"\n\n" ) );
-    msg += tr( "The RoboCup Soccer Simulator LogPlayer (rcsslogplayer) is\n"
-               "a game log replay tool for the RoboCup Soccer Siulator\n"
-               "Server (rcssserver).\n"
-               "the RoboCup Soccer Simulator.\n"
+    msg += tr( "The RoboCup Soccer Simulator LogPlayer (rcsslogplayer) is a game log"
+               " replay tool for the RoboCup Soccer Siulator Server (rcssserver).\n"
+               "\n"
+               "the RoboCup Soccer Simulator Official Web Page:\n"
                "  http://sserver.sourceforge.net/\n"
                "Author:\n"
                "  The RoboCup Soccer Simulator Maintenance Committee.\n"
@@ -1614,10 +1488,6 @@ MainWindow::resizeCanvas( const QSize & size )
         rect.setHeight( size.height() + height_diff );
 
         this->setGeometry( rect );
-
-        //std::cerr << "centralWidget width = " << centralWidget()->width()
-        //          << " height = " << centralWidget()->height()
-        //          << std::endl;
     }
 }
 
@@ -1628,8 +1498,6 @@ MainWindow::resizeCanvas( const QSize & size )
 void
 MainWindow::receiveMonitorPacket()
 {
-    //std::cerr << "receive monitor packet" << std::endl;
-
     if ( M_log_player->isLiveMode() )
     {
         M_log_player->showLive();
@@ -1650,8 +1518,7 @@ MainWindow::updatePositionLabel( const QPoint & point )
     if ( M_position_label
          && M_field_canvas
          && statusBar()
-         && statusBar()->isVisible()
-         )
+         && statusBar()->isVisible() )
     {
         double x = Options::instance().fieldX( point.x() );
         double y = Options::instance().fieldY( point.y() );

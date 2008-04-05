@@ -41,7 +41,9 @@
 #include "options.h"
 
 #include <rcsslogplayer/parser.h>
+#ifdef HAVE_LIBRCSSGZ
 #include <rcssbase/gzip/gzfstream.hpp>
+#endif
 
 /*-------------------------------------------------------------------*/
 /*!
@@ -79,7 +81,7 @@ MainData::clear()
 bool
 MainData::openRCG( const QString & file_path )
 {
-#ifdef HAVE_LIBZ
+#ifdef HAVE_LIBRCSSGZ
     rcss::gz::gzifstream fin( file_path.toAscii() );
 #else
     std::ifstream fin( file_path.toAscii() );

@@ -52,9 +52,9 @@ ScoreBoardPainter::ScoreBoardPainter( const MainData & main_data )
     : M_main_data( main_data )
     , M_pen( QColor( 255, 255, 255 ), 0, Qt::SolidLine )
     , M_brush( QColor( 0, 0, 0 ), Qt::SolidPattern )
-    , M_font( "6x13bold", 9, QFont::Bold )
+    , M_font( "6x13bold", 11, QFont::Bold )
 {
-    M_font.setPointSize( 9 );
+    M_font.setPointSize( 11 );
     M_font.setBold( true );
     //M_font.setStyleHint( QFont::System, QFont::PreferBitmap );
     M_font.setBold( true );

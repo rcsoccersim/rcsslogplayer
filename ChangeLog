@@ -1,6 +1,16 @@
 2008-04-05  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 
 	* qt4/disp_holder.cpp:
+	* qt4/field_canvas.cpp:
+	* qt4/log_player_tool_bar.cpp:
+	* qt4/main_data.cpp:
+	* qt4/main_window.cpp:
+	* qt4/options.cpp:
+	* qt4/score_board_painter.cpp:
+	- addec check of librcssgz.
+	- disabled monitor related actions.
+
+	* qt4/disp_holder.cpp:
 	- added the restriction to the max number of showinfo.
 
 	* classic/logplayer.cpp:

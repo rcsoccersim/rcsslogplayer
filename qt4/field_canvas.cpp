@@ -423,7 +423,7 @@ FieldCanvas::mouseReleaseEvent( QMouseEvent * event )
         }
         else if ( M_mouse_state[0].pressedPoint() == event->pos() )
         {
-//             if ( AppConfig::instance().monitorClientMode() )
+//             if ( Options::instance().monitorClientMode() )
 //             {
 //                 if ( M_monitor_menu
 //                      && ! M_monitor_menu->exec( event->globalPos() ) )
@@ -451,7 +451,7 @@ FieldCanvas::mouseReleaseEvent( QMouseEvent * event )
         }
         else if ( M_mouse_state[2].pressedPoint() == event->pos() )
         {
-//             if ( AppConfig::instance().monitorClientMode() )
+//             if ( Options::instance().monitorClientMode() )
 //             {
 //                 if ( M_system_menu
 //                      && ! M_system_menu->exec( event->globalPos() ) )
@@ -505,6 +505,12 @@ FieldCanvas::mouseMoveEvent( QMouseEvent * event )
     if ( M_mouse_state[2].isDragged() )
     {
         static QRect s_last_rect;
+
+        if ( this->cursor().shape() != Qt::CrossCursor )
+        {
+            this->setCursor( QCursor( Qt::CrossCursor ) );
+        }
+
         QRect new_rect
             = QRect( M_mouse_state[2].pressedPoint(),
                      M_mouse_state[2].draggedPoint() ).normalized();

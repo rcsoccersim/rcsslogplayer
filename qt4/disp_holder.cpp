@@ -201,8 +201,10 @@ DispHolder::doGetLogVersion() const
 void
 DispHolder::doHandleShowInfo( const rcss::rcg::ShowInfoT & show )
 {
-    if ( M_dispinfo_cache.size() >= 65535 )
+    if ( M_dispinfo_cont.size() >= 65535 )
     {
+        std::cerr << "over the maximum number of showinfo."
+                  << std::endl;
         return;
     }
 

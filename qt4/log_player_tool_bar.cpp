@@ -117,9 +117,6 @@ LogPlayerToolBar::LogPlayerToolBar( LogPlayer * log_player,
 
     connect( this, SIGNAL( cycleChanged( int ) ),
              log_player, SLOT( goToCycle( int ) ) );
-
-//     connect( this, SIGNAL( orientationChanged( Qt::Orientation ) ),
-//              this, SLOT( setOrientation( Qt::Orientation ) ) );
 }
 
 /*-------------------------------------------------------------------*/
@@ -128,7 +125,7 @@ LogPlayerToolBar::LogPlayerToolBar( LogPlayer * log_player,
 */
 LogPlayerToolBar::~LogPlayerToolBar()
 {
-    //std::cerr << "delete LogPlayerToolBar" << std::endl;
+
 }
 
 /*-------------------------------------------------------------------*/
@@ -145,7 +142,8 @@ LogPlayerToolBar::createControls( LogPlayer * log_player,
             = new QAction( QIcon( QPixmap( prev_score_xpm ) ),
                            tr( "Previous score" ), this );
         act->setShortcut( tr( "Ctrl+G" ) );
-        act->setStatusTip( tr( "Go to the previous goal scene.(Ctrl+G)" ) );
+        act->setStatusTip( tr( "Go to the previous goal scene.(" )
+                           + act->shortcut().toString() + tr(")" ) );
         connect( act, SIGNAL( triggered() ),
                  log_player, SLOT( goToPrevScore() ) );
         this->addAction( act );
@@ -156,12 +154,12 @@ LogPlayerToolBar::createControls( LogPlayer * log_player,
             = new QAction( QIcon( QPixmap( rew_xpm ) ),
                            tr( "Rewind" ), this );
 #ifdef Q_WS_MAC
-        act->setShortcut( Qt::META + Qt::Key_Left );
+        act->setShortcut( Qt::META + Qt::Key_Down );
 #else
-        act->setShortcut( Qt::CTRL + Qt::Key_Left );
+        act->setShortcut( Qt::CTRL + Qt::Key_Down );
 #endif
-
-        act->setStatusTip( "Rewind the log player.(Ctrl+Left)" );
+        act->setStatusTip( tr( "Rewind the log player.(" )
+                           + act->shortcut().toString() + tr( ")" ) );
         connect( act, SIGNAL( triggered() ),
                  log_player, SLOT( accelerateBack() ) );
         this->addAction( act );
@@ -171,8 +169,9 @@ LogPlayerToolBar::createControls( LogPlayer * log_player,
         QAction * act
             = new QAction( QIcon( QPixmap( rev_xpm ) ),
                            tr( "Play Backward" ), this );
-        act->setStatusTip( tr( "Play backward the log player.(Left)" ) );
-        act->setShortcut( Qt::Key_Left );
+        act->setShortcut( Qt::Key_Down );
+        act->setStatusTip( tr( "Play backward the log player.(" )
+                           + act->shortcut().toString() + tr( ")" ) );
         connect( act, SIGNAL( triggered() ),
                  log_player, SLOT( playBack() ) );
         this->addAction( act );
@@ -182,8 +181,9 @@ LogPlayerToolBar::createControls( LogPlayer * log_player,
         QAction * act
             = new QAction( QIcon( QPixmap( minus_xpm ) ),
                            tr( "Step Back" ), this );
-        act->setShortcut( Qt::Key_Down );
-        act->setStatusTip( tr( "One step back the log player. (Down)" ) );
+        act->setShortcut( Qt::Key_Left );
+        act->setStatusTip( tr( "One step back the log player.(" )
+                           + act->shortcut().toString() + tr( ")" ) );
         connect( act, SIGNAL( triggered() ),
                  log_player, SLOT( stepBack() ) );
         this->addAction( act );
@@ -192,11 +192,12 @@ LogPlayerToolBar::createControls( LogPlayer * log_player,
     {
         QAction * act
             = new QAction( QIcon( QPixmap( stop_xpm ) ),
-                           tr( "Stop" ), this );
-        //act->setShortcut( Qt::Key_Space );
-        act->setStatusTip( tr( "Stop the log player. (Space)" ) );
+                           tr( "Play/Stop" ), this );
+        act->setShortcut( Qt::Key_Space );
+        act->setStatusTip( tr( "Play/Stop the log player. (" )
+                           + act->shortcut().toString() + tr( ")" ) );
         connect( act, SIGNAL( triggered() ),
-                 log_player, SLOT( stop() ) );
+                 log_player, SLOT( playOrStop() ) );
         this->addAction( act );
         main_win->addAction( act );
     }
@@ -204,8 +205,9 @@ LogPlayerToolBar::createControls( LogPlayer * log_player,
         QAction * act
             = new QAction( QIcon( QPixmap( plus_xpm ) ),
                            tr( "Step Forward" ), this );
-        act->setShortcut( Qt::Key_Up );
-        act->setStatusTip( tr( "One step forward the log player. (Up)" ) );
+        act->setShortcut( Qt::Key_Right );
+        act->setStatusTip( tr( "One step forward the log player. (" )
+                           + act->shortcut().toString() + tr( ")" ) );
         connect( act, SIGNAL( triggered() ),
                  log_player, SLOT( stepForward() ) );
         this->addAction( act );
@@ -215,8 +217,9 @@ LogPlayerToolBar::createControls( LogPlayer * log_player,
         QAction * act
             = new QAction( QIcon( QPixmap( play_xpm ) ),
                            tr( "Play Forward" ), this );
-        act->setShortcut( Qt::Key_Right );
-        act->setStatusTip( tr( "Play forward the log player.(Right)" ) );
+        act->setShortcut( Qt::Key_Up );
+        act->setStatusTip( tr( "Play forward the log player.(" )
+                           + act->shortcut().toString() + tr( ")" ) );
         connect( act, SIGNAL( triggered() ),
                  log_player, SLOT( playForward() ) );
         this->addAction( act );
@@ -225,13 +228,14 @@ LogPlayerToolBar::createControls( LogPlayer * log_player,
     {
         QAction * act
             = new QAction( QIcon( QPixmap( ff_xpm ) ),
-                           tr( "FF" ), this );
+                           tr( "Fast Forward" ), this );
 #ifdef Q_WS_MAC
-        act->setShortcut( Qt::META + Qt::Key_Right );
+        act->setShortcut( Qt::META + Qt::Key_Up );
 #else
-        act->setShortcut( Qt::CTRL + Qt::Key_Right );
+        act->setShortcut( Qt::CTRL + Qt::Key_Up );
 #endif
-        act->setStatusTip( "Fast forward the log player.(Ctrl+Right)" );
+        act->setStatusTip( tr( "Fast forward the log player.(" )
+                           + act->shortcut().toString() + tr( ")" ) );
         connect( act, SIGNAL( triggered() ),
                  log_player, SLOT( accelerateForward() ) );
         this->addAction( act );
@@ -242,7 +246,8 @@ LogPlayerToolBar::createControls( LogPlayer * log_player,
             = new QAction( QIcon( QPixmap( next_score_xpm ) ),
                            tr( "Next score" ), this );
         act->setShortcut( Qt::Key_G );
-        act->setStatusTip( tr( "Go to the next goal scene.(G)" ) );
+        act->setStatusTip( tr( "Go to the next goal scene.(" )
+                           + act->shortcut().toString() + tr( ")" ) );
         connect( act, SIGNAL( triggered() ),
                  log_player, SLOT( goToNextScore() ) );
         this->addAction( act );
@@ -252,21 +257,11 @@ LogPlayerToolBar::createControls( LogPlayer * log_player,
     // invisible actions
     {
         QAction * act
-            = new QAction( QIcon( QPixmap( play_xpm ) ),
-                           tr( "Play/Stop." ), this );
-        act->setShortcut( Qt::Key_Space );
-        act->setStatusTip( tr( "Play or Stop the log player.(Space)" ) );
-        connect( act, SIGNAL( triggered() ),
-                 log_player, SLOT( playOrStop() ) );
-        //this->addAction( act );
-        main_win->addAction( act );
-    }
-    {
-        QAction * act
             = new QAction( //QIcon( QPixmap( go_first_xpm ) ),
                            tr( "Go first" ), this );
         act->setShortcut( Qt::Key_Home );
-        act->setStatusTip( tr( "Go to the first.(Home)" ) );
+        act->setStatusTip( tr( "Go to the first.(" )
+                           + act->shortcut().toString() + tr( ")" ) );
         connect( act, SIGNAL( triggered() ),
                  log_player, SLOT( goToFirst() ) );
         //this->addAction( act );
@@ -277,7 +272,8 @@ LogPlayerToolBar::createControls( LogPlayer * log_player,
             = new QAction( //QIcon( QPixmap( go_last_xpm ) ),
                            tr( "Go last" ), this );
         act->setShortcut( Qt::Key_End );
-        act->setStatusTip( tr( "Go to the last.(End)" ) );
+        act->setStatusTip( tr( "Go to the last.(" )
+                           + act->shortcut().toString() + tr( ")" ) );
         connect( act, SIGNAL( triggered() ),
                  log_player, SLOT( goToLast() ) );
         //this->addAction( act );
@@ -289,7 +285,7 @@ LogPlayerToolBar::createControls( LogPlayer * log_player,
     M_cycle_slider = new QSlider( this->orientation() );
     connect( this, SIGNAL( orientationChanged( Qt::Orientation ) ),
              M_cycle_slider, SLOT( setOrientation( Qt::Orientation ) ) );
-    M_cycle_slider->setStatusTip( tr( "You can select the cycle by this slider." ) );
+    M_cycle_slider->setStatusTip( tr( "Cycle Slider." ) );
     M_cycle_slider->setToolTip( tr( "Cycle Slider" ) );
     M_cycle_slider->setRange( 0, 0 );
     M_cycle_slider->setValue( 0 );
@@ -303,7 +299,7 @@ LogPlayerToolBar::createControls( LogPlayer * log_player,
     this->addWidget( M_cycle_slider );
 
     M_cycle_edit = new CycleEdit();
-    M_cycle_edit->setStatusTip( tr( "You can select the cycle directly." ) );
+    M_cycle_edit->setStatusTip( tr( "Cycle Input Box." ) );
     M_cycle_edit->setToolTip( tr( "Cycle Input" ) );
     connect( M_cycle_edit, SIGNAL( returnPressed() ),
              this, SLOT( editCycle() ) );
