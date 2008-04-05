@@ -1,5 +1,8 @@
 2008-04-05  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 
+	* qt4/disp_holder.cpp:
+	- added the restriction to the max number of showinfo.
+
 	* classic/logplayer.cpp:
 	- fixed a bug in the save log initialization.
 

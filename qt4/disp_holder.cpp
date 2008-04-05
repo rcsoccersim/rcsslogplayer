@@ -201,6 +201,11 @@ DispHolder::doGetLogVersion() const
 void
 DispHolder::doHandleShowInfo( const rcss::rcg::ShowInfoT & show )
 {
+    if ( M_dispinfo_cache.size() >= 65535 )
+    {
+        return;
+    }
+
     DispPtr disp( new rcss::rcg::DispInfoT );
 
     disp->pmode_ = M_playmode;
