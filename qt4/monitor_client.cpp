@@ -52,37 +52,32 @@ namespace {
 const int POLL_INTERVAL_MS = 1000;
 }
 
-class MonitorClientImpl {
-public:
-
-    QHostAddress server_addr_;
-    quint16 server_port_;
-
-};
-
-
 /*-------------------------------------------------------------------*/
 /*!
 
 */
-MonitorClient::MonitorClient( DispHolder & disp_holder,
+MonitorClient::MonitorClient( QObject * parent,
+                              DispHolder & disp_holder,
                               const char * hostname,
                               const int port,
                               const int version )
 
-    : M_impl( new MonitorClientImpl )
+    : QObject( parent )
     , M_disp_holder( disp_holder )
+    , M_server_port( static_cast< quint16 >( port ) )
     , M_socket( new QUdpSocket( this ) )
     , M_timer( new QTimer( this ) )
     , M_version( version )
     , M_waited_msec( 0 )
 {
+    assert( parent );
 
     // check protocl versin range
     if ( version < 1 )
     {
         M_version = 1;
     }
+
     if ( 3 < version )
     {
         M_version = 3;
@@ -96,14 +91,8 @@ MonitorClient::MonitorClient( DispHolder & disp_holder,
         return;
     }
 
-    M_impl->server_addr_ = host.addresses().front();
-    M_impl->server_port_ = port;
+    M_server_addr = host.addresses().front();
 
-    // setReadBufferSize() makes no effect for UdpSocet...
-    //M_socket->setReadBufferSize( 8192 * 256 );
-
-    //M_socket->bind( M_impl->server_addr_,
-    //                0 ); // created a local port
     // INADDR_ANY, bind random created port to local
     if ( ! M_socket->bind( 0 ) )
     {
@@ -118,6 +107,9 @@ MonitorClient::MonitorClient( DispHolder & disp_holder,
                   << std::endl;
         return;
     }
+
+    // setReadBufferSize() makes no effect for QUdpSocet...
+    // M_socket->setReadBufferSize( 8192 * 256 );
 
     connect( M_socket, SIGNAL( readyRead() ),
              this, SLOT( handleReceive() ) );
@@ -185,16 +177,16 @@ MonitorClient::handleReceive()
             quint16 from_port;
             int n = M_socket->readDatagram( buf,
                                             8192,
-                                            0, // QHosAddress
+                                            0, // QHostAddress*
                                             &from_port );
             if ( n > 0 )
             {
-//                 if ( ! M_disp_holder.addDisp3( buf ) )
-//                 {
-//                     std::cerr << "recv: " << buf << std::endl;
-//                 }
+                if ( ! M_disp_holder.addDispInfo3( buf ) )
+                {
+                    std::cerr << "recv: " << buf << std::endl;
+                }
 
-                if ( from_port != M_impl->server_port_ )
+                if ( from_port != M_server_port )
                 {
                     std::cerr << "updated server port number = "
                               << from_port
@@ -202,7 +194,7 @@ MonitorClient::handleReceive()
                         //<< M_socket->localPort()
                               << std::endl;
 
-                    M_impl->server_port_ = from_port;
+                    M_server_port = from_port;
                 }
             }
             ++receive_count;
@@ -216,18 +208,18 @@ MonitorClient::handleReceive()
             quint16 from_port;
             int n = M_socket->readDatagram( reinterpret_cast< char * >( &disp2 ),
                                             sizeof( disp2 ),
-                                            0, // QHosAddress
+                                            0, // QHostAddress*
                                             &from_port );
             if ( n > 0 )
             {
-//                 if ( ! M_disp_holder.addDispInfo2( disp2 ) )
-//                 {
-//                     std::cerr << "recv: "
-//                               << reinterpret_cast< char * >( &disp2 )
-//                               << std::endl;
-//                 }
+                if ( ! M_disp_holder.addDispInfo2( disp2 ) )
+                {
+                    std::cerr << "recv: "
+                              << reinterpret_cast< char * >( &disp2 )
+                              << std::endl;
+                }
 
-                if ( from_port != M_impl->server_port_ )
+                if ( from_port != M_server_port )
                 {
                     std::cerr << "updated server port number = "
                               << from_port
@@ -235,7 +227,7 @@ MonitorClient::handleReceive()
                         //<< M_socket->localPort()
                               << std::endl;
 
-                    M_impl->server_port_ = from_port;
+                    M_server_port = from_port;
                 }
             }
             ++receive_count;
@@ -249,23 +241,23 @@ MonitorClient::handleReceive()
             quint16 from_port;
             int n =  M_socket->readDatagram( reinterpret_cast< char * >( &disp1 ),
                                              sizeof( disp1 ),
-                                             0, // QHosAddress
+                                             0, // QHostAddress*
                                              &from_port );
             if ( n > 0 )
             {
-//                 if ( ! M_disp_holder.addDispInfo( disp1 ) )
-//                 {
-//                     std::cerr << "recv: "
-//                               << reinterpret_cast< char * >( &disp1 )
-//                               << std::endl;
-//                 }
+                if ( ! M_disp_holder.addDispInfo1( disp1 ) )
+                {
+                    std::cerr << "recv: "
+                              << reinterpret_cast< char * >( &disp1 )
+                              << std::endl;
+                }
 
-                if ( from_port != M_impl->server_port_ )
+                if ( from_port != M_server_port )
                 {
                     std::cerr << "updated port number = "
                               << from_port << std::endl;
 
-                    M_impl->server_port_ = from_port;
+                    M_server_port = from_port;
                 }
             }
             ++receive_count;
@@ -311,8 +303,8 @@ MonitorClient::sendCommand( const std::string & com )
     }
 
     M_socket->writeDatagram( com.c_str(), com.length() + 1,
-                             M_impl->server_addr_,
-                             M_impl->server_port_ );
+                             M_server_addr,
+                             M_server_port );
     std::cerr << "send: " << com << std::endl;
 }
 

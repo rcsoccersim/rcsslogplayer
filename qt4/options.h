@@ -95,14 +95,15 @@ private:
     // monitor client options
     //
     bool M_connect;
-    std::string M_host;
-    int M_port;
+    std::string M_server_host;
+    int M_server_port;
     int M_client_version;
     bool M_time_shift_replay;
 
     //
     // logplayer options
     //
+    int M_monitor_port;
     std::string M_game_log_file; //!< game log file path to be opened
     bool M_auto_loop_mode;
     int M_timer_interval; //!< logplayer's timer interval. default 100[ms]
@@ -211,18 +212,18 @@ public:
       }
 
     const
-    std::string & host() const
+    std::string & serverHost() const
       {
-          return M_host;
+          return M_server_host;
       }
-    void setHost( const std::string & host )
+    void setServerHost( const std::string & host )
       {
-          M_host = host;
+          M_server_host = host;
       }
 
-    int port() const
+    int serverPort() const
       {
-          return M_port;
+          return M_server_port;
       }
 
     int clientVersion() const
@@ -233,6 +234,11 @@ public:
     //
     // logplayer options
     //
+
+    int monitorPort() const
+      {
+          return M_monitor_port;
+      }
 
     const
     std::string & gameLogFile() const

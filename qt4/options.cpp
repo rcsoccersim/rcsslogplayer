@@ -89,10 +89,11 @@ Options::instance()
  */
 Options::Options()
     : M_connect( false )
-    , M_host( "localhost" )
-    , M_port( 6000 )
+    , M_server_host( "127.0.0.1" )
+    , M_server_port( 6000 )
     , M_client_version( 3 )
     , M_time_shift_replay( true )
+    , M_monitor_port( 6000 )
     , M_game_log_file( "" )
     , M_auto_loop_mode( true )
     , M_timer_interval( Options::DEFAULT_TIMER_INTERVAL )
@@ -179,16 +180,19 @@ Options::parseCmdLine( int argc,
         ( "connect,c",
           po::bool_switch( &M_connect ),
           "start as a soccer monitor." )
-        ( "host",
-          po::value< std::string >( &M_host )->default_value( "localhost", "localhost" ),
-          "set host name to be connected." )
-        ( "port",
-          po::value< int >( &M_port )->default_value( 6000, "6000" ),
-          "set port number for the monitor client and monitor server." )
+        ( "server-host",
+          po::value< std::string >( &M_server_host )->default_value( "127.0.0.1", "127.0.0.1" ),
+          "set host name to connect to rcssserver." )
+        ( "server-port",
+          po::value< int >( &M_server_port )->default_value( 6000, "6000" ),
+          "set port number to connect as the monitor client." )
         ( "client-version",
           po::value< int >( &M_client_version )->default_value( 3, "3" ),
           "set a monitor client protocol version." )
         // logplayer options
+        ( "monitor-port",
+          po::value< int >( &M_monitor_port )->default_value( 6000, "6000" ),
+          "set port number to wait the monitor client connection as the logplayer." )
         ( "auto-loop-mode",
           po::value< bool >( &M_auto_loop_mode )->default_value( true, "on" ),
           "enable automatic replay loop mode." )

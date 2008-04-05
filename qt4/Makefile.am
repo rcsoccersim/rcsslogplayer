@@ -23,9 +23,11 @@ rcsslogplayer_SOURCES = \
 	main_data.cpp \
 	main_window.cpp \
 	monitor_client.cpp \
+	monitor_server.cpp \
 	options.cpp \
 	player_painter.cpp \
 	player_type_dialog.cpp \
+	remote_monitor.cpp \
 	score_board_painter.cpp \
 	vector_2d.cpp
 
@@ -37,7 +39,9 @@ nodist_rcsslogplayer_SOURCES = \
 	moc_log_player_tool_bar.cpp \
 	moc_main_window.cpp \
 	moc_monitor_client.cpp \
-	moc_player_type_dialog.cpp
+	moc_monitor_server.cpp \
+	moc_player_type_dialog.cpp \
+	moc_remote_monitor.cpp
 
 noinst_HEADERS = \
 	angle_deg.h \
@@ -52,9 +56,11 @@ noinst_HEADERS = \
 	main_data.h \
 	main_window.h \
 	monitor_client.h \
+	monitor_server.h \
 	options.h \
 	player_painter.h \
 	player_type_dialog.h \
+	remote_monitor.h \
 	score_board_painter.h \
 	vector_2d.h
 

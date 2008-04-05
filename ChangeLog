@@ -1,5 +1,20 @@
 2008-04-05  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 
+	* qt4/monitor_server.cpp:
+	* qt4/monitor_server.h:
+	* qt4/remote_monitor.cpp:
+	* qt4/remote_monitor.h:
+	* qt4/Makefile.am:
+	* qt4/disp_holder.cpp:
+	* qt4/disp_holder.h:
+	* qt4/main_window.cpp:
+	* qt4/main_window.h:
+	* qt4/monitor_client.cpp:
+	* qt4/monitor_client.h:
+	* qt4/options.cpp:
+	* qt4/options.h:
+	- implemented monitor server.
+
 	* icons/next_score.xpm:
 	* icons/prev_score.xpm:
 	* qt4/Makefile.am:

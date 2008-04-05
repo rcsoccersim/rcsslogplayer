@@ -132,6 +132,10 @@ public:
       }
 
 
+    bool addDispInfo1( const rcss::rcg::dispinfo_t & disp );
+    bool addDispInfo2( const rcss::rcg::dispinfo_t2 & disp );
+    bool addDispInfo3( const char * msg );
+
 private:
     virtual
     void doHandleLogVersion( int ver );

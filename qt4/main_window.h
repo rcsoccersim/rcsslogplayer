@@ -38,8 +38,6 @@
 
 #include "main_data.h"
 
-#include <boost/shared_ptr.hpp>
-
 class QAction;
 class QActionGroup;
 class QCloseEvent;
@@ -79,8 +77,8 @@ private:
 
     QLabel * M_position_label;
 
-    //boost::shared_ptr< MonitorServer > M_monitor_server;
-    boost::shared_ptr< MonitorClient > M_monitor_client;
+    MonitorServer * M_monitor_server;
+    MonitorClient * M_monitor_client;
 
     // file actions
     QAction * M_open_act;
@@ -141,6 +139,7 @@ private:
     void createFieldCanvas();
     void createConfigDialog();
 
+    void createMonitorServer();
 protected:
 
     // overrided method (virtual in super)

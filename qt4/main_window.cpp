@@ -38,15 +38,12 @@
 
 #include "main_window.h"
 
-//#include "color_setting_dialog.h"
-//#include "image_save_dialog.h"
 #include "detail_dialog.h"
-//#include "font_setting_dialog.h"
-//#include "monitor_move_dialog.h"
 #include "player_type_dialog.h"
 #include "config_dialog.h"
 #include "field_canvas.h"
 #include "monitor_client.h"
+#include "monitor_server.h"
 #include "log_player.h"
 #include "log_player_tool_bar.h"
 #include "options.h"
@@ -74,7 +71,8 @@ MainWindow::MainWindow()
     , M_config_dialog( static_cast< ConfigDialog * >( 0 ) )
     , M_detail_dialog( static_cast< DetailDialog * >( 0 ) )
     , M_player_type_dialog( static_cast< PlayerTypeDialog * >( 0 ) )
-//, M_monitor_client( static_cast< MonitorClient * >( 0 ) )
+    , M_monitor_server( static_cast< MonitorServer * >( 0 ) )
+    , M_monitor_client( static_cast< MonitorClient * >( 0 ) )
 {
     readSettings();
 
@@ -152,7 +150,7 @@ MainWindow::init()
     }
     else if ( Options::instance().connect() )
     {
-        std::string host = Options::instance().host();
+        std::string host = Options::instance().serverHost();
         if ( host.empty() )
         {
             host = "127.0.0.1";
@@ -919,6 +917,27 @@ MainWindow::createConfigDialog()
 
  */
 void
+MainWindow::createMonitorServer()
+{
+    if ( M_monitor_server )
+    {
+        delete M_monitor_server;
+        M_monitor_server = static_cast< MonitorServer * >( 0 );
+    }
+
+    M_monitor_server = new MonitorServer( this,
+                                          M_main_data,
+                                          Options::instance().monitorPort() );
+
+    connect( M_log_player, SIGNAL( updated() ),
+             M_monitor_server, SLOT( sendToClients() ) );
+}
+
+/*-------------------------------------------------------------------*/
+/*!
+
+ */
+void
 MainWindow::closeEvent( QCloseEvent * event )
 {
     event->ignore();
@@ -1120,6 +1139,9 @@ MainWindow::openRCG( const QString & file_path )
     }
     this->setWindowTitle( name + tr( " - "PACKAGE_NAME ) );
 
+
+    createMonitorServer();
+
     emit viewUpdated();
 }
 
@@ -1283,7 +1305,7 @@ MainWindow::connectMonitorTo()
 {
     std::cerr << "MainWindow::connectMonitorTo()" << std::endl;
 
-    QString host = QString::fromStdString( Options::instance().host() );
+    QString host = QString::fromStdString( Options::instance().serverHost() );
     if ( host.isEmpty() )
     {
         host = "127.0.0.1";
@@ -1318,17 +1340,17 @@ MainWindow::connectMonitorTo( const char * hostname )
 
     std::cerr << "Connect to rcssserver on [" << hostname << "]" << std::endl;
 
-    M_monitor_client
-        = boost::shared_ptr< MonitorClient >
-        ( new MonitorClient( M_main_data.dispHolder(),
-                             hostname,
-                             Options::instance().port(),
-                             Options::instance().clientVersion() ) );
+    M_monitor_client = new MonitorClient( this,
+                                          M_main_data.dispHolder(),
+                                          hostname,
+                                          Options::instance().serverPort(),
+                                          Options::instance().clientVersion() );
 
     if ( ! M_monitor_client->isConnected() )
     {
         std::cerr << "Conenction failed." << std::endl;
-        M_monitor_client.reset();
+        delete M_monitor_client;
+        M_monitor_client = static_cast< MonitorClient * >( 0 );
         return;
     }
 
@@ -1346,7 +1368,7 @@ MainWindow::connectMonitorTo( const char * hostname )
     }
 
     //Options::instance().setMonitorClientMode( true );
-    Options::instance().setHost( hostname );
+    Options::instance().setServerHost( hostname );
 
     M_kick_off_act->setEnabled( true );
     M_set_live_mode_act->setEnabled( true );
@@ -1354,9 +1376,9 @@ MainWindow::connectMonitorTo( const char * hostname )
     M_connect_monitor_to_act->setEnabled( false );
     M_disconnect_monitor_act->setEnabled( true );
 
-    connect( M_monitor_client.get(), SIGNAL( received() ),
+    connect( M_monitor_client, SIGNAL( received() ),
              this, SLOT( receiveMonitorPacket() ) );
-    connect( M_monitor_client.get(), SIGNAL( timeout() ),
+    connect( M_monitor_client, SIGNAL( timeout() ),
              this, SLOT( disconnectMonitor() ) );
 
     M_log_player->setLiveMode();
@@ -1383,13 +1405,14 @@ MainWindow::disconnectMonitor()
     {
         M_monitor_client->disconnect();
 
-        disconnect( M_monitor_client.get(), SIGNAL( received() ),
+        disconnect( M_monitor_client, SIGNAL( received() ),
                     this, SLOT( receiveMonitorPacket() ) );
 
-        disconnect( M_monitor_client.get(), SIGNAL( timeout() ),
+        disconnect( M_monitor_client, SIGNAL( timeout() ),
                     this, SLOT( disconnectMonitor() ) );
 
-        M_monitor_client.reset();
+        delete M_monitor_client;
+        M_monitor_client = static_cast< MonitorClient * >( 0 );
     }
 
     //Options::instance().setMonitorClientMode( false );

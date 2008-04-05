@@ -34,18 +34,14 @@
 #define RCSSLOGPLAYER_MONITOR_CLIENT_H
 
 #include <QObject>
+#include <QHostAddress>
 
 #include <rcsslogplayer/types.h>
-
-#include <boost/scoped_ptr.hpp>
 
 class QHostInfo;
 class QTimer;
 class QUdpSocket;
-class QSocketNotifier;
 class DispHolder;
-
-class MonitorClientImpl;
 
 //! monitor client that connect to the rcssserver
 class MonitorClient
@@ -55,10 +51,10 @@ class MonitorClient
 
 private:
 
-    boost::scoped_ptr< MonitorClientImpl > M_impl;
-
     DispHolder & M_disp_holder;
 
+    QHostAddress M_server_addr;
+    quint16 M_server_port;
     QUdpSocket * M_socket;
     QTimer * M_timer;
 
@@ -73,7 +69,8 @@ private:
     MonitorClient & operator=( const MonitorClient & );
 public:
     //! constructor
-    MonitorClient( DispHolder & disp_holder,
+    MonitorClient( QObject * parent,
+                   DispHolder & disp_holder,
                    const char * hostname,
                    const int port,
                    const int version );

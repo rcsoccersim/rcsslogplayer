@@ -148,6 +148,36 @@ DispHolder::playerType( const int id ) const
 /*!
 
 */
+bool
+DispHolder::addDispInfo1( const rcss::rcg::dispinfo_t & disp )
+{
+    return true;
+}
+
+/*-------------------------------------------------------------------*/
+/*!
+
+*/
+bool
+DispHolder::addDispInfo2( const rcss::rcg::dispinfo_t2 & disp )
+{
+    return true;
+}
+
+/*-------------------------------------------------------------------*/
+/*!
+
+*/
+bool
+DispHolder::addDispInfo3( const char * msg )
+{
+    return true;
+}
+
+/*-------------------------------------------------------------------*/
+/*!
+
+*/
 void
 DispHolder::doHandleLogVersion( int ver )
 {
