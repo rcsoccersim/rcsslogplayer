@@ -158,12 +158,12 @@ DetailDialog::createPlayerLabels()
 
     layout->addWidget( new QLabel( tr( "Unum " ) ), row, 0, Qt::AlignRight );
     M_player_number = new QLabel( tr( " Neutral  0" ) );
-    layout->addWidget( M_player_number, row, 1, Qt::AlignHCenter );
+    layout->addWidget( M_player_number, row, 1, Qt::AlignRight );
     ++row;
 
     layout->addWidget( new QLabel( tr( "Type " ) ), row, 0, Qt::AlignRight );
-    M_player_type = new QLabel( tr( "0" ) );
-    layout->addWidget( M_player_type, row, 1, Qt::AlignHCenter );
+    M_player_type = new QLabel( tr( " 0" ) );
+    layout->addWidget( M_player_type, row, 1, Qt::AlignRight );
     ++row;
 
     layout->addWidget( new QLabel( tr( "Pos " ) ), row, 0, Qt::AlignRight );
@@ -320,7 +320,6 @@ DetailDialog::updateLabels()
             ? DispConstPtr()
             : M_main_data.getDispInfo( M_main_data.index() - 1 ) );
 
-    //std::cerr << "DetailDialog::updteLabels start" << std::endl;
 
     char buf[64];
 
@@ -375,13 +374,13 @@ DetailDialog::updateLabels()
     const rcss::rcg::PlayerTypeT & player_type = M_main_data.playerType( player.type_ );
 
     // side, number
-    std::snprintf( buf, 64, "%8s  %2d",
+    std::snprintf( buf, 64, " %8s  %2d",
                    number > 0 ? "   Left" : "   Right",
                    number > 0 ? number : -number );
     M_player_number->setText( QString::fromAscii( buf ) );
 
     // player type
-    std::snprintf( buf, 64, " %d" ,
+    std::snprintf( buf, 64, " %2d",
                    player.type_ );
     M_player_type->setText( QString::fromAscii( buf ) );
 
