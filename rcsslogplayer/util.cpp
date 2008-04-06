@@ -223,6 +223,7 @@ void
 convert( const BallT & from,
          pos_t & to )
 {
+    to.side = htons( NEUTRAL );
     to.x = hftons( from.x_ );
     to.y = hftons( from.y_ );
 }
@@ -251,8 +252,11 @@ convert( const BallT & from,
 {
     to.x = hftonl( from.x_ );
     to.y = hftonl( from.y_ );
-    to.deltax = hftonl( from.vx_ );
-    to.deltay = hftonl( from.vy_ );
+    if ( from.hasVelocity() )
+    {
+        to.deltax = hftonl( from.vx_ );
+        to.deltay = hftonl( from.vy_ );
+    }
 }
 
 /*-------------------------------------------------------------------*/
@@ -339,15 +343,27 @@ convert( const PlayerT & from,
     to.type = ntohs( from.type_ );
     to.x = hftonl( from.x_ );
     to.y = hftonl( from.y_ );
-    to.deltax = hftonl( from.vx_ );
-    to.deltay = hftonl( from.vy_ );
+    if ( from.hasVelocity() )
+    {
+        to.deltax = hftonl( from.vx_ );
+        to.deltay = hftonl( from.vy_ );
+    }
     to.body_angle = hftonl( from.body_ * DEG2RADF );
-    to.head_angle = hftonl( from.neck_ * DEG2RADF );
-    to.view_width = hftonl( from.view_width_ * DEG2RADF );
-    to.view_quality = htons( from.highQuality() ? 1 : 0 );
-    to.stamina = hftonl( from.stamina_ );
-    to.effort = hftonl( from.effort_ );
-    to.recovery = hftonl( from.recovery_ );
+    if ( from.hasNeck() )
+    {
+        to.head_angle = hftonl( from.neck_ * DEG2RADF );
+    }
+    if ( from.hasView() )
+    {
+        to.view_width = hftonl( from.view_width_ * DEG2RADF );
+        to.view_quality = htons( from.highQuality() ? 1 : 0 );
+    }
+    if ( from.hasStamina() )
+    {
+        to.stamina = hftonl( from.stamina_ );
+        to.effort = hftonl( from.effort_ );
+        to.recovery = hftonl( from.recovery_ );
+    }
     to.kick_count = htons( from.kick_count_ );
     to.dash_count = htons( from.dash_count_ );
     to.turn_count = htons( from.turn_count_ );
@@ -428,9 +444,7 @@ convert( const char playmode,
     convert( team_r, to.team[1] );
 
     // ball
-    to.pos[0].side = htons( NEUTRAL );
-    to.pos[0].x = hftons( from.ball_.x_ );
-    to.pos[0].y = hftons( from.ball_.y_ );
+    convert( from.ball_, to.pos[0] );
 
     // players
     for ( int i = 0; i < MAX_PLAYER*2; ++i )
@@ -440,12 +454,7 @@ convert( const char playmode,
         if ( from.player_[i].side() == RIGHT ) idx += MAX_PLAYER;
         if ( idx < 0 || MAX_PLAYER*2 + 1 <= idx ) continue;
 
-        to.pos[idx].enable = htons( static_cast< Int16 >( from.player_[i].state_ ) );
-        to.pos[idx].side = htons( from.player_[i].side() );
-        to.pos[idx].unum = htons( from.player_[i].unum_ );
-        to.pos[idx].angle = htons( static_cast< Int16 >( rintf( from.player_[i].body_ ) ) );
-        to.pos[idx].x = hftons( from.player_[i].x_ );
-        to.pos[idx].y = hftons( from.player_[i].y_ );
+        convert( from.player_[i], to.pos[idx] );
     }
 
     // time
@@ -470,10 +479,7 @@ convert( const char playmode,
     convert( team_r, to.team[1] );
 
     // ball
-    to.ball.x = hftonl( from.ball_.x_ );
-    to.ball.y = hftonl( from.ball_.y_ );
-    to.ball.deltax = hftonl( from.ball_.vx_ );
-    to.ball.deltay = hftonl( from.ball_.vx_ );
+    convert( from.ball_, to.ball );
 
     // players
     for ( int i = 0; i < MAX_PLAYER * 2; ++i )
@@ -522,10 +528,7 @@ convert( const ShowInfoT & from,
          short_showinfo_t2 & to )
 {
     // ball
-    to.ball.x = hftonl( from.ball_.x_ );
-    to.ball.y = hftonl( from.ball_.y_ );
-    to.ball.deltax = hftonl( from.ball_.vx_ );
-    to.ball.deltay = hftonl( from.ball_.vx_ );
+    convert( from.ball_, to.ball );
 
     // players
     for ( int i = 0; i < MAX_PLAYER * 2; ++i )
@@ -818,23 +821,23 @@ convert( const server_params_t & from,
     // 12.0.0
     to.max_tackle_power_ = to.max_power_;
     tmp = nltohd( from.max_tackle_power );
-    if ( 0.0 < tmp && std::fabs( tmp ) < 1000.0 ) to.max_tackle_power_ = tmp;
+    if ( 0.0 < tmp && std::fabs( tmp ) < 200.0 ) to.max_tackle_power_ = tmp;
 
     to.max_back_tackle_power_ = to.max_power_;
     tmp = nltohd( from.max_back_tackle_power );
-    if ( 0.0 < tmp && std::fabs( tmp ) < 1000.0 ) to.max_back_tackle_power_ = tmp;
+    if ( 0.0 < tmp && std::fabs( tmp ) < 200.0 ) to.max_back_tackle_power_ = tmp;
 
     to.tackle_dist_ = 2.0;
     tmp = nltohd( from.tackle_dist );
-    if ( 0.0 <= tmp && std::fabs( tmp ) < 1000.0 ) to.tackle_dist_ = tmp;
+    if ( 0.0 <= tmp && std::fabs( tmp ) < 3.0 ) to.tackle_dist_ = tmp;
 
     to.tackle_back_dist_ = 0.5;
     tmp = nltohd( from.tackle_back_dist );
-    if ( 0.0 <= tmp && std::fabs( tmp ) < 1000.0 ) to.tackle_back_dist_ = tmp;
+    if ( 0.0 <= tmp && std::fabs( tmp ) < 1.0 ) to.tackle_back_dist_ = tmp;
 
     to.tackle_width_ = 1.0;
     tmp = nltohd( from.tackle_width );
-    if ( 0.0 < tmp && std::fabs( tmp ) < 1000.0 ) to.tackle_width_ = tmp;
+    if ( 0.0 < tmp && std::fabs( tmp ) < 2.0 ) to.tackle_width_ = tmp;
 
     //
     to.start_goal_l_ = nstohi( from.start_goal_l );

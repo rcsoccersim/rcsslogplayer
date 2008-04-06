@@ -656,8 +656,8 @@ struct BallT {
     BallT()
         : x_( 0.0 )
         , y_( 0.0 )
-        , vx_( 0.0 )
-        , vy_( 0.0 )
+        , vx_( SHOWINFO_SCALE2F )
+        , vy_( SHOWINFO_SCALE2F )
       { }
 
 

@@ -588,6 +588,10 @@ PlayerPainter::drawControlArea( QPainter & painter,
     const Options & opt = Options::instance();
     const rcss::rcg::ServerParamT & sparam = M_main_data.serverParam();
 
+    //
+    // goalie's catchable area
+    //
+
     if ( param.player_.isGoalie() )
     {
         double catchable_area
@@ -606,6 +610,10 @@ PlayerPainter::drawControlArea( QPainter & painter,
                              catchable * 2 );
     }
 
+    //
+    // draw tackle area & probability
+    //
+
     Vector2D ppos( param.player_.x_,
                    param.player_.y_ );
     Vector2D bpos( param.ball_.x_,
@@ -614,50 +622,20 @@ PlayerPainter::drawControlArea( QPainter & painter,
     Vector2D player_to_ball = bpos - ppos;
     player_to_ball.rotate( - param.player_.body_ );
 
-    // draw tackle area & probability
     double tackle_dist = ( player_to_ball.x > 0.0
                            ? sparam.tackle_dist_
                            : sparam.tackle_back_dist_ );
-    double tackle_prob = 1.0;
+    double tackle_fail_prob = 1.0;
     if ( tackle_dist > 0.0 )
     {
-        tackle_prob = ( std::pow( std::fabs( player_to_ball.x ) / tackle_dist,
-                                  sparam.tackle_exponent_ )
-                        + std::pow( player_to_ball.absY() / sparam.tackle_width_,
-                                    sparam.tackle_exponent_ ) );
+        tackle_fail_prob = ( std::pow( player_to_ball.absX() / tackle_dist,
+                                       sparam.tackle_exponent_ )
+                             + std::pow( player_to_ball.absY() / sparam.tackle_width_,
+                                         sparam.tackle_exponent_ ) );
     }
 
-    if ( tackle_prob < 1.0 )
+    if ( tackle_fail_prob < 1.0 )
     {
-#if 0
-        double body_angle = param.body_ * DEG2RAD;
-        double body_angle_side = ( body_angle + 90.0 ) * DEG2RAD;
-        double body_x = std::cos( body_angle );
-        double body_y = std::sin( body_angle );
-        double forward_x = sparam.tackle_dist_ * body_x;
-        double forward_y = sparam.tackle_dist_ * body_y;
-        double back_x = sparam.tackle_back_dist_ * -body_x;
-        double back_y = sparam.tackle_back_dist_ * -body_y;
-        double right_x = sparam.tackle_width_ * std::cos( body_angle_side );
-        double right_y = sparam.tackle_width_ * std::sin( body_angle_side );
-
-        QPoint pts[5];
-        pts[0].setX( opt.screenX( ppos.x + forward_x + right_x ) );
-        pts[0].setY( opt.screenY( ppos.y + forward_y + right_y ) );
-        pts[1].setX( opt.screenX( ppos.x + forward_x - right_x ) );
-        pts[1].setY( opt.screenY( ppos.y + forward_y - right_y ) );
-        pts[2].setX( opt.screenX( ppos.x + back_x - right_x ) );
-        pts[2].setY( opt.screenY( ppos.y + back_y - right_y ) );
-        pts[3].setX( opt.screenX( ppos.x + back_x + right_x ) );
-        pts[3].setY( opt.screenY( ppos.y + back_y + right_y ) );
-        pts[4] = pts[0];
-
-        painter.setPen( M_tackle_pen );
-        painter.setBrush( Qt::NoBrush );
-
-        //painter.drawConvexPolygon( pts, 4 );
-        painter.drawPolyline( pts, 5 );
-#else
         painter.save();
         painter.translate( param.x_, param.y_ );
         painter.rotate( param.player_.body_ );
@@ -669,11 +647,7 @@ PlayerPainter::drawControlArea( QPainter & painter,
                           opt.scale( - sparam.tackle_width_ ),
                           opt.scale( sparam.tackle_dist_ + sparam.tackle_back_dist_ ),
                           opt.scale( sparam.tackle_width_ * 2.0 ) );
-
-
         painter.restore();
-#endif
-
 
         int text_radius = param.draw_radius_;
         if ( text_radius > 40 )
@@ -685,7 +659,7 @@ PlayerPainter::drawControlArea( QPainter & painter,
         painter.setPen( M_tackle_pen );
 
         char msg[32];
-        std::snprintf( msg, 32, "TackleProb=%.3f", 1.0 - tackle_prob );
+        std::snprintf( msg, 32, "TackleProb=%.3f", 1.0 - tackle_fail_prob );
         painter.drawText( param.x_ + text_radius,
                           param.y_ + 4 + painter.fontMetrics().ascent(),
                           QString::fromAscii( msg ) );

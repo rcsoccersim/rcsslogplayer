@@ -76,7 +76,7 @@ MainData::clear()
 
 /*-------------------------------------------------------------------*/
 /*!
-
+  \todo multi-threaded
 */
 bool
 MainData::openRCG( const QString & file_path )
@@ -97,10 +97,14 @@ MainData::openRCG( const QString & file_path )
     clear();
 
     rcss::rcg::Parser parser( M_disp_holder );
-
+    int count = -1;
     while (  parser.parse( fin ) )
     {
-
+        if ( ++count % 1000 == 0 )
+        {
+            std::fprintf( stdout, "parsing... %d\r", M_disp_holder.dispInfoCont().size() );
+            std::fflush( stdout );
+        }
     }
 
     if ( ! fin.eof() )
@@ -114,8 +118,8 @@ MainData::openRCG( const QString & file_path )
     //M_view_holder.pushBackLatestViewData();
     fin.close();
 
-    std::cerr << "opened rcg [" << file_path.toStdString()
-              << "] data size = "
+    std::cerr << "opened [" << file_path.toStdString()
+              << "]. data size = "
               << M_disp_holder.dispInfoCont().size()
               << std::endl;
 

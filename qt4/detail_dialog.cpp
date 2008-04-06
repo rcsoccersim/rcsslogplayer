@@ -195,6 +195,12 @@ DetailDialog::createPlayerLabels()
     layout->addWidget( M_player_head, row, 1, Qt::AlignRight );
     ++row;
 
+    layout->addWidget( new QLabel( tr( "TackleProb " ), group_box ),
+                       row, 0, Qt::AlignRight );
+    M_player_tackle_prob = new QLabel( tr( "   0.0" ), group_box );
+    layout->addWidget( M_player_tackle_prob, row, 1, Qt::AlignRight );
+    ++row;
+
     layout->addWidget( new QLabel( tr( "PointtoPos " ), group_box ),
                        row, 0, Qt::AlignRight );
     M_player_pointto_pos = new QLabel( tr( "      -,      -" ), group_box );
@@ -445,6 +451,32 @@ DetailDialog::updateLabels()
     else
     {
         M_player_head->setText( tr( "     -" ) );
+    }
+
+    // tackle prob
+    {
+
+        Vector2D player_to_ball( ball.x_ - player.x_,
+                                 ball.y_ - player.y_ );
+        player_to_ball.rotate( - player.body_ );
+
+        // draw tackle area & probability
+        double tackle_dist = ( player_to_ball.x > 0.0
+                               ? M_main_data.serverParam().tackle_dist_
+                               : M_main_data.serverParam().tackle_back_dist_ );
+        double tackle_fail_prob = 1.0;
+        if ( tackle_dist > 0.0 )
+        {
+            tackle_fail_prob = ( std::pow( std::fabs( player_to_ball.x ) / tackle_dist,
+                                           M_main_data.serverParam().tackle_exponent_ )
+                                 + std::pow( player_to_ball.absY() / M_main_data.serverParam().tackle_width_,
+                                             M_main_data.serverParam().tackle_exponent_ ) );
+            tackle_fail_prob = std::min( 1.0, tackle_fail_prob );
+            tackle_fail_prob = std::max( 0.0, tackle_fail_prob );
+        }
+
+        std::snprintf( buf, 64, " %.4f", 1.0 - tackle_fail_prob );
+        M_player_tackle_prob->setText( QString::fromAscii( buf ) );
     }
 
     // pointto point

@@ -1,3 +1,15 @@
+2008-04-06  Hidehisa Akiyama  <akky@users.sourceforge.jp>
+
+	* qt4/detail_dialog.cpp:
+	* qt4/detail_dialog.h:
+	* qt4/main_data.cpp:
+	* qt4/player_painter.cpp:
+	- added tackle probability to DetailDialog.
+
+	* rcsslogplayer/types.h:
+	* rcsslogplayer/util.cpp:
+	- fixed hreashold values for binary format.
+
 2008-04-05  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 
 	* qt4/disp_holder.cpp:
