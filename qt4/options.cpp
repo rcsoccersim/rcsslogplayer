@@ -94,6 +94,7 @@ Options::Options()
     , M_client_version( 3 )
     , M_time_shift_replay( true )
     , M_minimum_mode( false )
+    , M_monitor_path( "self" )
     , M_monitor_port( 6000 )
     , M_game_log_file( "" )
     , M_auto_loop_mode( true )
@@ -193,9 +194,12 @@ Options::parseCmdLine( int argc,
 //           po::value< bool >( &M_time_shift_replay )->default_value( true, "on" ),
 //           "enable time shift replay mode." )
         // logplayer options
-        ( "minimum-mode",
-          po::bool_switch( &M_minimum_mode ),
-          "start logplayer only with log server interface." )
+//         ( "minimum-mode",
+//           po::bool_switch( &M_minimum_mode ),
+//           "start logplayer only with log server interface." )
+        ( "monitor-path,m",
+          po::value< std::string >( &M_monitor_path )->default_value( "self", "self" ),
+          "set the path to the monitor client that is invoked by rcsslogplayer." )
         ( "monitor-port",
           po::value< int >( &M_monitor_port )->default_value( 6000, "6000" ),
           "set port number to wait the monitor client connection as the logplayer." )

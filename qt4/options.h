@@ -104,6 +104,7 @@ private:
     // logplayer options
     //
     bool M_minimum_mode;
+    std::string M_monitor_path;
     int M_monitor_port;
     std::string M_game_log_file; //!< game log file path to be opened
     bool M_auto_loop_mode;
@@ -244,6 +245,12 @@ public:
     void toggleMinimumMode()
       {
           M_minimum_mode = ! M_minimum_mode;
+      }
+
+    const
+    std::string & monitorPath() const
+      {
+          return M_monitor_path;
       }
 
     int monitorPort() const

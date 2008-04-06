@@ -1,5 +1,14 @@
 2008-04-07  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 
+	* classic/rcsslogplay_classic:
+	* qt4/rcsslogplay:
+	* qt4/Makefile.am:
+	* qt4/main_window.cpp:
+	* qt4/main_window.h:
+	* qt4/options.cpp:
+	* qt4/options.h:
+	- implemented the option to invoke external monitor.
+
 	* qt4/circle_2d.cpp:
 	* qt4/circle_2d.h:
 	* qt4/line_2d.cpp:

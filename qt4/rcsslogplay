@@ -4,14 +4,15 @@
 # option
 #
 
-PLAYER=`which rcsslogplayer_classic 2> /dev/null`
+PLAYER=`which rcsslogplayer 2> /dev/null`
 if test $? -eq 1; then
-    echo "Error: rcsslogplayer_classic can not be found in your PATH"
+    echo "Error: rcsslogplayer can not be found in your PATH"
     echo ""
     exit 1
 fi
 
 LOG=$1
+MON=self
 
 if test $# -eq 1; then
     if test "$RCSSMONITOR"; then
@@ -19,7 +20,7 @@ if test $# -eq 1; then
         if test $? -eq 1; then
             echo "Error: cannot find the monitor specified by RCSSMONITOR: $RCSSMONITOR"
             echo ""
-            exit 1
+            MON=self
         fi
     else
         MON=`which rcssmonitor 2> /dev/null`
@@ -32,18 +33,21 @@ if test $# -eq 1; then
                 echo "       or set the RCSSMONITOR environment variable to the"
                 echo "       executable you wish to use."
                 echo ""
-                exit 1
+                MON=self
             fi
         fi
     fi
 elif test $# -eq 2; then
     case "$1" in
+        -standalone)
+        MON=self
+        ;;
         -frameview)
         MON=`which rcssmonitor 2> /dev/null`
         if test $? -eq 1; then
             echo "Error: rcssmonitor found in your PATH"
             echo ""
-            exit 1
+            MON=self
         fi
         ;;
         -classic)
@@ -51,7 +55,7 @@ elif test $# -eq 2; then
         if test $? -eq 1; then
             echo "Error: rcssmonitor_classic found in your PATH"
             echo ""
-            exit 1
+            MON=self
         fi
         ;;
     esac
@@ -59,13 +63,13 @@ elif test $# -eq 2; then
 elif test $# -eq 0; then
     PROG=`basename $0`
     echo "Error: no log file"
-    echo "Usage: $PROG [(-frameview)|(-classic)] <logfile>"
+    echo "Usage: $PROG [(-standalone)(-frameview)|(-classic)] <logfile>"
     echo ""
     exit 1
 else
     PROG=`basename $0`
     echo "Error: too many options"
-    echo "Usage: $ $PROG [(-frameview)|(-classic)] <logfile>"
+    echo "Usage: $ $PROG [(-standalone)(-frameview)|(-classic)] <logfile>"
     echo ""
     exit 1
 fi

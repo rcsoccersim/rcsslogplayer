@@ -34,6 +34,7 @@
 #define RCSSLOGPLAYER_MAIN_WINDOW_H
 
 #include <QMainWindow>
+#include <QProcess>
 #include <QString>
 
 #include "main_data.h"
@@ -81,6 +82,9 @@ private:
 
     MonitorServer * M_monitor_server;
     MonitorClient * M_monitor_client;
+
+    // monitor process
+    QProcess * M_monitor_process;
 
     // file actions
     QAction * M_open_act;
@@ -163,6 +167,11 @@ private slots:
     // file menu actions slots
     void openRCG();
     // QWidget::close() can be used as the slot for a quit action.
+
+    void startMonitor();
+    void printMonitorError( QProcess::ProcessError error );
+    void printMonitorExit( int exit_code,
+                           QProcess::ExitStatus exit_status );
 
     // monitor menu actions slots
     void kickOff();

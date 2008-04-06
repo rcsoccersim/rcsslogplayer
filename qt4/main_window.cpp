@@ -74,6 +74,7 @@ MainWindow::MainWindow()
     , M_player_type_dialog( static_cast< PlayerTypeDialog * >( 0 ) )
     , M_monitor_server( static_cast< MonitorServer * >( 0 ) )
     , M_monitor_client( static_cast< MonitorClient * >( 0 ) )
+    , M_monitor_process( static_cast< QProcess * >( 0 ) )
 {
     readSettings();
 
@@ -189,11 +190,17 @@ MainWindow::init()
         }
     }
 
-    if ( Options::instance().minimumMode() )
+    if ( ! Options::instance().monitorPath().empty()
+         && Options::instance().monitorPath() != "self" )
     {
-        std::cerr << "init minimum mode" << std::endl;
-        Options::instance().toggleMinimumMode();
+        if ( Options::instance().minimumMode() )
+        {
+            Options::instance().toggleMinimumMode();
+        }
         toggleFieldCanvas();
+
+        QTimer::singleShot( 500,
+                            this, SLOT( startMonitor() ) );
     }
 }
 
@@ -264,7 +271,8 @@ MainWindow::createActionsFile()
     M_open_act->setShortcut( tr( "Ctrl+O" ) );
 #endif
     M_open_act->setStatusTip( tr( "Open RoboCup Game Log file" ) );
-    connect( M_open_act, SIGNAL( triggered() ), this, SLOT( openRCG() ) );
+    connect( M_open_act, SIGNAL( triggered() ),
+             this, SLOT( openRCG() ) );
     this->addAction( M_open_act );
     //
     M_exit_act = new QAction( tr( "&Quit" ), this );
@@ -274,7 +282,8 @@ MainWindow::createActionsFile()
     M_exit_act->setShortcut( tr( "Ctrl+Q" ) );
 #endif
     M_exit_act->setStatusTip( tr( "Exit the application." ) );
-    connect( M_exit_act, SIGNAL( triggered() ), this, SLOT( close() ) );
+    connect( M_exit_act, SIGNAL( triggered() ),
+             this, SLOT( close() ) );
     this->addAction( M_exit_act );
 }
 
@@ -1135,6 +1144,7 @@ MainWindow::openRCG( const QString & file_path )
                                err_msg,
                                QMessageBox::Ok, QMessageBox::NoButton );
         this->setWindowTitle( tr( PACKAGE_NAME ) );
+        this->statusBar()->showMessage( tr( "Ready" ) );
         return;
     }
 
@@ -1148,6 +1158,7 @@ MainWindow::openRCG( const QString & file_path )
                                err_msg,
                                QMessageBox::Ok, QMessageBox::NoButton );
         this->setWindowTitle( tr( PACKAGE_NAME ) );
+        this->statusBar()->showMessage( tr( "Ready" ) );
         return;
     }
 
@@ -1172,11 +1183,93 @@ MainWindow::openRCG( const QString & file_path )
         name.replace( 125, name.length() - 125, tr( "..." ) );
     }
     this->setWindowTitle( name + tr( " - "PACKAGE_NAME ) );
-
+    this->statusBar()->showMessage( name );
 
     createMonitorServer();
 
     emit viewUpdated();
+}
+
+/*-------------------------------------------------------------------*/
+/*!
+
+ */
+void
+MainWindow::startMonitor()
+{
+    M_monitor_process = new QProcess( this );
+
+    connect( M_monitor_process, SIGNAL( error( QProcess::ProcessError ) ),
+             this, SLOT( printMonitorError( QProcess::ProcessError ) ) );
+    connect( M_monitor_process, SIGNAL( finished( int, QProcess::ExitStatus ) ),
+             this, SLOT( printMonitorExit( int, QProcess::ExitStatus ) ) );
+
+    QString command = QString::fromStdString( Options::instance().monitorPath() );
+
+    M_monitor_process->start( command );
+
+    //QProcess::startDetached( command );
+}
+
+/*-------------------------------------------------------------------*/
+/*!
+
+ */
+void
+MainWindow::printMonitorError( QProcess::ProcessError error )
+{
+    switch ( error ) {
+    case QProcess::FailedToStart:
+        std::cerr << "Failed to start the monitor ["
+                  << Options::instance().monitorPath() << "]" << std::endl;
+        break;
+    case QProcess::Crashed:
+        std::cerr << "Crashed the monitor ["
+                  << Options::instance().monitorPath() << "]" << std::endl;
+        break;
+    case QProcess::Timedout:
+        std::cerr << "Timeout the monitor ["
+                  << Options::instance().monitorPath() << "]" << std::endl;
+        break;
+    case QProcess::WriteError:
+        std::cerr << "Write error to the monitor ["
+                  << Options::instance().monitorPath() << "]" << std::endl;
+        break;
+    case QProcess::ReadError:
+        std::cerr << "Read error to the monitor ["
+                  << Options::instance().monitorPath() << "]" << std::endl;
+        break;
+    case QProcess::UnknownError:
+        std::cerr << "Unknown error to the monitor ["
+                  << Options::instance().monitorPath() << "]" << std::endl;
+        break;
+    default:
+        break;
+    }
+
+    this->close();
+}
+
+/*-------------------------------------------------------------------*/
+/*!
+
+ */
+void
+MainWindow::printMonitorExit( int exit_code,
+                              QProcess::ExitStatus exit_status )
+{
+    switch ( exit_status ) {
+    case QProcess::NormalExit:
+        break;
+    case QProcess::CrashExit:
+        std::cerr << "monitor exit with some error. exit code=" << exit_code
+                  << std::endl;
+        break;
+    default:
+        break;
+    }
+
+    this->close();
 }
 
 /*-------------------------------------------------------------------*/

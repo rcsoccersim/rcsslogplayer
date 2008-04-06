@@ -2,12 +2,12 @@
 
 if BUILD_QT4
 BUILD_PROGS = rcsslogplayer
-#BUILD_SCRPTS = rcsslogplay
+BUILD_SCRPTS = rcsslogplay
 endif
 
 bin_PROGRAMS = $(BUILD_PROGS)
 
-#bin_SCRRIPTS = $(BUILD_SCRPTS)
+bin_SCRIPTS = $(BUILD_SCRPTS)
 
 rcsslogplayer_SOURCES = \
 	angle_deg.cpp \
