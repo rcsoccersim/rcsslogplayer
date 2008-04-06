@@ -275,6 +275,20 @@ MainWindow::createActionsFile()
              this, SLOT( openRCG() ) );
     this->addAction( M_open_act );
     //
+    M_open_output_act = new QAction( //QIcon( QPixmap( open_xpm ) ),
+                                    tr( "&Output data as..." ), this );
+    M_open_output_act->setEnabled( false );
+#ifdef Q_WS_MAC
+    M_open_output_act->setShortcut( tr( "Meta+S" ) );
+#else
+    M_open_output_act->setShortcut( tr( "Ctrl+S" ) );
+#endif
+    M_open_output_act->setStatusTip( tr( "Output log data segments to the file." ) );
+    connect( M_open_output_act, SIGNAL( triggered() ),
+             this, SLOT( openOutputFile() ) );
+    this->addAction( M_open_output_act );
+
+    //
     M_exit_act = new QAction( tr( "&Quit" ), this );
 #ifdef Q_WS_MAC
     M_exit_act->setShortcut( tr( "Meta+Q" ) );
@@ -486,6 +500,7 @@ MainWindow::createMenuFile()
     QMenu * menu = menuBar()->addMenu( tr( "&File" ) );
 
     menu->addAction( M_open_act );
+    menu->addAction( M_open_output_act );
 
     menu->addSeparator();
     menu->addAction( M_exit_act );
@@ -1132,6 +1147,8 @@ MainWindow::openRCG( const QString & file_path )
     }
 
     disconnectMonitor();
+    M_open_output_act->setEnabled( false );
+    M_log_player_tool_bar->closeOutputFile();
     M_log_player->stop();
 
     if ( ! M_main_data.openRCG( file_path ) )
@@ -1186,8 +1203,52 @@ MainWindow::openRCG( const QString & file_path )
     this->statusBar()->showMessage( name );
 
     createMonitorServer();
+    M_open_output_act->setEnabled( true );
 
     emit viewUpdated();
+}
+
+/*-------------------------------------------------------------------*/
+/*!
+
+ */
+void
+MainWindow::openOutputFile()
+{
+#ifdef HAVE_LIBRCSSGZ
+    QString filter( tr( "Game Log files (*.rcg *.rcg.gz);;"
+                        "All files (*)" ) );
+#else
+    QString filter( tr( "Game Log files (*.rcg);;"
+                        "All files (*)" ) );
+#endif
+
+    QString file_path = QFileDialog::getSaveFileName( this,
+                                                      tr( "Output game log data to file" ),
+                                                      QString(),
+                                                      filter );
+
+    if ( file_path.isEmpty() )
+    {
+        //std::cerr << "MainWindow::opneRCG() empty file path" << std::endl;
+        return;
+    }
+
+    std::cerr << "file = [" << file_path.toStdString() << ']' << std::endl;
+
+    openOutputFile( file_path );
+
+    M_log_player_tool_bar->openOutputFile();
+}
+
+/*-------------------------------------------------------------------*/
+/*!
+
+ */
+void
+MainWindow::openOutputFile( const QString & file_path )
+{
+
 }
 
 /*-------------------------------------------------------------------*/
@@ -1425,6 +1486,14 @@ MainWindow::disconnectMonitor()
 
         delete M_monitor_client;
         M_monitor_client = static_cast< MonitorClient * >( 0 );
+    }
+
+    if ( M_monitor_server )
+    {
+        disconnect( M_log_player, SIGNAL( updated() ),
+                    M_monitor_server, SLOT( sendToClients() ) );
+        delete M_monitor_server;
+        M_monitor_server = static_cast< MonitorServer * >( 0 );
     }
 
     //Options::instance().setMonitorClientMode( false );

@@ -109,6 +109,8 @@ public slots:
 
     void setLiveMode();
 
+    void toggleRecord( bool checked );
+
 signals:
 
     void updated();

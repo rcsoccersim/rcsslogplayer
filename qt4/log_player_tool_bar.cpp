@@ -52,44 +52,7 @@
 #include "icons/rew.xpm"
 #include "icons/next_score.xpm"
 #include "icons/prev_score.xpm"
-
-class CycleEdit
-    : public QLineEdit {
-
-public:
-
-    CycleEdit()
-        : QLineEdit( tr( "0" ) )
-      {
-          this->setMaximumSize( 28, 20 );
-          this->setMinimumSize( 16, 16 );
-
-          QSizePolicy policy( QSizePolicy::Maximum, QSizePolicy::Maximum );
-          policy.setHorizontalStretch( 1 );
-          policy.setVerticalStretch( 1 );
-          this->setSizePolicy( policy );
-
-          QFont font = this->font();
-          font.setPointSize( 6 );
-          this->setFont( font );
-      }
-
-    virtual
-    QSize sizeHint() const
-      {
-          QSize size = QLineEdit::sizeHint();
-          if ( size.width() > 32 )
-          {
-              size.setWidth( 32 );
-          }
-          if ( size.height() > 24 )
-          {
-              size.setHeight( 24 );
-          }
-          return size;
-      }
-
-};
+#include "icons/rec.xpm"
 
 /*-------------------------------------------------------------------*/
 /*!
@@ -248,6 +211,28 @@ LogPlayerToolBar::createControls( LogPlayer * log_player,
         main_win->addAction( act );
     }
 
+    this->addSeparator();
+
+    {
+        M_toggle_record_act
+            = new QAction( QIcon( QPixmap( rec_xpm ) ),
+                           tr( "Record" ), this );
+        M_toggle_record_act->setCheckable( true );
+        M_toggle_record_act->setEnabled( false );
+#ifdef Q_WS_MAC
+        M_toggle_record_act->setShortcut( Qt::META + Qt::Key_R );
+#else
+        M_toggle_record_act->setShortcut( Qt::CTRL + Qt::Key_R );
+#endif
+        M_toggle_record_act->setStatusTip( tr( "Record.(" )
+                                           + M_toggle_record_act->shortcut().toString()
+                                           + tr( ")" ) );
+        connect( M_toggle_record_act, SIGNAL( triggled( bool ) ),
+                 log_player, SLOT( toggleRecord( bool ) ) );
+        this->addAction( M_toggle_record_act );
+        main_win->addAction( M_toggle_record_act );
+    }
+
     // invisible actions
     {
         QAction * act
@@ -273,6 +258,26 @@ LogPlayerToolBar::createControls( LogPlayer * log_player,
         //this->addAction( act );
         main_win->addAction( act );
     }
+}
+
+/*-------------------------------------------------------------------*/
+/*!
+
+*/
+void
+LogPlayerToolBar::openOutputFile()
+{
+    M_toggle_record_act->setEnabled( true );
+}
+
+/*-------------------------------------------------------------------*/
+/*!
+
+*/
+void
+LogPlayerToolBar::closeOutputFile()
+{
+    M_toggle_record_act->setEnabled( false );
 }
 
 /*-------------------------------------------------------------------*/

@@ -107,6 +107,7 @@ private:
     std::string M_monitor_path;
     int M_monitor_port;
     std::string M_game_log_file; //!< game log file path to be opened
+    std::string M_output_file;
     bool M_auto_loop_mode;
     int M_timer_interval; //!< logplayer's timer interval. default 100[ms]
 
@@ -266,6 +267,12 @@ public:
     void setGameLogFile( const std::string & path )
       {
           M_game_log_file = path;
+      }
+
+    const
+    std::string & outputFile() const
+      {
+          return M_output_file;
       }
 
     bool timeShiftReplay() const

@@ -55,8 +55,7 @@ private:
     const MainData & M_main_data;
     LogPlayer * M_log_player;
 
-//     QSlider * M_cycle_slider;
-//     QLineEdit * M_cycle_edit;
+    QAction * M_toggle_record_act;
 
 public:
 
@@ -74,19 +73,17 @@ protected:
 
 //     void moveEvent( QMoveEvent * event );
 
+public slots:
+
+    void openOutputFile();
+    void closeOutputFile();
+
 private slots:
 
-//     void editCycle();
 
     void stop();
     void playForward();
     void playBack();
-
-// public slots:
-
-//     void changeOrientation( Qt::Orientation );
-
-//     void updateSlider();
 
 signals:
 

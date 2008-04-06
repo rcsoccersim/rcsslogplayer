@@ -446,3 +446,14 @@ LogPlayer::setLiveMode()
 
     //emit updated();
 }
+
+/*-------------------------------------------------------------------*/
+/*!
+
+*/
+void
+LogPlayer::toggleRecord( bool checked )
+{
+    std::cerr << "LogPlaeyr::toggleRecord( " << checked << " )" << std::endl;
+
+}

@@ -97,6 +97,7 @@ Options::Options()
     , M_monitor_path( "self" )
     , M_monitor_port( 6000 )
     , M_game_log_file( "" )
+    , M_output_file( "" )
     , M_auto_loop_mode( true )
     , M_timer_interval( Options::DEFAULT_TIMER_INTERVAL )
       // window options
@@ -203,6 +204,9 @@ Options::parseCmdLine( int argc,
         ( "monitor-port",
           po::value< int >( &M_monitor_port )->default_value( 6000, "6000" ),
           "set port number to wait the monitor client connection as the logplayer." )
+        ( "output-file",
+          po::value< std::string >( &M_monitor_path )->default_value( "self", "self" ),
+          "set the path to the monitor client that is invoked by rcsslogplayer." )
         ( "auto-loop-mode",
           po::value< bool >( &M_auto_loop_mode )->default_value( true, "on" ),
           "enable automatic replay loop mode." )

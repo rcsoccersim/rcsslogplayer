@@ -1,5 +1,17 @@
 2008-04-07  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 
+	* icons/rec.xpm:
+	* qt4/log_player.cpp:
+	* qt4/log_player.h:
+	* qt4/log_player_tool_bar.cpp:
+	* qt4/log_player_tool_bar.h:
+	* qt4/main_window.cpp:
+	* qt4/main_window.h:
+	* qt4/options.cpp:
+	* qt4/options.h:
+	- added new option to output game log data, but not fully
+	implemented yet.
+
 	* classic/rcsslogplay_classic:
 	* qt4/rcsslogplay:
 	* qt4/Makefile.am:
