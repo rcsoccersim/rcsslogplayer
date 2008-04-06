@@ -1,8 +1,8 @@
 // -*-c++-*-
 
 /*!
-  \file log_player_tool_bar.h
-  \brief log player control tool bar class Header File.
+  \file log_slider_tool_bar.h
+  \brief log player slider tool bar class Header File.
 */
 
 /*
@@ -30,8 +30,8 @@
 
 /////////////////////////////////////////////////////////////////////
 
-#ifndef RCSSLOGPLAYER_LOG_PLAYER_TOOL_BAR_H
-#define RCSSLOGPLAYER_LOG_PLAYER_TOOL_BAR_H
+#ifndef RCSSLOGPLAYER_LOG_SLIDER_TOOL_BAR_H
+#define RCSSLOGPLAYER_LOG_SLIDER_TOOL_BAR_H
 
 #include <QToolBar>
 
@@ -45,7 +45,7 @@ class QMoveEvent;
 class LogPlayer;
 class MainData;
 
-class LogPlayerToolBar
+class LogSliderToolBar
     : public QToolBar {
 
     Q_OBJECT
@@ -55,15 +55,15 @@ private:
     const MainData & M_main_data;
     LogPlayer * M_log_player;
 
-//     QSlider * M_cycle_slider;
-//     QLineEdit * M_cycle_edit;
+    QSlider * M_cycle_slider;
+    QLineEdit * M_cycle_edit;
 
 public:
 
-    LogPlayerToolBar( LogPlayer * log_player,
+    LogSliderToolBar( LogPlayer * log_player,
                       const MainData & main_data,
                       QMainWindow * main_win );
-    ~LogPlayerToolBar();
+    ~LogSliderToolBar();
 
 private:
 
@@ -76,17 +76,13 @@ protected:
 
 private slots:
 
-//     void editCycle();
+    void editCycle();
 
-    void stop();
-    void playForward();
-    void playBack();
+public slots:
 
-// public slots:
+    void changeOrientation( Qt::Orientation );
 
-//     void changeOrientation( Qt::Orientation );
-
-//     void updateSlider();
+    void updateSlider();
 
 signals:
 

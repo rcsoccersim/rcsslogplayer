@@ -81,7 +81,9 @@ private:
     QCheckBox * M_player_type_cb;
     QCheckBox * M_stamina_cb;
     QCheckBox * M_view_area_cb;
-    QCheckBox * M_control_area_cb;
+    QCheckBox * M_catch_area_cb;
+    QCheckBox * M_tackle_area_cb;
+    QCheckBox * M_kick_accel_area_cb;
     QCheckBox * M_pointto_cb;
 
     // show/hide control
@@ -166,7 +168,9 @@ private slots:
     void clickShowPlayerType( bool checked );
     void clickShowStamina( bool checked );
     void clickShowViewArea( bool checked );
-    void clickShowControlArea( bool checked );
+    void clickShowCatchArea( bool checked );
+    void clickShowTackleArea( bool checked );
+    void clickShowKickAccelArea( bool checked );
     void clickShowPointto( bool checked );
 
     void clickShowScoreBoard( bool checked );
@@ -228,7 +232,9 @@ public slots:
     void toggleShowPlayerType();
     void toggleShowStamina();
     void toggleShowViewArea();
-    void toggleShowControlArea();
+    void toggleShowCatchArea();
+    void toggleShowTackleArea();
+    void toggleShowKickAccelArea();
     void toggleShowPointto();
 
     void toggleShowScoreBoard();

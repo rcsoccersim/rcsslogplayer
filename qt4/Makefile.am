@@ -12,13 +12,16 @@ bin_PROGRAMS = $(BUILD_PROGS)
 rcsslogplayer_SOURCES = \
 	angle_deg.cpp \
 	ball_painter.cpp \
+	circle_2d.cpp \
 	config_dialog.cpp \
 	detail_dialog.cpp \
 	disp_holder.cpp \
 	field_canvas.cpp \
 	field_painter.cpp \
+	line_2d.cpp \
 	log_player.cpp \
 	log_player_tool_bar.cpp \
+	log_slider_tool_bar.cpp \
 	main.cpp \
 	main_data.cpp \
 	main_window.cpp \
@@ -37,6 +40,7 @@ nodist_rcsslogplayer_SOURCES = \
 	moc_field_canvas.cpp \
 	moc_log_player.cpp \
 	moc_log_player_tool_bar.cpp \
+	moc_log_slider_tool_bar.cpp \
 	moc_main_window.cpp \
 	moc_monitor_client.cpp \
 	moc_monitor_server.cpp \
@@ -46,13 +50,16 @@ nodist_rcsslogplayer_SOURCES = \
 noinst_HEADERS = \
 	angle_deg.h \
 	ball_painter.h \
+	circle_2d.h \
 	config_dialog.h \
 	detail_dialog.h \
 	disp_holder.h \
 	field_canvas.h \
 	field_painter.h \
+	line_2d.h \
 	log_player.h \
 	log_player_tool_bar.h \
+	log_slider_tool_bar.h \
 	main_data.h \
 	main_window.h \
 	monitor_client.h \

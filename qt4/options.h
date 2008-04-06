@@ -140,7 +140,9 @@ private:
     bool M_show_player_number;
     bool M_show_player_type;
     bool M_show_view_area;
-    bool M_show_control_area;
+    bool M_show_catch_area;
+    bool M_show_tackle_area;
+    bool M_show_kick_accel_area;
     bool M_show_stamina;
     bool M_show_pointto;
 
@@ -418,13 +420,31 @@ public:
           M_show_view_area = ! M_show_view_area;
       }
 
-    bool showControlArea() const
+    bool showCatchArea() const
       {
-          return M_show_control_area;
+          return M_show_catch_area;
       }
-    void toggleShowControlArea()
+    void toggleShowCatchArea()
       {
-          M_show_control_area = ! M_show_control_area;
+          M_show_catch_area = ! M_show_catch_area;
+      }
+
+    bool showTackleArea() const
+      {
+          return M_show_tackle_area;
+      }
+    void toggleShowTackleArea()
+      {
+          M_show_tackle_area = ! M_show_tackle_area;
+      }
+
+    bool showKickAccelArea() const
+      {
+          return M_show_kick_accel_area;
+      }
+    void toggleShowKickAccelArea()
+      {
+          M_show_kick_accel_area = ! M_show_kick_accel_area;
       }
 
     bool showStamina() const
@@ -597,8 +617,8 @@ public:
       {
           M_selected_number = ( side == rcss::rcg::LEFT ? unum : -unum );
       }
-    bool isSelectedPlayer( const rcss::rcg::Side side,
-                           const int unum ) const
+    bool selectedPlayer( const rcss::rcg::Side side,
+                         const int unum ) const
       {
           return ( M_selected_number
                    == ( side == rcss::rcg::LEFT ? unum : -unum ) );

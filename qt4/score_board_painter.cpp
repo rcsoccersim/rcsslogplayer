@@ -53,6 +53,7 @@ ScoreBoardPainter::ScoreBoardPainter( const MainData & main_data )
     , M_pen( QColor( 255, 255, 255 ), 0, Qt::SolidLine )
     , M_brush( QColor( 0, 0, 0 ), Qt::SolidPattern )
     , M_font( "6x13bold", 11, QFont::Bold )
+    , M_minimum_font( "6x13bold", 11, QFont::Bold )
 {
     M_font.setPointSize( 11 );
     M_font.setBold( true );
@@ -174,29 +175,39 @@ ScoreBoardPainter::draw( QPainter & painter )
         show_pen_score = false;
     }
 
-    const char * format = ( opt.minimumMode()
-                            ? ( show_pen_score
-                                ? " %10s %d:%d |%-5s:%-5s| %-10s\n %-16s %6d"
-                                : " %10s %d:%d %-10s\n %-16s %6d    " )
-                            : ( show_pen_score
-                                ? " %10s %d:%d |%-5s:%-5s| %-10s %16s %6d"
-                                : " %10s %d:%d %-10s %16s %6d    " ) );
 
     QString main_buf;
 
     if ( ! show_pen_score )
     {
-        main_buf.sprintf( format, //" %10s %d:%d %-10s %16s %6d    ",
-                          ( team_l.name_.empty() || team_l.name_ == "null" )
-                          ? ""
-                          : team_l.name_.c_str(),
-                          team_l.score_,
-                          team_r.score_,
-                          ( team_r.name_.empty() || team_r.name_ == "null" )
-                          ? ""
-                          : team_r.name_.c_str(),
-                          s_playmode_strings[pmode].c_str(),
-                          current_time );
+        if ( opt.minimumMode() )
+        {
+            main_buf.sprintf( " %-15s %2d\n %-15s %2d\n %19s %6d    ",
+                              ( team_l.name_.empty() || team_l.name_ == "null" )
+                              ? ""
+                              : team_l.name_.c_str(),
+                              team_l.score_,
+                              ( team_r.name_.empty() || team_r.name_ == "null" )
+                              ? ""
+                              : team_r.name_.c_str(),
+                              team_r.score_,
+                              s_playmode_strings[pmode].c_str(),
+                              current_time );
+        }
+        else
+        {
+            main_buf.sprintf( " %10s %d:%d %-10s %19s %6d    ",
+                              ( team_l.name_.empty() || team_l.name_ == "null" )
+                              ? ""
+                              : team_l.name_.c_str(),
+                              team_l.score_,
+                              team_r.score_,
+                              ( team_r.name_.empty() || team_r.name_ == "null" )
+                              ? ""
+                              : team_r.name_.c_str(),
+                              s_playmode_strings[pmode].c_str(),
+                              current_time );
+        }
     }
     else
     {
@@ -239,29 +250,50 @@ ScoreBoardPainter::draw( QPainter & painter )
             }
         }
 
-        main_buf.sprintf( format, //" %10s %d:%d |%-5s:%-5s| %-10s %16s %6d",
-                          ( team_l.name_.empty() || team_l.name_ == "null" )
-                          ? ""
-                          : team_l.name_.c_str(),
-                          team_l.score_, team_r.score_,
-                          left_penalty.c_str(),
-                          right_penalty.c_str(),
-                          ( team_r.name_.empty() || team_r.name_ == "null" )
-                          ? ""
-                          : team_r.name_.c_str(),
-                          s_playmode_strings[pmode].c_str(),
-                          current_time );
+        if ( opt.minimumMode() )
+        {
+            main_buf.sprintf( " %-15s %2d |%-5s|\n %-15s %2d |%-5s|\n %19s %6d",
+                              ( team_l.name_.empty() || team_l.name_ == "null" )
+                              ? ""
+                              : team_l.name_.c_str(),
+                              team_l.score_,
+                              left_penalty.c_str(),
+                              ( team_r.name_.empty() || team_r.name_ == "null" )
+                              ? ""
+                              : team_r.name_.c_str(),
+                              team_r.score_,
+                              right_penalty.c_str(),
+                              s_playmode_strings[pmode].c_str(),
+                              current_time );
+        }
+        else
+        {
+            main_buf.sprintf( " %10s %d:%d |%-5s:%-5s| %-10s %19s %6d",
+                              ( team_l.name_.empty() || team_l.name_ == "null" )
+                              ? ""
+                              : team_l.name_.c_str(),
+                              team_l.score_, team_r.score_,
+                              left_penalty.c_str(),
+                              right_penalty.c_str(),
+                              ( team_r.name_.empty() || team_r.name_ == "null" )
+                              ? ""
+                              : team_r.name_.c_str(),
+                              s_playmode_strings[pmode].c_str(),
+                              current_time );
+        }
     }
-
-    painter.setFont( M_font );
 
     QRect rect;
     if ( opt.minimumMode() )
     {
+        painter.setFont( M_minimum_font );
+
         rect = painter.window();
     }
     else
     {
+        painter.setFont( M_font );
+
         QRect bounding_rect = painter.fontMetrics().boundingRect( main_buf );
         rect.setLeft( 0 );
         rect.setTop( painter.window().bottom() - bounding_rect.height() + 1 );

@@ -40,6 +40,8 @@
 
 #include "main_data.h"
 #include "options.h"
+#include "circle_2d.h"
+#include "line_2d.h"
 #include "vector_2d.h"
 
 #include <rcsslogplayer/types.h>
@@ -55,12 +57,12 @@ const double DEG2RAD = M_PI / 180.0;
 /*-------------------------------------------------------------------*/
 /*
 
-*/
+ */
 inline
 PlayerPainter::Param::Param(  const rcss::rcg::PlayerT & player,
                               const rcss::rcg::BallT & ball,
-                             const rcss::rcg::ServerParamT & sparam,
-                             const rcss::rcg::PlayerTypeT & ptype )
+                              const rcss::rcg::ServerParamT & sparam,
+                              const rcss::rcg::PlayerTypeT & ptype )
     : x_( Options::instance().screenX( player.x_ ) )
     , y_( Options::instance().screenY( player.y_ ) )
     , body_radius_( Options::instance().scale( ptype.player_size_ ) )
@@ -73,13 +75,15 @@ PlayerPainter::Param::Param(  const rcss::rcg::PlayerT & player,
     if ( body_radius_ < 1 ) body_radius_ = 1;
     if ( kick_radius_ < 5 ) kick_radius_ = 5;
 
-    draw_radius_ =  kick_radius_;
+    draw_radius_ =  ( Options::instance().playerSize() >= 0.01
+                      ? Options::instance().scale( Options::instance().playerSize() )
+                      : kick_radius_ );
 }
 
 /*-------------------------------------------------------------------*/
 /*
 
-*/
+ */
 PlayerPainter::PlayerPainter( const MainData & main_data )
     : M_main_data( main_data )
     , M_player_font( "6x13bold", 9, QFont::Bold )
@@ -101,6 +105,7 @@ PlayerPainter::PlayerPainter( const MainData & main_data )
     , M_player_collide_brush( QColor( 105, 185, 255 ), Qt::SolidPattern )
     , M_kick_pen( QColor( 255, 255, 255 ), 2, Qt::SolidLine )
     , M_kick_fault_brush( QColor( 255, 0, 0 ), Qt::SolidPattern )
+    , M_kick_accel_pen( QColor( 0, 255, 0 ), 0, Qt::SolidLine )
     , M_catch_brush( QColor( 10, 80, 10 ), Qt::SolidPattern )
     , M_catch_fault_brush( QColor( 10, 80, 150 ), Qt::SolidPattern )
     , M_tackle_pen( QColor( 255, 136, 127 ), 2, Qt::SolidLine )
@@ -120,7 +125,7 @@ PlayerPainter::PlayerPainter( const MainData & main_data )
 /*-------------------------------------------------------------------*/
 /*
 
-*/
+ */
 PlayerPainter::~PlayerPainter()
 {
     writeSettings();
@@ -129,7 +134,7 @@ PlayerPainter::~PlayerPainter()
 /*-------------------------------------------------------------------*/
 /*
 
-*/
+ */
 void
 PlayerPainter::readSettings()
 {
@@ -198,6 +203,9 @@ PlayerPainter::readSettings()
     val = settings.value( "kick_fault_brush" );
     if ( val.isValid() ) M_kick_fault_brush.setColor( val.toString() );
 
+    val = settings.value( "kick_accel_pen" );
+    if ( val.isValid() ) M_kick_accel_pen.setColor( val.toString() );
+
     val = settings.value( "catch_brush" );
     if ( val.isValid() ) M_catch_brush.setColor( val.toString() );
 
@@ -219,7 +227,7 @@ PlayerPainter::readSettings()
 /*-------------------------------------------------------------------*/
 /*
 
-*/
+ */
 void
 PlayerPainter::writeSettings()
 {
@@ -257,7 +265,7 @@ PlayerPainter::writeSettings()
 /*-------------------------------------------------------------------*/
 /*
 
-*/
+ */
 void
 PlayerPainter::draw( QPainter & painter )
 {
@@ -290,7 +298,7 @@ PlayerPainter::draw( QPainter & painter )
 /*-------------------------------------------------------------------*/
 /*
 
-*/
+ */
 void
 PlayerPainter::drawAll( QPainter & painter,
                         const rcss::rcg::PlayerT & player,
@@ -311,20 +319,33 @@ PlayerPainter::drawAll( QPainter & painter,
         drawViewArea( painter, param );
     }
 
-    if ( Options::instance().showControlArea() )
+    if ( player.isGoalie()
+         && Options::instance().showCatchArea() )
     {
-        drawControlArea( painter, param );
+        drawCatchArea( painter, param );
     }
 
-    if ( Options::instance().showPointto()
-         && player.isPointing() )
+    if ( Options::instance().showTackleArea() )
+    {
+        drawTackleArea( painter, param );
+    }
+
+    if ( Options::instance().showKickAccelArea()
+         && Options::instance().selectedPlayer( player.side(),
+                                                player.unum_ ) )
+    {
+        drawKickAccelArea( painter, param );
+    }
+
+    if ( player.isPointing()
+         && Options::instance().showPointto() )
     {
         drawPointto( painter, param );
     }
 
     if ( Options::instance().showPlayerTrace()
-         && Options::instance().isSelectedPlayer( param.player_.side(),
-                                                  param.player_.unum_ ) )
+         && Options::instance().selectedPlayer( param.player_.side(),
+                                                param.player_.unum_ ) )
     {
         drawTrace( painter, param );
     }
@@ -335,7 +356,7 @@ PlayerPainter::drawAll( QPainter & painter,
 /*-------------------------------------------------------------------*/
 /*
 
-*/
+ */
 void
 PlayerPainter::drawBody( QPainter & painter,
                          const PlayerPainter::Param & param ) const
@@ -413,24 +434,25 @@ PlayerPainter::drawBody( QPainter & painter,
         painter.setBrush( M_player_collide_brush );
     }
 
-    painter.drawEllipse( param.x_ - param.kick_radius_ ,
-                         param.y_ - param.kick_radius_ ,
-                         param.kick_radius_ * 2 ,
-                         param.kick_radius_ * 2 );
+    painter.drawEllipse( param.x_ - param.draw_radius_ ,
+                         param.y_ - param.draw_radius_ ,
+                         param.draw_radius_ * 2 ,
+                         param.draw_radius_ * 2 );
 
     // draw stamina status if effort or recovery is decayed.
     if ( param.player_.hasStamina() )
     {
-//         double stamina_rate = param.player_.stamina_ / M_main_data.serverParam().stamina_max_;
-//         int dark_rate = 200 - static_cast< int >( rint( 200 * rint( stamina_rate * 8.0 ) / 8.0 ) );
+#if 1
+        double stamina_rate = param.player_.stamina_ / M_main_data.serverParam().stamina_max_;
+        int dark_rate = 180 - static_cast< int >( rint( 180 * rint( stamina_rate / 0.125 ) * 0.125 ) );
 
-//         painter.setPen( Qt::NoPen );
-//         painter.setBrush( painter.brush().color().darker( 100 + dark_rate ) );
-//         painter.drawEllipse( param.x_ - param.body_radius_,
-//                              param.y_ - param.body_radius_,
-//                              param.body_radius_ * 2 ,
-//                              param.body_radius_ * 2  );
-
+        painter.setPen( Qt::NoPen );
+        painter.setBrush( painter.brush().color().darker( 100 + dark_rate ) );
+        painter.drawEllipse( param.x_ - param.body_radius_,
+                             param.y_ - param.body_radius_,
+                             param.body_radius_ * 2 ,
+                             param.body_radius_ * 2  );
+#else
         if ( param.player_.stamina_ < 1500.0f )
         {
             painter.setPen( Qt::NoPen );
@@ -440,6 +462,7 @@ PlayerPainter::drawBody( QPainter & painter,
                                  param.body_radius_ * 2 ,
                                  param.body_radius_ * 2  );
         }
+#endif
     }
 
     // draw real body edge
@@ -455,7 +478,7 @@ PlayerPainter::drawBody( QPainter & painter,
 /*-------------------------------------------------------------------*/
 /*!
 
-*/
+ */
 void
 PlayerPainter::drawDir( QPainter & painter,
                         const PlayerPainter::Param & param ) const
@@ -493,7 +516,7 @@ PlayerPainter::drawDir( QPainter & painter,
 /*-------------------------------------------------------------------*/
 /*!
 
-*/
+ */
 void
 PlayerPainter::drawViewArea( QPainter & painter,
                              const PlayerPainter::Param & param ) const
@@ -506,8 +529,8 @@ PlayerPainter::drawViewArea( QPainter & painter,
     const int span_angle = static_cast< int >( rint( param.player_.view_width_ * 16 ) );
 
 
-    if ( opt.isSelectedPlayer( param.player_.side(),
-                               param.player_.unum_ ) )
+    if ( opt.selectedPlayer( param.player_.side(),
+                             param.player_.unum_ ) )
     {
         // draw large view area
         const int UNUM_FAR = opt.scale( 20.0 );
@@ -581,39 +604,47 @@ PlayerPainter::drawViewArea( QPainter & painter,
 /*-------------------------------------------------------------------*/
 /*!
 
-*/
+ */
 void
-PlayerPainter::drawControlArea( QPainter & painter,
-                                const PlayerPainter::Param & param ) const
+PlayerPainter::drawCatchArea( QPainter & painter,
+                              const PlayerPainter::Param & param ) const
 {
-    const Options & opt = Options::instance();
-    const rcss::rcg::ServerParamT & sparam = M_main_data.serverParam();
-
     //
     // goalie's catchable area
     //
+    const Options & opt = Options::instance();
+    const rcss::rcg::ServerParamT & sparam = M_main_data.serverParam();
 
-    if ( param.player_.isGoalie() )
-    {
-        double catchable_area
-            = std::sqrt( std::pow( sparam.catchable_area_w_ * 0.5, 2.0 )
-                         + std::pow( sparam.catchable_area_l_, 2.0 ) );
+    double catchable_area
+        = std::sqrt( std::pow( sparam.catchable_area_w_ * 0.5, 2.0 )
+                     + std::pow( sparam.catchable_area_l_, 2.0 ) );
 
-        int catchable = opt.scale( catchable_area );
-        painter.setPen( ( param.player_.side_ == 'l' )
-                        ? M_left_goalie_pen
-                        : M_right_goalie_pen );
-        painter.setBrush( Qt::NoBrush );
+    int catchable = opt.scale( catchable_area );
+    painter.setPen( ( param.player_.side_ == 'l' )
+                    ? M_left_goalie_pen
+                    : M_right_goalie_pen );
+    painter.setBrush( Qt::NoBrush );
 
-        painter.drawEllipse( param.x_ - catchable,
-                             param.y_ - catchable,
-                             catchable * 2,
-                             catchable * 2 );
-    }
+    painter.drawEllipse( param.x_ - catchable,
+                         param.y_ - catchable,
+                         catchable * 2,
+                         catchable * 2 );
+}
 
+/*-------------------------------------------------------------------*/
+/*!
+
+ */
+void
+PlayerPainter::drawTackleArea( QPainter & painter,
+                               const PlayerPainter::Param & param ) const
+{
     //
     // draw tackle area & probability
     //
+
+    const Options & opt = Options::instance();
+    const rcss::rcg::ServerParamT & sparam = M_main_data.serverParam();
 
     Vector2D ppos( param.player_.x_,
                    param.player_.y_ );
@@ -670,7 +701,184 @@ PlayerPainter::drawControlArea( QPainter & painter,
 /*-------------------------------------------------------------------*/
 /*!
 
-*/
+ */
+void
+PlayerPainter::drawKickAccelArea( QPainter & painter,
+                                  const PlayerPainter::Param & param ) const
+{
+    //
+    // draw kick accel area
+    //
+
+    if ( ! param.ball_.hasVelocity() )
+    {
+        return;
+    }
+
+    const Options & opt = Options::instance();
+    const rcss::rcg::ServerParamT & sparam = M_main_data.serverParam();
+
+    Vector2D ppos( param.player_.x_,
+                   param.player_.y_ );
+    Vector2D bpos( param.ball_.x_,
+                   param.ball_.y_ );
+
+    Vector2D player_to_ball = bpos - ppos;
+    player_to_ball.rotate( - param.player_.body_ );
+
+    double ball_dist = player_to_ball.r();
+
+    if ( ball_dist > ( param.player_type_.player_size_
+                       + param.player_type_.kickable_margin_
+                       + sparam.ball_size_ ) )
+    {
+        return;
+    }
+
+    double max_kick_accel
+        = sparam.max_power_
+        * sparam.kick_power_rate_
+        * ( 1.0 - 0.25 * player_to_ball.th().abs() / 180.0
+            - 0.25
+            * ( ball_dist - param.player_type_.player_size_ - sparam.ball_size_ )
+            / param.player_type_.kickable_margin_ );
+
+    if ( max_kick_accel > sparam.ball_accel_max_ )
+    {
+        max_kick_accel = sparam.ball_accel_max_;
+    }
+
+    Vector2D bnext( bpos.x + param.ball_.vx_,
+                    bpos.y + param.ball_.vy_ );
+
+    QPoint bpos_screen( opt.screenX( bpos.x ),
+                        opt.screenY( bpos.y ) );
+    QPoint bnext_screen( opt.screenX( bnext.x ),
+                         opt.screenY( bnext.y ) );
+    int max_speed_screen = opt.scale( sparam.ball_speed_max_ );
+    int max_kick_accel_screen = opt.scale( max_kick_accel );
+
+    painter.setPen( M_kick_accel_pen );
+    painter.setBrush( Qt::NoBrush );
+
+    // draw no noise ball move line
+    painter.drawLine( bpos_screen, bnext_screen );
+
+    Circle2D max_speed_circle( bpos, sparam.ball_speed_max_ );
+    Circle2D max_accel_circle( bnext, max_kick_accel );
+    Vector2D intersection_1, intersection_2;
+
+    if ( max_speed_circle.intersection( max_accel_circle,
+                                        &intersection_1,
+                                        &intersection_2 ) != 2 )
+
+    {
+        // no intersection points
+
+        // just draw a next ball reachable area by max accel
+        painter.drawEllipse( bnext_screen.x() - max_kick_accel_screen,
+                             bnext_screen.y() - max_kick_accel_screen,
+                             max_kick_accel_screen * 2,
+                             max_kick_accel_screen * 2 );
+    }
+    else
+    {
+        // exists 2 intersection points
+
+        AngleDeg bpos_to_intersection_1 = ( intersection_1 - bpos ).th();
+        AngleDeg bpos_to_intersection_2 = ( intersection_2 - bpos ).th();
+
+        AngleDeg bpos_to_bnext_angle = ( bnext - bpos ).th();
+
+        AngleDeg * bpos_start_angle = 0;
+        double bpos_angle_span = 0.0;
+        if ( bpos_to_intersection_1.isLeftOf( bpos_to_bnext_angle ) )
+        {
+            bpos_start_angle = &bpos_to_intersection_1;
+            bpos_angle_span = ( bpos_to_intersection_2 - bpos_to_intersection_1 ).degree();
+            if ( bpos_angle_span < 0.0 )
+            {
+                bpos_angle_span += 360.0;
+            }
+            bpos_angle_span *= -1.0;
+        }
+        else
+        {
+            bpos_start_angle = &bpos_to_intersection_2;
+            bpos_angle_span = ( bpos_to_intersection_1 - bpos_to_intersection_2 ).degree();
+            if ( bpos_angle_span < 0.0 )
+            {
+                bpos_angle_span += 360.0;
+            }
+            bpos_angle_span *= -1.0;
+        }
+
+        int bpos_start_angle_int
+            = static_cast< int >( rint( - bpos_start_angle->degree() * 16 ) );
+        int bpos_angle_span_int
+            = static_cast< int >( rint( bpos_angle_span * 16 ) );
+        painter.drawArc( bpos_screen.x() - max_speed_screen,
+                         bpos_screen.y() - max_speed_screen,
+                         max_speed_screen * 2,
+                         max_speed_screen * 2,
+                         bpos_start_angle_int,
+                         bpos_angle_span_int  );
+
+        AngleDeg bnext_to_intersection_1 = ( intersection_1 - bnext ).th();
+        AngleDeg bnext_to_intersection_2 = ( intersection_2 - bnext ).th();
+
+        AngleDeg bnext_to_bpos_angle = bpos_to_bnext_angle + 180.0;
+
+        AngleDeg * bnext_start_angle = 0;
+        double bnext_angle_span = 0.0;
+        if ( bnext_to_intersection_1.isLeftOf( bnext_to_bpos_angle ) )
+        {
+            bnext_start_angle = &bnext_to_intersection_1;
+            bnext_angle_span = ( bnext_to_intersection_2 - bnext_to_intersection_1 ).degree();
+            if ( bnext_angle_span < 0.0 )
+            {
+                bnext_angle_span += 360.0;
+            }
+            bnext_angle_span *= -1.0;
+        }
+        else
+        {
+            bnext_start_angle = &bnext_to_intersection_2;
+            bnext_angle_span = ( bnext_to_intersection_1 - bnext_to_intersection_2 ).degree();
+            if ( bnext_angle_span < 0.0 )
+            {
+                bnext_angle_span += 360.0;
+            }
+            bnext_angle_span *= -1.0;
+        }
+
+        int bnext_start_angle_int
+            = static_cast< int >( rint( - bnext_start_angle->degree() * 16 ) );
+        int bnext_angle_span_int
+            = static_cast< int >( rint( bnext_angle_span * 16 ) );
+        painter.drawArc( bnext_screen.x() - max_kick_accel_screen,
+                         bnext_screen.y() - max_kick_accel_screen,
+                         max_kick_accel_screen * 2,
+                         max_kick_accel_screen * 2,
+                         bnext_start_angle_int,
+                         bnext_angle_span_int );
+    }
+
+    // draw kick info text
+    painter.setFont( M_player_font );
+    painter.setPen( M_kick_accel_pen );
+
+    char buf[32];
+    std::snprintf( buf, 32, "MaxAccel=%.3f", max_kick_accel );
+    painter.drawText( bnext_screen.x() + 10,
+                      bnext_screen.y() + painter.fontMetrics().ascent(),
+                      QString::fromAscii( buf ) );
+}
+
+/*-------------------------------------------------------------------*/
+/*!
+
+ */
 void
 PlayerPainter::drawPointto( QPainter & painter,
                             const PlayerPainter::Param & param ) const
@@ -684,11 +892,10 @@ PlayerPainter::drawPointto( QPainter & painter,
                       ix, iy );
 }
 
-
 /*-------------------------------------------------------------------*/
 /*!
 
-*/
+ */
 void
 PlayerPainter::drawTrace( QPainter & painter,
                           const PlayerPainter::Param & param ) const
@@ -768,7 +975,7 @@ PlayerPainter::drawTrace( QPainter & painter,
 /*-------------------------------------------------------------------*/
 /*!
 
-*/
+ */
 void
 PlayerPainter::drawText( QPainter & painter,
                          const PlayerPainter::Param & param ) const
@@ -820,7 +1027,7 @@ PlayerPainter::drawText( QPainter & painter,
 /*-------------------------------------------------------------------*/
 /*!
 
-*/
+ */
 void
 PlayerPainter::drawOffsideLine( QPainter & painter,
                                 const rcss::rcg::ShowInfoT & show ) const

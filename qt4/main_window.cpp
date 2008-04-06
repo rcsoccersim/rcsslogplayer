@@ -46,6 +46,7 @@
 #include "monitor_server.h"
 #include "log_player.h"
 #include "log_player_tool_bar.h"
+#include "log_slider_tool_bar.h"
 #include "options.h"
 
 #include <string>
@@ -112,6 +113,7 @@ MainWindow::MainWindow()
     if ( Options::instance().hideToolBar() )
     {
         M_log_player_tool_bar->hide();
+        M_log_slider_tool_bar->hide();
     }
 
     if ( Options::instance().hideStatusBar() )
@@ -364,7 +366,7 @@ MainWindow::createActionsView()
              this, SLOT( toggleStatusBar() ) );
     this->addAction( M_toggle_status_bar_act );
     //
-    M_toggle_field_canvas_act = new QAction( tr( "&Field" ), this );
+    M_toggle_field_canvas_act = new QAction( tr( "Minimum" ), this );
     M_toggle_field_canvas_act->setStatusTip( tr( "Show/Hide Field" ) );
     connect( M_toggle_field_canvas_act, SIGNAL( triggered() ),
              this, SLOT( toggleFieldCanvas() ) );
@@ -508,10 +510,14 @@ void
 MainWindow::createMenuView()
 {
     QMenu * menu = menuBar()->addMenu( tr( "&View" ) );
+
+    menu->addAction( M_toggle_field_canvas_act );
+
+    menu->addSeparator();
+
     menu->addAction( M_toggle_menu_bar_act );
     menu->addAction( M_toggle_tool_bar_act );
     menu->addAction( M_toggle_status_bar_act );
-    menu->addAction( M_toggle_field_canvas_act );
 
     menu->addSeparator();
     menu->addAction( M_full_screen_act );
@@ -555,30 +561,18 @@ MainWindow::createToolBars()
                                                   M_main_data,
                                                   this );
 
-    //M_log_player_tool_bar->addSeparator();
-    //M_log_player_tool_bar->addAction( M_set_live_mode_act );
-    {
-        QFrame * dummy_frame = new QFrame;
-        QHBoxLayout * layout = new QHBoxLayout;
-        //layout->addSpacing( 10 );
-        layout->addStretch( 1 );
-        dummy_frame->setLayout( layout );
-        M_log_player_tool_bar->addWidget( dummy_frame );
-    }
-    {
-        QFrame * dummy_frame = new QFrame;
-        QVBoxLayout * layout = new QVBoxLayout;
-        //layout->addSpacing( 10 );
-        layout->addStretch( 1 );
-        dummy_frame->setLayout( layout );
-        M_log_player_tool_bar->addWidget( dummy_frame );
-    }
+    this->addToolBar( Qt::TopToolBarArea, M_log_player_tool_bar );
+
+    //
+
+    M_log_slider_tool_bar = new LogSliderToolBar( M_log_player,
+                                                  M_main_data,
+                                                  this );
 
     connect( this,  SIGNAL( viewUpdated() ),
-             M_log_player_tool_bar, SLOT( updateSlider() ) );
+             M_log_slider_tool_bar, SLOT( updateSlider() ) );
 
-
-    this->addToolBar( Qt::TopToolBarArea, M_log_player_tool_bar );
+    this->addToolBar( Qt::TopToolBarArea, M_log_slider_tool_bar );
 }
 
 /*-------------------------------------------------------------------*/
@@ -730,9 +724,7 @@ MainWindow::createConfigDialog()
 
     // field style
     {
-        // k
         QAction * act = new QAction( tr( "Show Keepaway Area" ), this );
-        act->setShortcut( Qt::Key_K );
         this->addAction( act );
         connect( act, SIGNAL( triggered() ),
                  M_config_dialog, SLOT( toggleShowKeepawayArea() ) );
@@ -773,18 +765,46 @@ MainWindow::createConfigDialog()
     }
     {
         // c
-        QAction * act = new QAction( tr( "Show Control Area" ), this );
+        QAction * act = new QAction( tr( "Show Catch Area" ), this );
         act->setShortcut( Qt::Key_C );
         this->addAction( act );
         connect( act, SIGNAL( triggered() ),
-                 M_config_dialog, SLOT( toggleShowControlArea() ) );
+                 M_config_dialog, SLOT( toggleShowCatchArea() ) );
+    }
+    {
+        // k
+        QAction * act = new QAction( tr( "Show Tackle Area" ), this );
+        act->setShortcut( Qt::Key_T );
+        this->addAction( act );
+        connect( act, SIGNAL( triggered() ),
+                 M_config_dialog, SLOT( toggleShowTackleArea() ) );
+    }
+    {
+        // k
+        QAction * act = new QAction( tr( "Show Kick Accel Area" ), this );
+        act->setShortcut( Qt::Key_K );
+        this->addAction( act );
+        connect( act, SIGNAL( triggered() ),
+                 M_config_dialog, SLOT( toggleShowKickAccelArea() ) );
+    }
+    {
+        // p
+        QAction * act = new QAction( tr( "Show Pointto Point" ), this );
+        act->setShortcut( Qt::Key_P );
+        this->addAction( act );
+        connect( act, SIGNAL( triggered() ),
+                 M_config_dialog, SLOT( toggleShowKickAccelArea() ) );
     }
 
     // show/hide
     {
-        // t
+        // Ctrl + t
         QAction * act = new QAction( tr( "Show Score Board" ), this );
-        act->setShortcut( Qt::Key_T );
+#ifdef Q_WS_MAC
+        act->setShortcut( Qt::META + Qt::Key_T );
+#else
+        act->setShortcut( Qt::CTRL + Qt::Key_T );
+#endif
         this->addAction( act );
         connect( act, SIGNAL( triggered() ),
                  M_config_dialog, SLOT( toggleShowScoreBoard() ) );
@@ -816,7 +836,11 @@ MainWindow::createConfigDialog()
     {
         // f
         QAction * act = new QAction( tr( "Show Flags" ), this );
-        act->setShortcut( Qt::Key_F );
+#ifdef Q_WS_MAC
+        act->setShortcut( Qt::META + Qt::Key_F );
+#else
+        act->setShortcut( Qt::CTRL + Qt::Key_F );
+#endif
         this->addAction( act );
         connect( act, SIGNAL( triggered() ),
                  M_config_dialog, SLOT( toggleShowFlag() ) );
@@ -881,10 +905,10 @@ MainWindow::createConfigDialog()
         connect( act, SIGNAL( triggered() ),
                  M_config_dialog, SLOT( toggleFocusBall() ) );
     }
-    // p
+    // f
     {
         QAction * act = new QAction( tr( "Focus Player" ), this );
-        act->setShortcut( Qt::Key_P );
+        act->setShortcut( Qt::Key_F );
         this->addAction( act );
         connect( act, SIGNAL( triggered() ),
                  M_config_dialog, SLOT( toggleFocusPlayer() ) );
@@ -1337,6 +1361,7 @@ void
 MainWindow::toggleToolBar()
 {
     M_log_player_tool_bar->setVisible( ! M_log_player_tool_bar->isVisible() );
+    M_log_slider_tool_bar->setVisible( ! M_log_slider_tool_bar->isVisible() );
 }
 
 /*-------------------------------------------------------------------*/
@@ -1356,7 +1381,7 @@ MainWindow::toggleStatusBar()
 void
 MainWindow::toggleFieldCanvas()
 {
-    static QSize old_canvas_size = M_field_canvas->size();
+    static QSize s_old_canvas_size = M_field_canvas->size();
 
     Options::instance().toggleMinimumMode();
 
@@ -1374,23 +1399,43 @@ MainWindow::toggleFieldCanvas()
     {
         M_config_dialog->hide();
     }
+    M_toggle_tool_bar_act->setEnabled( visible );
+    M_toggle_status_bar_act->setEnabled( visible );
     M_full_screen_act->setEnabled( visible );
     M_show_config_dialog_act->setEnabled( visible );
     M_show_detail_dialog_act->setEnabled( visible );
 
-    M_log_player_tool_bar->setMovable( visible );
-    M_log_player_tool_bar->setFloatable( visible );
-
     if ( Options::instance().minimumMode() )
     {
-        old_canvas_size = M_field_canvas->size();
+        s_old_canvas_size = M_field_canvas->size();
 
-        QSize new_canvas_size( 256, 76 );
+        //QSize new_canvas_size( 270, 76 ); // for 2 lines
+        QSize new_canvas_size( 270, 100 ); // for 3 lines
 
         QRect win_rect = this->geometry();
-        this->setMinimumWidth( win_rect.width() - old_canvas_size.width() + new_canvas_size.width() );
-        this->setMinimumHeight( win_rect.height() - old_canvas_size.height() + new_canvas_size.height() );
-        this->setMaximumHeight( win_rect.height() - old_canvas_size.height() + new_canvas_size.height() );
+
+        int new_height =
+            24 //M_log_player_tool_bar->height()
+            + 24 //+ M_log_slider_tool_bar->height()
+            + new_canvas_size.height()
+            + this->statusBar()->height();
+        this->setMinimumWidth( win_rect.width() - s_old_canvas_size.width() + new_canvas_size.width() );
+        this->setMinimumHeight( new_height );
+        this->setMaximumHeight( new_height );
+
+        // relocate toolbars
+        this->addToolBar( Qt::TopToolBarArea, M_log_player_tool_bar );
+        this->addToolBarBreak( Qt::TopToolBarArea );
+        this->addToolBar( Qt::TopToolBarArea, M_log_slider_tool_bar );
+
+        M_log_player_tool_bar->show();
+        M_log_player_tool_bar->setMovable( false );
+        M_log_player_tool_bar->setFloatable( false );
+        M_log_slider_tool_bar->show();
+        M_log_slider_tool_bar->setMovable( false );
+        M_log_slider_tool_bar->setFloatable( false );
+
+        M_toggle_field_canvas_act->setText( tr( "Show Field" ) );
 
         resizeCanvas( new_canvas_size );
     }
@@ -1398,9 +1443,18 @@ MainWindow::toggleFieldCanvas()
     {
         this->setMinimumWidth( 280 );
         this->setMinimumHeight( 220 );
-        this->setMaximumSize( QWIDGETSIZE_MAX, QWIDGETSIZE_MAX );
+        this->setMaximumHeight( QWIDGETSIZE_MAX );
 
-        resizeCanvas( old_canvas_size );
+        this->removeToolBarBreak( M_log_slider_tool_bar );
+
+        M_log_player_tool_bar->setMovable( true );
+        M_log_player_tool_bar->setFloatable( true );
+        M_log_slider_tool_bar->setMovable( true );
+        M_log_slider_tool_bar->setFloatable( true );
+
+        M_toggle_field_canvas_act->setText( tr( "Minimum" ) );
+
+        resizeCanvas( s_old_canvas_size );
     }
 }
 
@@ -1586,7 +1640,8 @@ MainWindow::receiveMonitorPacket()
     }
     else
     {
-        M_log_player_tool_bar->updateSlider();
+        //M_log_player_tool_bar->updateSlider();
+        M_log_slider_tool_bar->updateSlider();
     }
 }
 

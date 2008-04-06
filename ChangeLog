@@ -1,5 +1,30 @@
 2008-04-07  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 
+	* qt4/circle_2d.cpp:
+	* qt4/circle_2d.h:
+	* qt4/line_2d.cpp:
+	* qt4/line_2d.h:
+	* qt4/log_slider_tool_bar.cpp:
+	* qt4/log_slider_tool_bar.h:
+	* qt4/Makefile.am:
+	* qt4/angle_deg.h:
+	* qt4/config_dialog.cpp:
+	* qt4/config_dialog.h:
+	* qt4/field_canvas.cpp:
+	* qt4/log_player_tool_bar.cpp:
+	* qt4/log_player_tool_bar.h:
+	* qt4/main_window.cpp:
+	* qt4/main_window.h:
+	* qt4/options.cpp:
+	* qt4/options.h:
+	* qt4/player_painter.cpp:
+	* qt4/player_painter.h:
+	* qt4/score_board_painter.cpp:
+	* qt4/score_board_painter.h:
+	- fixed several minor problems.
+	- changed the designe of minimum mode.
+	- added show-kick-accel-area option.
+
 	* qt4/ball_painter.cpp:
 	* qt4/config_dialog.cpp:
 	* qt4/detail_dialog.cpp:

@@ -229,6 +229,19 @@ public:
           return normalize();
       }
 
+    /*!
+      \brief check if this angle is left of 'angle'
+      \return true or false
+     */
+    bool isLeftOf( const AngleDeg & angle ) const
+      {
+          //return (*this - angle).degree() < 0.0;
+          double diff = angle.degree() - this->degree();
+          return ( ( 0.0 < diff && diff < 180.0 )
+                   || diff < -180.0 );
+      }
+
+
     //////////////////////////////////////////////////////////////////
 
     /*!

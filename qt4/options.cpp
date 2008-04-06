@@ -120,7 +120,7 @@ Options::Options()
     , M_show_player_number( true )
     , M_show_player_type( false )
     , M_show_view_area( true )
-    , M_show_control_area( true )
+    , M_show_tackle_area( false )
     , M_show_stamina( true )
     , M_show_pointto( true )
     , M_enlarge( true )
@@ -237,9 +237,9 @@ Options::parseCmdLine( int argc,
         ( "show-keepaway-area",
           po::value< bool >( &M_show_keepaway_area )->default_value( false, "off" ),
           "show keepaway area." )
-        ( "show-team-logo",
-          po::value< bool >( &M_show_team_logo )->default_value( true, "on" ),
-          "show team logo." )
+//         ( "show-team-logo",
+//           po::value< bool >( &M_show_team_logo )->default_value( true, "on" ),
+//           "show team logo." )
         ( "show-ball",
           po::value< bool >( &M_show_ball )->default_value( true, "on" ),
           "show ball." )
@@ -255,18 +255,24 @@ Options::parseCmdLine( int argc,
         ( "show-view-area",
           po::value< bool >( &M_show_view_area )->default_value( false, "off" ),
           "show player\'s view area." )
-        ( "show-control-area",
-          po::value< bool >( &M_show_control_area )->default_value( false, "off" ),
-          "show player\'s control area." )
+        ( "show-catch-area",
+          po::value< bool >( &M_show_catch_area )->default_value( false, "off" ),
+          "show player\'s catch area." )
+        ( "show-tackle-area",
+          po::value< bool >( &M_show_tackle_area )->default_value( false, "off" ),
+          "show player\'s tackle area." )
+        ( "show-kick-accel-area",
+          po::value< bool >( &M_show_kick_accel_area )->default_value( false, "off" ),
+          "show player\'s kick acceleration area." )
         ( "show-stamina",
           po::value< bool >( &M_show_stamina )->default_value( false, "off" ),
           "show player\'s stamina." )
         ( "show-pointto",
           po::value< bool >( &M_show_pointto )->default_value( false, "off" ),
           "show player\'s pointing to point." )
-        ( "enlarge",
-          po::value< bool >( &M_enlarge )->default_value( true, "on" ),
-          "show enlarged objects." )
+//         ( "enlarge",
+//           po::value< bool >( &M_enlarge )->default_value( true, "on" ),
+//           "show enlarged objects." )
         ( "ball-size",
           po::value< double >( &M_ball_size )->default_value( 0.35, "0.35" ),
           "set a ball radius in enlarge mode." )

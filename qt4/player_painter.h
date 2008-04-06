@@ -95,6 +95,7 @@ private:
     QBrush M_player_collide_brush;
     QPen M_kick_pen;
     QBrush M_kick_fault_brush;
+    QPen M_kick_accel_pen;
     QBrush M_catch_brush;
     QBrush M_catch_fault_brush;
     QPen M_tackle_pen;
@@ -129,10 +130,14 @@ private:
                   const PlayerPainter::Param & param ) const;
     void drawViewArea( QPainter & painter,
                        const PlayerPainter::Param & param ) const;
-    void drawControlArea( QPainter & painter,
-                          const PlayerPainter::Param & param ) const;
+    void drawCatchArea( QPainter & painter,
+                        const PlayerPainter::Param & param ) const;
+    void drawTackleArea( QPainter & painter,
+                         const PlayerPainter::Param & param ) const;
     void drawPointto( QPainter & painter,
                       const PlayerPainter::Param & param ) const;
+    void drawKickAccelArea( QPainter & painter,
+                            const PlayerPainter::Param & param ) const;
     void drawTrace( QPainter & painter,
                     const PlayerPainter::Param & param ) const;
     void drawText( QPainter & painter,

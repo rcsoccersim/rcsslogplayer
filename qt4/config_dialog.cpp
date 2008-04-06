@@ -199,7 +199,7 @@ ConfigDialog::createZoomControls()
         M_scale_slider->setValue( 80 );
         M_scale_slider->setSingleStep( 1 );
         M_scale_slider->setPageStep( 1 ); // set the minimal increment/decrement step
-        M_scale_slider->setMinimumSize( 260, 24 );
+        M_scale_slider->setMinimumSize( 250, 24 );
         connect( M_scale_slider, SIGNAL( sliderMoved( int ) ),
                  this, SLOT( slideFieldScale( int ) ) );
         layout->addWidget( M_scale_slider );
@@ -234,11 +234,11 @@ ConfigDialog::createObjectSizeControls()
     top_layout->setMargin( 1 );
     top_layout->setSpacing( 0 );
 
-    M_enlarge_cb = new QCheckBox( tr( "Enlarge Objects" ) );
-    M_enlarge_cb->setChecked( true ); //M_view_config.isEnlarged() );
-    connect( M_enlarge_cb, SIGNAL( clicked( bool ) ),
-             this, SLOT( clickEnlarge( bool ) ) );
-    top_layout->addWidget( M_enlarge_cb );
+//     M_enlarge_cb = new QCheckBox( tr( "Enlarge Objects" ) );
+//     M_enlarge_cb->setChecked( true );
+//     connect( M_enlarge_cb, SIGNAL( clicked( bool ) ),
+//              this, SLOT( clickEnlarge( bool ) ) );
+//     top_layout->addWidget( M_enlarge_cb );
 
 
     QHBoxLayout * box = new QHBoxLayout();
@@ -349,17 +349,46 @@ ConfigDialog::createPlayerInfoControls()
         layout->setMargin( 0 );
         layout->setSpacing( 0 );
 
+        //
         M_view_area_cb = new QCheckBox( tr( "View Area" ) );
         M_view_area_cb->setChecked( Options::instance().showViewArea() );
         connect( M_view_area_cb, SIGNAL( clicked( bool ) ),
                  this, SLOT( clickShowViewArea( bool ) ) );
         layout->addWidget( M_view_area_cb );
+
+        top_layout->addLayout( layout );
+    }
+    {
+        QHBoxLayout * layout = new QHBoxLayout();
+        layout->setMargin( 0 );
+        layout->setSpacing( 0 );
+
         //
-        M_control_area_cb = new QCheckBox( tr( "Control Area" ) );
-        M_control_area_cb->setChecked( Options::instance().showControlArea() );
-        connect( M_control_area_cb, SIGNAL( clicked( bool ) ),
-                 this, SLOT( clickShowControlArea( bool ) ) );
-        layout->addWidget( M_control_area_cb );
+        M_catch_area_cb = new QCheckBox( tr( "Catch Area" ) );
+        M_catch_area_cb->setChecked( Options::instance().showCatchArea() );
+        connect( M_catch_area_cb, SIGNAL( clicked( bool ) ),
+                 this, SLOT( clickShowCatchArea( bool ) ) );
+        layout->addWidget( M_catch_area_cb );
+        //
+        M_tackle_area_cb = new QCheckBox( tr( "Tackle Area" ) );
+        M_tackle_area_cb->setChecked( Options::instance().showTackleArea() );
+        connect( M_tackle_area_cb, SIGNAL( clicked( bool ) ),
+                 this, SLOT( clickShowTackleArea( bool ) ) );
+        layout->addWidget( M_tackle_area_cb );
+        //
+        M_kick_accel_area_cb = new QCheckBox( tr( "Kick Accel Area" ) );
+        M_kick_accel_area_cb->setChecked( Options::instance().showKickAccelArea() );
+        connect( M_kick_accel_area_cb, SIGNAL( clicked( bool ) ),
+                 this, SLOT( clickShowKickAccelArea( bool ) ) );
+        layout->addWidget( M_kick_accel_area_cb );
+
+        top_layout->addLayout( layout );
+    }
+    {
+        QHBoxLayout * layout = new QHBoxLayout();
+        layout->setMargin( 0 );
+        layout->setSpacing( 0 );
+
         //
         M_pointto_cb = new QCheckBox( tr( "Pointto" ) );
         M_pointto_cb->setChecked( Options::instance().showPointto() );
@@ -403,12 +432,12 @@ ConfigDialog::createShowControls()
         connect( M_show_keepaway_area_cb, SIGNAL( clicked( bool ) ),
                  this, SLOT( clickShowKeepawayArea( bool ) ) );
         layout->addWidget( M_show_keepaway_area_cb );
-        //
-        M_show_team_logo_cb = new QCheckBox( tr( "Team Logo" ) );
-        M_show_team_logo_cb->setChecked( Options::instance().showTeamLogo() );
-        connect( M_show_team_logo_cb, SIGNAL( clicked( bool ) ),
-                 this, SLOT( clickShowTeamLogo( bool ) ) );
-        layout->addWidget( M_show_team_logo_cb );
+//         //
+//         M_show_team_logo_cb = new QCheckBox( tr( "Team Logo" ) );
+//         M_show_team_logo_cb->setChecked( Options::instance().showTeamLogo() );
+//         connect( M_show_team_logo_cb, SIGNAL( clicked( bool ) ),
+//                  this, SLOT( clickShowTeamLogo( bool ) ) );
+//         layout->addWidget( M_show_team_logo_cb );
         //
         M_show_flag_cb = new QCheckBox( tr( "Flag" ) );
         M_show_flag_cb->setChecked( Options::instance().showFlag() );
@@ -792,7 +821,7 @@ ConfigDialog::updateAll()
 {
     const Options & opt = Options::instance();
 
-    M_enlarge_cb->setChecked( opt.enlarge() );
+//    M_enlarge_cb->setChecked( opt.enlarge() );
     M_ball_size_text->setText( QString::number( opt.ballSize() ) );
     M_player_size_text->setText( QString::number( opt.playerSize() ) );
 
@@ -807,12 +836,14 @@ ConfigDialog::updateAll()
     M_player_type_cb->setChecked( opt.showPlayerType() );
     M_stamina_cb->setChecked( opt.showStamina() );
     M_view_area_cb->setChecked( opt.showViewArea() );
-    M_control_area_cb->setChecked( opt.showControlArea() );
+    M_catch_area_cb->setChecked( opt.showCatchArea() );
+    M_tackle_area_cb->setChecked( opt.showTackleArea() );
+    M_kick_accel_area_cb->setChecked( opt.showKickAccelArea() );
     M_pointto_cb->setChecked( opt.showPointto() );
 
     M_show_score_board_cb->setChecked( opt.showScoreBoard() );
     M_show_keepaway_area_cb->setChecked( opt.showKeepawayArea() );
-    M_show_team_logo_cb->setChecked( opt.showTeamLogo() );
+//    M_show_team_logo_cb->setChecked( opt.showTeamLogo() );
     M_show_ball_cb->setChecked( opt.showBall() );
     M_show_player_cb->setChecked( opt.showPlayer() );
     M_show_flag_cb->setChecked( opt.showFlag() );
@@ -1171,11 +1202,11 @@ ConfigDialog::toggleShowViewArea()
 
 */
 void
-ConfigDialog::clickShowControlArea( bool checked )
+ConfigDialog::clickShowCatchArea( bool checked )
 {
-    if ( Options::instance().showControlArea() != checked )
+    if ( Options::instance().showCatchArea() != checked )
     {
-        Options::instance().toggleShowControlArea();
+        Options::instance().toggleShowCatchArea();
         emit configured();
     }
 }
@@ -1185,10 +1216,64 @@ ConfigDialog::clickShowControlArea( bool checked )
 
 */
 void
-ConfigDialog::toggleShowControlArea()
+ConfigDialog::toggleShowCatchArea()
 {
-    Options::instance().toggleShowControlArea();
-    M_control_area_cb->setChecked( Options::instance().showControlArea() );
+    Options::instance().toggleShowCatchArea();
+    M_catch_area_cb->setChecked( Options::instance().showCatchArea() );
+
+    emit configured();
+}
+
+/*-------------------------------------------------------------------*/
+/*!
+
+*/
+void
+ConfigDialog::clickShowTackleArea( bool checked )
+{
+    if ( Options::instance().showTackleArea() != checked )
+    {
+        Options::instance().toggleShowTackleArea();
+        emit configured();
+    }
+}
+
+/*-------------------------------------------------------------------*/
+/*!
+
+*/
+void
+ConfigDialog::toggleShowTackleArea()
+{
+    Options::instance().toggleShowTackleArea();
+    M_tackle_area_cb->setChecked( Options::instance().showTackleArea() );
+
+    emit configured();
+}
+
+/*-------------------------------------------------------------------*/
+/*!
+
+*/
+void
+ConfigDialog::clickShowKickAccelArea( bool checked )
+{
+    if ( Options::instance().showKickAccelArea() != checked )
+    {
+        Options::instance().toggleShowKickAccelArea();
+        emit configured();
+    }
+}
+
+/*-------------------------------------------------------------------*/
+/*!
+
+*/
+void
+ConfigDialog::toggleShowKickAccelArea()
+{
+    Options::instance().toggleShowKickAccelArea();
+    M_kick_accel_area_cb->setChecked( Options::instance().showKickAccelArea() );
 
     emit configured();
 }
@@ -1215,7 +1300,7 @@ void
 ConfigDialog::toggleShowPointto()
 {
     Options::instance().toggleShowPointto();
-    M_control_area_cb->setChecked( Options::instance().showPointto() );
+    M_pointto_cb->setChecked( Options::instance().showPointto() );
 
     emit configured();
 }
@@ -1744,13 +1829,13 @@ void
 ConfigDialog::choicePlayer( int number )
 {
     if ( number <= 11
-         && Options::instance().isSelectedPlayer( rcss::rcg::LEFT, number ) )
+         && Options::instance().selectedPlayer( rcss::rcg::LEFT, number ) )
     {
         return;
     }
 
     if ( number > 11
-         && Options::instance().isSelectedPlayer( rcss::rcg::RIGHT, number - 11 ) )
+         && Options::instance().selectedPlayer( rcss::rcg::RIGHT, number - 11 ) )
     {
         return;
     }

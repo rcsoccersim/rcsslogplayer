@@ -52,6 +52,7 @@ class DetailDialog;
 class FieldCanvas;
 class LogPlayer;
 class LogPlayerToolBar;
+class LogSliderToolBar;
 class MonitorServer;
 class MonitorClient;
 class PlayerTypeDialog;
@@ -71,6 +72,7 @@ private:
     FieldCanvas * M_field_canvas;
     LogPlayer * M_log_player;
     LogPlayerToolBar * M_log_player_tool_bar;
+    LogSliderToolBar * M_log_slider_tool_bar;
     ConfigDialog * M_config_dialog;
     DetailDialog * M_detail_dialog;
     PlayerTypeDialog * M_player_type_dialog;
