@@ -150,6 +150,7 @@ ConfigDialog::createZoomControls()
     QGroupBox * group_box = new QGroupBox( tr( "Zoom" ) );
 
     QVBoxLayout * top_layout = new QVBoxLayout();
+    top_layout->setSizeConstraint( QLayout::SetFixedSize );
     top_layout->setMargin( 1 );
     top_layout->setSpacing( 0 );
 
@@ -619,18 +620,19 @@ ConfigDialog::createGridStepControls()
     //
     M_grid_step_slider = new QSlider( Qt::Horizontal );
     M_grid_step_slider->setRange( 0, 1000 );
-    M_grid_step_slider->setValue( 0 );
+    M_grid_step_slider->setValue( static_cast< int >( rint( Options::instance().gridStep() * 10.0 ) ) );
     M_grid_step_slider->setSingleStep( 1 );
     M_grid_step_slider->setPageStep( 1 );
-    M_grid_step_slider->setMinimumSize( 300, 24 );
+    M_grid_step_slider->setMinimumSize( 260, 24 );
     connect( M_grid_step_slider, SIGNAL( sliderMoved( int ) ),
              this, SLOT( slideGridStep( int ) ) );
     layout->addWidget( M_grid_step_slider );
 
     //
-    M_grid_step_text = new QLineEdit( tr( " 000.0" )  );
-    M_grid_step_text->setValidator( new QDoubleValidator( 0.0, 200.0, 2, M_grid_step_text ) );
+    M_grid_step_text = new QLineEdit( tr( " 0.0" )  );
+    M_grid_step_text->setValidator( new QDoubleValidator( 0.0, 100.0, 3, M_grid_step_text ) );
     M_grid_step_text->setMaximumSize( 48, 24 );
+    M_grid_step_text->setText( QString::number( rint( Options::instance().gridStep() / 0.001 ) * 0.001 ) );
     connect( M_grid_step_text, SIGNAL( textChanged( const QString & ) ),
              this, SLOT( editGridStep( const QString & ) ) );
     layout->addWidget( M_grid_step_text );
@@ -988,7 +990,6 @@ ConfigDialog::editPlayerSize( const QString & text )
 void
 ConfigDialog::slideFieldScale( int value )
 {
-    std::cerr << "slideFieldScale " << value << std::endl;
     double scale = value * 0.1;
 
     if ( std::fabs( scale - Options::instance().fieldScale() ) >= 0.01 )
@@ -1431,7 +1432,7 @@ ConfigDialog::slideGridStep( int value )
 {
     M_grid_step_text->setText( QString::number( value * 0.1 ) );
 
-    Options::instance().setGridStep( value );
+    Options::instance().setGridStep( value * 0.1 );
 
     emit configured();
 }
@@ -1448,7 +1449,8 @@ ConfigDialog::editGridStep( const QString & text )
 
     if ( ok )
     {
-        Options::instance().setGridStep( static_cast< int >( rint( value * 10.0 ) ) );
+        M_grid_step_slider->setValue( static_cast< int >( rint( value * 10.0 ) ) );
+        Options::instance().setGridStep( rint( value / 0.001 ) * 0.001 );
 
         emit configured();
     }

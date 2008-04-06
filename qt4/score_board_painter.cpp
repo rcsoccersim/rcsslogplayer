@@ -128,7 +128,8 @@ ScoreBoardPainter::draw( QPainter & painter )
 
     const Options & opt = Options::instance();
 
-    if ( ! opt.showScoreBoard() )
+    if ( ! opt.showScoreBoard()
+         && ! opt.minimumMode() )
     {
         return;
     }
@@ -173,12 +174,19 @@ ScoreBoardPainter::draw( QPainter & painter )
         show_pen_score = false;
     }
 
+    const char * format = ( opt.minimumMode()
+                            ? ( show_pen_score
+                                ? " %10s %d:%d |%-5s:%-5s| %-10s\n %-16s %6d"
+                                : " %10s %d:%d %-10s\n %-16s %6d    " )
+                            : ( show_pen_score
+                                ? " %10s %d:%d |%-5s:%-5s| %-10s %16s %6d"
+                                : " %10s %d:%d %-10s %16s %6d    " ) );
 
     QString main_buf;
 
     if ( ! show_pen_score )
     {
-        main_buf.sprintf( " %10s %d:%d %-10s %16s %6d    ",
+        main_buf.sprintf( format, //" %10s %d:%d %-10s %16s %6d    ",
                           ( team_l.name_.empty() || team_l.name_ == "null" )
                           ? ""
                           : team_l.name_.c_str(),
@@ -231,7 +239,7 @@ ScoreBoardPainter::draw( QPainter & painter )
             }
         }
 
-        main_buf.sprintf( " %10s %d:%d |%-5s:%-5s| %-10s %16s %6d",
+        main_buf.sprintf( format, //" %10s %d:%d |%-5s:%-5s| %-10s %16s %6d",
                           ( team_l.name_.empty() || team_l.name_ == "null" )
                           ? ""
                           : team_l.name_.c_str(),
@@ -247,11 +255,19 @@ ScoreBoardPainter::draw( QPainter & painter )
 
     painter.setFont( M_font );
 
-    QRect bounding_rect = painter.fontMetrics().boundingRect( main_buf );
-    QRect rect( 0,
-                painter.window().bottom() - bounding_rect.height() + 1,
-                bounding_rect.width(),
-                bounding_rect.height() );
+    QRect rect;
+    if ( opt.minimumMode() )
+    {
+        rect = painter.window();
+    }
+    else
+    {
+        QRect bounding_rect = painter.fontMetrics().boundingRect( main_buf );
+        rect.setLeft( 0 );
+        rect.setTop( painter.window().bottom() - bounding_rect.height() + 1 );
+        rect.setWidth( bounding_rect.width() );
+        rect.setHeight( bounding_rect.height() );
+    }
 
     painter.fillRect( rect, M_brush );
 

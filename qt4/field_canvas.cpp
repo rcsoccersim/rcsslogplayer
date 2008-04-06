@@ -244,6 +244,12 @@ FieldCanvas::freeKickRight()
 void
 FieldCanvas::paintEvent( QPaintEvent * )
 {
+    if ( ! this->isVisible() )
+    {
+        std::cerr << "FieldCanvas invisible" << std::endl;
+        return;
+    }
+
     QPainter painter( this );
 
     if ( Options::instance().antiAliasing() )

@@ -82,6 +82,7 @@ void
 DetailDialog::createWidgets()
 {
     QVBoxLayout * layout = new QVBoxLayout();
+    layout->setSizeConstraint( QLayout::SetFixedSize );
     layout->setMargin( 2 );
     layout->setSpacing( 2 );
 

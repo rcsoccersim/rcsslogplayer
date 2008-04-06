@@ -103,6 +103,7 @@ private:
     //
     // logplayer options
     //
+    bool M_minimum_mode;
     int M_monitor_port;
     std::string M_game_log_file; //!< game log file path to be opened
     bool M_auto_loop_mode;
@@ -148,7 +149,6 @@ private:
     double M_player_size; //!< fixed player radius
 
     double M_grid_step;
-    bool M_show_grid;
     bool M_show_grid_coord;
 
     bool M_show_flag;
@@ -234,6 +234,15 @@ public:
     //
     // logplayer options
     //
+
+    bool minimumMode() const
+      {
+          return M_minimum_mode;
+      }
+    void toggleMinimumMode()
+      {
+          M_minimum_mode = ! M_minimum_mode;
+      }
 
     int monitorPort() const
       {
@@ -475,15 +484,6 @@ public:
     void setGridStep( const double & value )
       {
           M_grid_step = value;
-      }
-
-    bool showGrid() const
-      {
-          return M_show_grid;
-      }
-    void toggleShowGrid()
-      {
-          M_show_grid = ! M_show_grid;
       }
 
     bool showGridCoord() const

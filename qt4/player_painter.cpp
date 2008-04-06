@@ -261,7 +261,8 @@ PlayerPainter::writeSettings()
 void
 PlayerPainter::draw( QPainter & painter )
 {
-    if ( ! Options::instance().showPlayer() )
+    if ( ! Options::instance().showPlayer()
+         || Options::instance().minimumMode() )
     {
         return;
     }

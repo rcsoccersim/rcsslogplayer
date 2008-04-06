@@ -93,6 +93,7 @@ Options::Options()
     , M_server_port( 6000 )
     , M_client_version( 3 )
     , M_time_shift_replay( true )
+    , M_minimum_mode( false )
     , M_monitor_port( 6000 )
     , M_game_log_file( "" )
     , M_auto_loop_mode( true )
@@ -126,7 +127,6 @@ Options::Options()
     , M_ball_size( 0.35 )
     , M_player_size( 0.0 )
     , M_grid_step( 5.0 )
-    , M_show_grid( false )
     , M_show_grid_coord( false )
     , M_show_flag( false )
     , M_show_offside_line( false )
@@ -189,16 +189,19 @@ Options::parseCmdLine( int argc,
 //         ( "client-version",
 //           po::value< int >( &M_client_version )->default_value( 3, "3" ),
 //           "set a monitor client protocol version." )
+//         ( "time-shift-replay",
+//           po::value< bool >( &M_time_shift_replay )->default_value( true, "on" ),
+//           "enable time shift replay mode." )
         // logplayer options
+        ( "minimum-mode",
+          po::bool_switch( &M_minimum_mode ),
+          "start logplayer only with log server interface." )
         ( "monitor-port",
           po::value< int >( &M_monitor_port )->default_value( 6000, "6000" ),
           "set port number to wait the monitor client connection as the logplayer." )
         ( "auto-loop-mode",
           po::value< bool >( &M_auto_loop_mode )->default_value( true, "on" ),
           "enable automatic replay loop mode." )
-        ( "time-shift-replay",
-          po::value< bool >( &M_time_shift_replay )->default_value( true, "on" ),
-          "enable time shift replay mode." )
         ( "timer-interval",
           po::value< int >( &M_timer_interval )->default_value( DEFAULT_TIMER_INTERVAL ),
           "set the logplayer timer interval." )
@@ -270,14 +273,11 @@ Options::parseCmdLine( int argc,
         ( "player-size",
           po::value< double >( &M_player_size )->default_value( 0.0, "0.0" ),
           "set a fixed player radius in enlarge mode." )
-        ( "show-grid",
-          po::value< bool >( &M_show_grid )->default_value( false, "off" ),
-          "show grid lines." )
         ( "show-grid-coord",
           po::value< bool >( &M_show_grid_coord )->default_value( false, "off" ),
           "show grid line coordinate value." )
         ( "grid-step",
-          po::value< double >( &M_grid_step )->default_value( 5.0, "5.0" ),
+          po::value< double >( &M_grid_step )->default_value( 0.0, "0.0" ),
           "set a grid step size." )
         ( "show-flag",
           po::value< bool >( &M_show_flag )->default_value( false, "off" ),

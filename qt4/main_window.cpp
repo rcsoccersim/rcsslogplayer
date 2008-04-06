@@ -186,6 +186,13 @@ MainWindow::init()
             }
         }
     }
+
+    if ( Options::instance().minimumMode() )
+    {
+        std::cerr << "init minimum mode" << std::endl;
+        Options::instance().toggleMinimumMode();
+        toggleFieldCanvas();
+    }
 }
 
 /*-------------------------------------------------------------------*/
@@ -357,6 +364,12 @@ MainWindow::createActionsView()
              this, SLOT( toggleStatusBar() ) );
     this->addAction( M_toggle_status_bar_act );
     //
+    M_toggle_field_canvas_act = new QAction( tr( "&Field" ), this );
+    M_toggle_field_canvas_act->setStatusTip( tr( "Show/Hide Field" ) );
+    connect( M_toggle_field_canvas_act, SIGNAL( triggered() ),
+             this, SLOT( toggleFieldCanvas() ) );
+    this->addAction( M_toggle_field_canvas_act );
+    //
     M_full_screen_act = new QAction( tr( "&Full Screen" ), this );
     M_full_screen_act->setShortcut( tr( "F11" ) );
     //M_full_screen_act->setShortcut( tr( "Alt+Enter" ) );
@@ -498,6 +511,7 @@ MainWindow::createMenuView()
     menu->addAction( M_toggle_menu_bar_act );
     menu->addAction( M_toggle_tool_bar_act );
     menu->addAction( M_toggle_status_bar_act );
+    menu->addAction( M_toggle_field_canvas_act );
 
     menu->addSeparator();
     menu->addAction( M_full_screen_act );
@@ -1340,6 +1354,61 @@ MainWindow::toggleStatusBar()
 
  */
 void
+MainWindow::toggleFieldCanvas()
+{
+    static QSize old_canvas_size = M_field_canvas->size();
+
+    Options::instance().toggleMinimumMode();
+
+    const bool visible = ! Options::instance().minimumMode();
+    M_position_label->setVisible( visible );
+    if ( ! visible
+         && M_detail_dialog
+         && M_detail_dialog->isVisible() )
+    {
+        M_detail_dialog->hide();
+    }
+    if ( ! visible
+         && M_config_dialog
+         && M_config_dialog->isVisible() )
+    {
+        M_config_dialog->hide();
+    }
+    M_full_screen_act->setEnabled( visible );
+    M_show_config_dialog_act->setEnabled( visible );
+    M_show_detail_dialog_act->setEnabled( visible );
+
+    M_log_player_tool_bar->setMovable( visible );
+    M_log_player_tool_bar->setFloatable( visible );
+
+    if ( Options::instance().minimumMode() )
+    {
+        old_canvas_size = M_field_canvas->size();
+
+        QSize new_canvas_size( 256, 76 );
+
+        QRect win_rect = this->geometry();
+        this->setMinimumWidth( win_rect.width() - old_canvas_size.width() + new_canvas_size.width() );
+        this->setMinimumHeight( win_rect.height() - old_canvas_size.height() + new_canvas_size.height() );
+        this->setMaximumHeight( win_rect.height() - old_canvas_size.height() + new_canvas_size.height() );
+
+        resizeCanvas( new_canvas_size );
+    }
+    else
+    {
+        this->setMinimumWidth( 280 );
+        this->setMinimumHeight( 220 );
+        this->setMaximumSize( QWIDGETSIZE_MAX, QWIDGETSIZE_MAX );
+
+        resizeCanvas( old_canvas_size );
+    }
+}
+
+/*-------------------------------------------------------------------*/
+/*!
+
+ */
+void
 MainWindow::toggleFullScreen()
 {
     if ( this->isFullScreen() )
@@ -1418,6 +1487,11 @@ void
 MainWindow::showConfigDialog()
 {
     M_config_dialog->setVisible( ! M_config_dialog->isVisible() );
+
+    if ( M_config_dialog->isVisible() )
+    {
+        M_config_dialog->setFixedSize( M_config_dialog->size() );
+    }
 }
 
 /*-------------------------------------------------------------------*/
@@ -1461,16 +1535,6 @@ MainWindow::about()
 void
 MainWindow::resizeCanvas( const QSize & size )
 {
-    if ( size.width() < this->minimumWidth()
-         || size.height() < this->minimumHeight() )
-    {
-        std::cerr << "Too small canvas size ("
-                  << size.width() << " "
-                  << size.height() << ")"
-                  << std::endl;
-        return;
-    }
-
     if ( centralWidget() )
     {
         if ( this->isMaximized()
@@ -1480,6 +1544,24 @@ MainWindow::resizeCanvas( const QSize & size )
         }
 
         QRect rect = this->geometry();
+
+        if ( rect.width() - centralWidget()->width() + size.width() < this->minimumWidth() )
+        {
+            std::cerr << "Too small canvas width "
+                      << size.width() << " "
+                      << " minimum=" << this->minimumWidth()
+                      << std::endl;
+            return;
+        }
+
+        if ( rect.height() - centralWidget()->height() + size.height() < this->minimumHeight() )
+        {
+            std::cerr << "Too small canvas height "
+                      << size.height() << " "
+                      << " minimum=" << this->minimumHeight()
+                      << std::endl;
+            return;
+        }
 
         int width_diff = rect.width() - centralWidget()->width();
         int height_diff = rect.height() - centralWidget()->height();

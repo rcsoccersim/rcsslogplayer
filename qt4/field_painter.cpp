@@ -113,6 +113,13 @@ FieldPainter::writeSettings()
 void
 FieldPainter::draw( QPainter & painter )
 {
+    if ( Options::instance().minimumMode() )
+    {
+        painter.fillRect( painter.window(),
+                          Qt::black );
+        return;
+    }
+
     if ( Options::instance().antiAliasing() )
     {
         painter.setRenderHint( QPainter::Antialiasing, false );
@@ -126,6 +133,10 @@ FieldPainter::draw( QPainter & painter )
     if ( Options::instance().showFlag() )
     {
         drawFlags( painter );
+    }
+    if ( Options::instance().gridStep() > 0.0 )
+    {
+        drawGrid( painter );
     }
 
     if ( Options::instance().antiAliasing() )
@@ -617,27 +628,20 @@ FieldPainter::drawGrid( QPainter & painter ) const
 {
     const Options & opt = Options::instance();
 
-    if ( ! opt.showGrid() )
-    {
-        return;
-    }
-
     const double grid_step = opt.gridStep();
-    if ( grid_step <= 0.0 )
-    {
-        return;
-    }
-
     const int istep = opt.scale( grid_step );
-    if ( istep < 2 )
+    if ( istep <= 2 )
     {
         return;
     }
 
-    const int text_step = ( opt.showGridCoord()
-                            ? 10
-                            : 100000 );
-
+    const QFontMetrics metrics = painter.fontMetrics();
+    const int text_step_x = ( opt.showGridCoord()
+                              ? metrics.width( QObject::tr( "-00.000" ) )
+                              : 100000 );
+    const int text_step_y = ( opt.showGridCoord()
+                              ? metrics.ascent()
+                              : 100000 );
 
     const QRect win = painter.window();
 
@@ -650,6 +654,7 @@ FieldPainter::drawGrid( QPainter & painter ) const
     const double max_y = opt.fieldY( max_iy );
     const double min_y = opt.fieldY( min_iy );
 
+    const int coord_x_print_y = min_iy + metrics.ascent();
     //     std::cerr << "drawGrid  min_x = " << min_x
     //               << "  max_x = " << max_x
     //               << "  min_y = " << min_y
@@ -665,10 +670,10 @@ FieldPainter::drawGrid( QPainter & painter ) const
     while ( x < max_x )
     {
         int ix = opt.screenX( x );
-        if ( istep > text_step )
+        if ( istep > text_step_x )
         {
-            text.sprintf( "%.1f", x );
-            painter.drawText( ix, max_iy, text );
+            text.sprintf( "%.3f", x );
+            painter.drawText( ix, coord_x_print_y , text );
         }
         painter.drawLine( ix, max_iy, ix, min_iy );
         x += grid_step;
@@ -678,10 +683,10 @@ FieldPainter::drawGrid( QPainter & painter ) const
     while ( min_x < x )
     {
         int ix = opt.screenX( x );
-        if ( istep > text_step )
+        if ( istep > text_step_x )
         {
-            text.sprintf( "%.1f", x );
-            painter.drawText( ix, max_iy, text );
+            text.sprintf( "%.3f", x );
+            painter.drawText( ix, coord_x_print_y, text );
         }
         painter.drawLine( ix, max_iy, ix, min_iy );
         x -= grid_step;
@@ -692,9 +697,9 @@ FieldPainter::drawGrid( QPainter & painter ) const
     while ( y < max_y )
     {
         int iy = opt.screenY( y );
-        if ( istep > text_step )
+        if ( istep > text_step_y )
         {
-            text.sprintf( "%.1f", y );
+            text.sprintf( "%.3f", y );
             painter.drawText( min_ix, iy, text );
         }
         painter.drawLine( max_ix, iy, min_ix, iy );
@@ -705,9 +710,9 @@ FieldPainter::drawGrid( QPainter & painter ) const
     while ( min_y < y )
     {
         int iy = opt.screenY( y );
-        if ( istep > text_step )
+        if ( istep > text_step_y )
         {
-            text.sprintf( "%.1f", y );
+            text.sprintf( "%.3f", y );
             painter.drawText( min_ix, iy, text );
         }
         painter.drawLine( max_ix, iy, min_ix, iy );

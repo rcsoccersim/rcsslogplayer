@@ -1,3 +1,18 @@
+2008-04-07  Hidehisa Akiyama  <akky@users.sourceforge.jp>
+
+	* qt4/ball_painter.cpp:
+	* qt4/config_dialog.cpp:
+	* qt4/detail_dialog.cpp:
+	* qt4/field_canvas.cpp:
+	* qt4/field_painter.cpp:
+	* qt4/main_window.cpp:
+	* qt4/main_window.h:
+	* qt4/options.cpp:
+	* qt4/options.h:
+	* qt4/player_painter.cpp:
+	* qt4/score_board_painter.cpp:
+	- implemented minimum mode.
+
 2008-04-06  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 
 	* qt4/detail_dialog.cpp:

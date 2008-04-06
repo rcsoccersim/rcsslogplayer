@@ -95,6 +95,7 @@ private:
     QAction * M_toggle_menu_bar_act;
     QAction * M_toggle_tool_bar_act;
     QAction * M_toggle_status_bar_act;
+    QAction * M_toggle_field_canvas_act;
     QAction * M_full_screen_act;
     QAction * M_show_player_type_dialog_act;
     QAction * M_show_detail_dialog_act;
@@ -172,6 +173,7 @@ private slots:
     void toggleMenuBar();
     void toggleToolBar();
     void toggleStatusBar();
+    void toggleFieldCanvas();
     void toggleFullScreen();
     void showPlayerTypeDialog();
     void showDetailDialog();

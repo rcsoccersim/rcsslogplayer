@@ -122,7 +122,8 @@ BallPainter::draw( QPainter & painter )
 {
     const Options & opt = Options::instance();
 
-    if ( ! opt.showBall() )
+    if ( ! opt.showBall()
+         || opt.minimumMode() )
     {
         return;
     }
