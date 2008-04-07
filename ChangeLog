@@ -1,5 +1,8 @@
 2008-04-07  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 
+	* qt4/main.cpp:
+	- added copyright notice.
+
 	* classic/logplayer.cpp:
 	* classic/logplayer.h:
 	* qt4/main_window.cpp:

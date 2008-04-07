@@ -43,6 +43,10 @@ int
 main( int argc,
       char ** argv )
 {
+    std::cout << PACKAGE"-"VERSION << "\n\n"
+              << "Copyright (C) 2008 RoboCup Soccer Simulator Maintenance Group.\n"
+              << std::endl;
+
     QApplication app( argc, argv );
 
     if ( ! Options::instance().parseCmdLine( argc, argv ) )
