@@ -320,13 +320,11 @@ RCG3to4::doHandleShowInfo( const ShowInfoT & show )
            << ' ' << quantize( p.vy_, 0.0001 )
            << ' ' << quantize( p.body_, 0.001 )
            << ' ' << quantize( p.neck_, 0.001 );
-        if ( p.point_x_ != SHOWINFO_SCALE2F
-             && p.point_y_ != SHOWINFO_SCALE2F )
+        if ( p.isPointing() )
         {
             os << ' ' << quantize( p.point_x_, 0.0001 )
                << ' ' << quantize( p.point_y_, 0.0001 );
         }
-
 
         os << " (v " << p.view_quality_
            << ' ' << quantize( p.view_width_, 0.001 ) << ')';

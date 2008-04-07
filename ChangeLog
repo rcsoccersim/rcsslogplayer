@@ -1,5 +1,23 @@
 2008-04-07  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 
+	* qt4/disp_holder.cpp:
+	* qt4/disp_holder.h:
+	* qt4/log_player.cpp:
+	* qt4/log_player.h:
+	* qt4/log_player_tool_bar.cpp:
+	* qt4/log_player_tool_bar.h:
+	* qt4/main_data.cpp:
+	* qt4/main_data.h:
+	* qt4/main_window.cpp:
+	* qt4/main_window.h:
+	* qt4/player_painter.cpp:
+	* qt4/remote_monitor.cpp:
+	* rcsslogplayer/parser.cpp:
+	* rcsslogplayer/util.cpp:
+	* tool/rcg3to4.cpp:
+	- fixed bugs in the older version log parsing.
+	- implemented a function of data segment recording.
+
 	* qt4/draw_info_painter.cpp:
 	* qt4/draw_info_painter.h:
 	* qt4/Makefile.am:

@@ -348,14 +348,20 @@ Parser::parseDispInfo( std::istream & is )
 
     Int16 mode = ntohs( disp.mode );
 
-    switch ( ntohs( mode ) ) {
+    switch ( mode ) {
     case NO_INFO:
         return true;
     case SHOW_MODE:
         {
             ShowInfoT show;
+            TeamT team[2];
             convert( disp.body.show, show );
+            convert( disp.body.show.team[0], team[0] );
+            convert( disp.body.show.team[1], team[1] );
+
             M_time = show.time_;
+            M_handler.handlePlayMode( M_time, static_cast< PlayMode >( disp.body.show.pmode ) );
+            M_handler.handleTeamInfo( M_time, team[0], team[1] );
             M_handler.handleShowInfo( show );
         }
         return true;
@@ -450,9 +456,16 @@ Parser::parseShowInfo( std::istream & is )
             return strmErr( is );
         }
 
+
+        TeamT team[2];
+
         convert( show, new_show );
+        convert( show.team[0], team[0] );
+        convert( show.team[1], team[1] );
 
         M_time = new_show.time_;
+        M_handler.handlePlayMode( M_time, static_cast< PlayMode >( show.pmode ) );
+        M_handler.handleTeamInfo( M_time, team[0], team[1] );
         M_handler.handleShowInfo( new_show );
     }
 

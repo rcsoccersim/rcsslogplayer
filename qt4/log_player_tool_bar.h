@@ -75,8 +75,8 @@ protected:
 
 public slots:
 
-    void openOutputFile();
-    void closeOutputFile();
+    void checkRecord( bool checked );
+    void enableRecord( bool checked );
 
 private slots:
 
@@ -88,6 +88,7 @@ private slots:
 signals:
 
     void cycleChanged( int cycle );
+    void recordToggled( bool checked );
 
 };
 

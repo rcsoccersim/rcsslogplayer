@@ -267,7 +267,7 @@ void
 convert( const pos_t & from,
          PlayerT & to )
 {
-    Side side = static_cast< Side >( ntohs( from.side ) );
+    Side side = static_cast< Side >( static_cast< Int16 >( ntohs( from.side ) ) );
 
     to.state_ = static_cast< Int32 >( ntohs( from.enable ) );
     to.side_ = ( side == LEFT ? 'l'

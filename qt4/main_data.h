@@ -35,6 +35,8 @@
 
 #include "disp_holder.h"
 
+#include <ostream>
+
 class QString;
 
 class MainData {
@@ -43,6 +45,10 @@ private:
     DispHolder M_disp_holder;
     std::size_t M_index;
 
+    std::ostream * M_out;
+    bool M_record_mode;
+    rcss::rcg::PlayMode M_record_playmode;
+    rcss::rcg::TeamT M_record_team[2];
 
     // not used
     MainData( const MainData & );
@@ -100,6 +106,15 @@ public:
 
 
     bool openRCG( const QString & file_path );
+
+    bool openOutputFile( const QString & file_path );
+    void setEnableRecord( bool checked );
+    void outputCurrentData();
+    void closeOutputFile();
+
+private:
+    void serializeShow( std::ostream & os,
+                        const rcss::rcg::DispInfoT & disp );
 
 public:
 

@@ -169,6 +169,7 @@ private slots:
     // file menu actions slots
     void openRCG();
     void openOutputFile();
+    void outputCurrentData();
     // QWidget::close() can be used as the slot for a quit action.
 
     void startMonitor();
@@ -200,6 +201,8 @@ private slots:
     void resizeCanvas( const QSize & size );
 
 public slots:
+
+    void toggleRecord( bool checked );
 
     void receiveMonitorPacket();
 

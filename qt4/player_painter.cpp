@@ -395,6 +395,7 @@ PlayerPainter::drawBody( QPainter & painter,
         }
         break;
     case 'n':
+        std::cerr << "drawBody neutral unum=" << param.player_.unum_ << std::endl;
         painter.setBrush( Qt::black );
         break;
     default:

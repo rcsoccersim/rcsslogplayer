@@ -90,6 +90,8 @@ MainWindow::MainWindow()
 
     connect( M_log_player, SIGNAL( updated() ),
              this, SIGNAL( viewUpdated() ) );
+    connect( M_log_player, SIGNAL( updated() ),
+             this, SLOT( outputCurrentData() ) );
 
     this->setWindowIcon( QIcon( QPixmap( rcss_xpm ) ) );
     this->setWindowTitle( tr( PACKAGE_NAME ) );
@@ -135,8 +137,6 @@ MainWindow::MainWindow()
  */
 MainWindow::~MainWindow()
 {
-    //std::cerr << "delete MainWindow" << std::endl;
-
     writeSettings();
 }
 
@@ -285,7 +285,7 @@ MainWindow::createActionsFile()
     this->addAction( M_open_act );
     //
     M_open_output_act = new QAction( //QIcon( QPixmap( open_xpm ) ),
-                                    tr( "&Output data as..." ), this );
+                                    tr( "Record data as..." ), this );
     M_open_output_act->setEnabled( false );
 #ifdef Q_WS_MAC
     M_open_output_act->setShortcut( tr( "Meta+S" ) );
@@ -321,13 +321,13 @@ MainWindow::createActionsMonitor()
     M_kick_off_act->setShortcut( Qt::Key_S );
     M_kick_off_act->setStatusTip( tr( "Start the game" ) );
     M_kick_off_act->setEnabled( false );
-//     connect( M_kick_off_act, SIGNAL( triggered() ),
-//              this, SLOT( kickOff() ) );
+    //     connect( M_kick_off_act, SIGNAL( triggered() ),
+    //              this, SLOT( kickOff() ) );
     this->addAction( M_kick_off_act );
     //
     M_set_live_mode_act = new QAction( //QIcon( QPixmap( logplayer_live_mode_xpm ) ),
-                                       tr( "&Live Mode" ),
-                                       this );
+                                      tr( "&Live Mode" ),
+                                      this );
 #ifdef Q_WS_MAC
     M_set_live_mode_act->setShortcut( tr( "Meta+L" ) );
 #else
@@ -335,8 +335,8 @@ MainWindow::createActionsMonitor()
 #endif
     M_set_live_mode_act->setStatusTip( tr( "set monitor to live mode" ) );
     M_set_live_mode_act->setEnabled( false );
-//     connect( M_set_live_mode_act, SIGNAL( triggered() ),
-//              this, SLOT( setLiveMode() ) );
+    //     connect( M_set_live_mode_act, SIGNAL( triggered() ),
+    //              this, SLOT( setLiveMode() ) );
     this->addAction( M_set_live_mode_act );
     //
     M_connect_monitor_act = new QAction( tr( "&Connect" ), this );
@@ -348,23 +348,23 @@ MainWindow::createActionsMonitor()
     M_connect_monitor_act
         ->setStatusTip( "Connect to the rcssserver on localhost" );
     M_connect_monitor_act->setEnabled( true );
-//     connect( M_connect_monitor_act, SIGNAL( triggered() ),
-//              this, SLOT( connectMonitor() ) );
+    //     connect( M_connect_monitor_act, SIGNAL( triggered() ),
+    //              this, SLOT( connectMonitor() ) );
     this->addAction( M_connect_monitor_act );
     //
     M_connect_monitor_to_act = new QAction( tr( "Connect &to ..." ), this );
     M_connect_monitor_to_act
         ->setStatusTip( tr( "Connect to the rcssserver on other host" ) );
     M_connect_monitor_to_act->setEnabled( true );
-//     connect( M_connect_monitor_to_act, SIGNAL( triggered() ),
-//              this, SLOT( connectMonitorTo() ) );
+    //     connect( M_connect_monitor_to_act, SIGNAL( triggered() ),
+    //              this, SLOT( connectMonitorTo() ) );
     this->addAction( M_connect_monitor_to_act );
     //
     M_disconnect_monitor_act = new QAction( tr( "&Disconnect" ), this );
     M_disconnect_monitor_act->setStatusTip( tr( "Disonnect from rcssserver" ) );
     M_disconnect_monitor_act->setEnabled( false );
-//     connect( M_disconnect_monitor_act, SIGNAL( triggered() ),
-//              this, SLOT( disconnectMonitor() ) );
+    //     connect( M_disconnect_monitor_act, SIGNAL( triggered() ),
+    //              this, SLOT( disconnectMonitor() ) );
     this->addAction( M_disconnect_monitor_act );
 }
 
@@ -593,6 +593,8 @@ MainWindow::createToolBars()
     M_log_player_tool_bar = new LogPlayerToolBar( M_log_player,
                                                   M_main_data,
                                                   this );
+    connect( M_log_player_tool_bar, SIGNAL( recordToggled( bool ) ),
+             this, SLOT( toggleRecord( bool ) ) );
 
     this->addToolBar( Qt::TopToolBarArea, M_log_player_tool_bar );
 
@@ -657,14 +659,14 @@ MainWindow::createFieldCanvas()
     {
         QMenu * menu = new QMenu( M_field_canvas );
         menu->addAction( M_open_act );
-//        menu->addAction( M_connect_monitor_act );
+        //        menu->addAction( M_connect_monitor_act );
 
         M_field_canvas->setNormalMenu( menu );
     }
     {
         QMenu * menu = new QMenu( M_field_canvas );
         menu->addAction( M_open_act );
-//        menu->addAction( M_connect_monitor_act );
+        //        menu->addAction( M_connect_monitor_act );
 
         M_field_canvas->setSystemMenu( menu );
     }
@@ -1127,7 +1129,7 @@ MainWindow::openRCG()
         return;
     }
 
-    std::cerr << "file = [" << file_path.toStdString() << ']' << std::endl;
+    std::cerr << "open file = [" << file_path.toStdString() << ']' << std::endl;
 
     openRCG( file_path );
 }
@@ -1147,10 +1149,12 @@ MainWindow::openRCG( const QString & file_path )
         return;
     }
 
+    M_log_player->stop();
     disconnectMonitor();
     M_open_output_act->setEnabled( false );
-    M_log_player_tool_bar->closeOutputFile();
-    M_log_player->stop();
+    M_log_player_tool_bar->checkRecord( false );
+    M_log_player_tool_bar->enableRecord( false );
+    M_main_data.closeOutputFile();
 
     if ( ! M_main_data.openRCG( file_path ) )
     {
@@ -1216,13 +1220,8 @@ MainWindow::openRCG( const QString & file_path )
 void
 MainWindow::openOutputFile()
 {
-#ifdef HAVE_LIBRCSSGZ
-    QString filter( tr( "Game Log files (*.rcg *.rcg.gz);;"
-                        "All files (*)" ) );
-#else
     QString filter( tr( "Game Log files (*.rcg);;"
                         "All files (*)" ) );
-#endif
 
     QString file_path = QFileDialog::getSaveFileName( this,
                                                       tr( "Output game log data to file" ),
@@ -1235,11 +1234,12 @@ MainWindow::openOutputFile()
         return;
     }
 
-    std::cerr << "file = [" << file_path.toStdString() << ']' << std::endl;
+    std::cerr << "output file = [" << file_path.toStdString() << ']' << std::endl;
 
-    openOutputFile( file_path );
-
-    M_log_player_tool_bar->openOutputFile();
+    if ( M_main_data.openOutputFile( file_path ) )
+    {
+        M_log_player_tool_bar->enableRecord( true );
+    }
 }
 
 /*-------------------------------------------------------------------*/
@@ -1247,9 +1247,19 @@ MainWindow::openOutputFile()
 
  */
 void
-MainWindow::openOutputFile( const QString & file_path )
+MainWindow::toggleRecord( bool checked )
 {
+    M_main_data.setEnableRecord( checked );
+}
 
+/*-------------------------------------------------------------------*/
+/*!
+
+ */
+void
+MainWindow::outputCurrentData()
+{
+    M_main_data.outputCurrentData();
 }
 
 /*-------------------------------------------------------------------*/

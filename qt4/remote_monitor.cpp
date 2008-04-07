@@ -253,10 +253,17 @@ RemoteMonitor::serializeDisp( const rcss::rcg::DispInfoT & disp,
 
     ostr << " ((b)"
          << ' ' << quantize( disp.show_.ball_.x_, PREC )
-         << ' ' << quantize( disp.show_.ball_.y_, PREC )
-         << ' ' << quantize( disp.show_.ball_.vx_, PREC )
-         << ' ' << quantize( disp.show_.ball_.vy_, PREC )
-         << ')';
+         << ' ' << quantize( disp.show_.ball_.y_, PREC );
+    if ( disp.show_.ball_.hasVelocity() )
+    {
+        ostr << ' ' << quantize( disp.show_.ball_.vx_, PREC )
+             << ' ' << quantize( disp.show_.ball_.vy_, PREC );
+    }
+    else
+    {
+        ostr << " 0 0";
+    }
+    ostr << ')';
 
     for ( int i = 0; i < rcss::rcg::MAX_PLAYER*2; ++i )
     {
@@ -267,22 +274,45 @@ RemoteMonitor::serializeDisp( const rcss::rcg::DispInfoT & disp,
              << ' ' << p.type_
              << ' ' << std::hex << std::showbase << p.state_ << std::dec << std::noshowbase;
         ostr << ' ' << quantize( p.x_, PREC )
-             << ' ' << quantize( p.y_, PREC )
-             << ' ' << quantize( p.vx_, PREC )
-             << ' ' << quantize( p.vy_, PREC )
-             << ' ' << quantize( p.body_, DPREC )
-             << ' ' << quantize( p.neck_, DPREC );
-        if ( p.point_x_ != rcss::rcg::SHOWINFO_SCALE2F
-             && p.point_x_ != rcss::rcg::SHOWINFO_SCALE2F )
+             << ' ' << quantize( p.y_, PREC );
+        if ( p.hasVelocity() )
+        {
+            ostr << ' ' << quantize( p.vx_, PREC )
+                 << ' ' << quantize( p.vy_, PREC );
+        }
+        else
+        {
+            ostr << " 0 0";
+        }
+        ostr << ' ' << quantize( p.body_, DPREC )
+             << ' ' << ( p.hasNeck() ? quantize( p.neck_, DPREC ) : 0.0 );
+        if ( p.isPointing() )
         {
             ostr << ' ' << quantize( p.point_x_, PREC )
                  << ' ' << quantize( p.point_y_, PREC );
         }
-        ostr << " (v " << p.view_quality_ << ' ' << quantize( p.view_width_, DPREC ) << ')';
-        ostr << " (s "
-             << quantize( p.stamina_, 0.001f )<< ' '
-             << quantize( p.effort_, 0.0001f ) << ' '
-             << quantize( p.recovery_, 0.0001f ) << ')';
+
+        if ( p.hasView() )
+        {
+            ostr << " (v " << p.view_quality_ << ' ' << quantize( p.view_width_, DPREC ) << ')';
+        }
+        else
+        {
+            ostr << " (v h 90)";
+        }
+
+        if ( p.hasStamina() )
+        {
+            ostr << " (s "
+                 << quantize( p.stamina_, 0.001f )<< ' '
+                 << quantize( p.effort_, 0.0001f ) << ' '
+                 << quantize( p.recovery_, 0.0001f ) << ')';
+        }
+        else
+        {
+            ostr << " (s 4000 1 1)";
+        }
+
         ostr << " (c "
              << p.kick_count_ << ' '
              << p.dash_count_ << ' '
@@ -297,6 +327,7 @@ RemoteMonitor::serializeDisp( const rcss::rcg::DispInfoT & disp,
              << p.attentionto_count_ << ')';
         ostr << ')';
     }
+    ostr << ')';
 
     msg = ostr.str();
 }

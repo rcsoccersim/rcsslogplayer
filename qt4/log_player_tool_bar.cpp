@@ -228,7 +228,7 @@ LogPlayerToolBar::createControls( LogPlayer * log_player,
                                            + M_toggle_record_act->shortcut().toString()
                                            + tr( ")" ) );
         connect( M_toggle_record_act, SIGNAL( triggered( bool ) ),
-                 log_player, SLOT( toggleRecord( bool ) ) );
+                 this, SIGNAL( recordToggled( bool ) ) );
         this->addAction( M_toggle_record_act );
         main_win->addAction( M_toggle_record_act );
     }
@@ -265,9 +265,9 @@ LogPlayerToolBar::createControls( LogPlayer * log_player,
 
 */
 void
-LogPlayerToolBar::openOutputFile()
+LogPlayerToolBar::checkRecord( bool checked )
 {
-    M_toggle_record_act->setEnabled( true );
+    M_toggle_record_act->setChecked( checked );
 }
 
 /*-------------------------------------------------------------------*/
@@ -275,9 +275,9 @@ LogPlayerToolBar::openOutputFile()
 
 */
 void
-LogPlayerToolBar::closeOutputFile()
+LogPlayerToolBar::enableRecord( bool checked )
 {
-    M_toggle_record_act->setEnabled( false );
+    M_toggle_record_act->setEnabled( checked );
 }
 
 /*-------------------------------------------------------------------*/

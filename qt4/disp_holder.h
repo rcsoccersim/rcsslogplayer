@@ -88,6 +88,11 @@ public:
 
     void clear();
 
+    int logVersion() const
+      {
+          return M_log_version;
+      }
+
     DispConstPtr getDispInfo( const std::size_t idx ) const;
     std::size_t getIndexOf( const int time ) const;
 
