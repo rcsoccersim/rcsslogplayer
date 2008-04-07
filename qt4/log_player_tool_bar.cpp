@@ -227,7 +227,7 @@ LogPlayerToolBar::createControls( LogPlayer * log_player,
         M_toggle_record_act->setStatusTip( tr( "Record.(" )
                                            + M_toggle_record_act->shortcut().toString()
                                            + tr( ")" ) );
-        connect( M_toggle_record_act, SIGNAL( triggled( bool ) ),
+        connect( M_toggle_record_act, SIGNAL( triggered( bool ) ),
                  log_player, SLOT( toggleRecord( bool ) ) );
         this->addAction( M_toggle_record_act );
         main_win->addAction( M_toggle_record_act );

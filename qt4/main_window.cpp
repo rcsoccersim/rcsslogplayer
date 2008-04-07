@@ -211,15 +211,19 @@ MainWindow::init()
 void
 MainWindow::readSettings()
 {
+#ifndef Q_WS_WIN
     QSettings settings( QDir::homePath() + "/.rcsslogplayer",
                         QSettings::IniFormat );
+#else
+    QSettings settings( QDir::currentPath() + "/rcsslogplayer.ini",
+                        QSettings::IniFormat );
+#endif
 
-    settings.beginGroup( "Main" );
+    settings.beginGroup( "Global" );
 
     QVariant val;
 
     M_window_style = settings.value( "window_style", "plastique" ).toString();
-    M_game_log_path = settings.value( "game_log_path", "" ).toString();
 
     settings.endGroup();
 }
@@ -231,13 +235,17 @@ MainWindow::readSettings()
 void
 MainWindow::writeSettings()
 {
+#ifndef Q_WS_WIN
     QSettings settings( QDir::homePath() + "/.rcsslogplayer",
                         QSettings::IniFormat );
+#else
+    QSettings settings( QDir::currentPath() + "/rcsslogplayer.ini",
+                        QSettings::IniFormat );
+#endif
 
-    settings.beginGroup( "Main" );
+    settings.beginGroup( "Global" );
 
     settings.setValue( "window_style", M_window_style );
-    settings.setValue( "game_log_path", M_game_log_path );
 
     settings.endGroup();
 }
@@ -1583,7 +1591,7 @@ MainWindow::toggleFieldCanvas()
             + this->statusBar()->height();
         this->setMinimumWidth( win_rect.width() - s_old_canvas_size.width() + new_canvas_size.width() );
         this->setMinimumHeight( new_height );
-        this->setMaximumHeight( new_height );
+//         this->setMaximumHeight( new_height );
 
         // relocate toolbars
         this->addToolBar( Qt::TopToolBarArea, M_log_player_tool_bar );
@@ -1605,7 +1613,7 @@ MainWindow::toggleFieldCanvas()
     {
         this->setMinimumWidth( 280 );
         this->setMinimumHeight( 220 );
-        this->setMaximumHeight( QWIDGETSIZE_MAX );
+//         this->setMaximumHeight( QWIDGETSIZE_MAX );
 
         this->removeToolBarBreak( M_log_slider_tool_bar );
 

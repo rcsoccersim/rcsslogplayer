@@ -75,8 +75,13 @@ BallPainter::~BallPainter()
 void
 BallPainter::readSettings()
 {
+#ifndef Q_WS_WIN
     QSettings settings( QDir::homePath() + "/.rcsslogplayer",
                         QSettings::IniFormat );
+#else
+    QSettings settings( QDir::currentPath() + "/rcsslogplayer.ini",
+                        QSettings::IniFormat );
+#endif
 
     settings.beginGroup( "BallPainter" );
 
@@ -101,8 +106,13 @@ BallPainter::readSettings()
 void
 BallPainter::writeSettings()
 {
+#ifndef Q_WS_WIN
     QSettings settings( QDir::homePath() + "/.rcsslogplayer",
                         QSettings::IniFormat );
+#else
+    QSettings settings( QDir::currentPath() + "/rcsslogplayer.ini",
+                        QSettings::IniFormat );
+#endif
 
     settings.beginGroup( "BallPainter" );
 

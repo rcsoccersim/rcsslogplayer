@@ -34,20 +34,25 @@
 #include <config.h>
 #endif
 
+#include <QSettings>
+#include <QDir>
+
+#include "options.h"
+
+#ifdef HAVE_BOOST_PROGRAM_OPTIONS
+#include <boost/program_options.hpp>
+#endif
+
+#include <iostream>
+#include <cmath>
+#include <cstdio>
+
 #ifndef PACKAGE_NAME
 #define PACKAGE_NAME "rcsslogplayer"
 #endif
 #ifndef VERSION
 #define VERSION "unknown-version"
 #endif
-
-#include "options.h"
-
-#include <boost/program_options.hpp>
-
-#include <iostream>
-#include <cmath>
-#include <cstdio>
 
 const double Options::PITCH_LENGTH = 105.0;
 const double Options::PITCH_WIDTH = 68.0;
@@ -146,7 +151,7 @@ Options::Options()
     , M_line_trace( true )
     , M_ball_vel_cycle( 0 )
 {
-
+    readSettings();
 }
 
 /*-------------------------------------------------------------------*/
@@ -155,8 +160,197 @@ Options::Options()
  */
 Options::~Options()
 {
-
+    writeSettings();
 }
+
+/*-------------------------------------------------------------------*/
+/*!
+
+ */
+void
+Options::readSettings()
+{
+#ifndef Q_WS_WIN
+    QSettings settings( QDir::homePath() + "/.rcsslogplayer",
+                        QSettings::IniFormat );
+#else
+    QSettings settings( QDir::currentPath() + "/rcsslogplayer.ini",
+                        QSettings::IniFormat );
+#endif
+
+    settings.beginGroup( "Global" );
+
+    QVariant val;
+
+    val = settings.value( "game_log_file" );
+    if ( val.isValid() ) M_game_log_file = val.toString().toStdString();
+
+    val = settings.value( "monitor_port" );
+    if ( val.isValid() ) M_monitor_port = val.toInt();
+
+    val = settings.value( "auto_loop_mode" );
+    if ( val.isValid() ) M_auto_loop_mode = val.toBool();
+
+    val = settings.value( "timer_interval" );
+    if ( val.isValid() ) M_timer_interval = val.toInt();
+
+    val = settings.value( "window_width" );
+    if ( val.isValid() ) M_window_width = val.toInt();
+
+    val = settings.value( "window_height" );
+    if ( val.isValid() ) M_window_height = val.toInt();
+
+    val = settings.value( "window_x" );
+    if ( val.isValid() ) M_window_x = val.toInt();
+
+    val = settings.value( "window_y" );
+    if ( val.isValid() ) M_window_y = val.toInt();
+
+    val = settings.value( "canvas_width" );
+    if ( val.isValid() ) M_canvas_width = val.toInt();
+
+    val = settings.value( "canvas_height" );
+    if ( val.isValid() ) M_canvas_height = val.toInt();
+
+    val = settings.value( "maximize" );
+    if ( val.isValid() ) M_maximize = val.toBool();
+
+    val = settings.value( "full_screen" );
+    if ( val.isValid() ) M_full_screen = val.toBool();
+
+    val = settings.value( "hide_menu_bar" );
+    if ( val.isValid() ) M_hide_menu_bar = val.toBool();
+
+    val = settings.value( "hide_tool_bar" );
+    if ( val.isValid() ) M_hide_tool_bar = val.toBool();
+
+    val = settings.value( "hide_status_bar" );
+    if ( val.isValid() ) M_hide_status_bar = val.toBool();
+
+    val = settings.value( "anti_aliasing" );
+    if ( val.isValid() ) M_anti_aliasing = val.toBool();
+
+    val = settings.value( "show_score_board" );
+    if ( val.isValid() ) M_show_score_board = val.toBool();
+
+    val = settings.value( "show_keepaway_area" );
+    if ( val.isValid() ) M_show_keepaway_area = val.toBool();
+
+    // val = settings.value( "show_team_logo" );
+    // if ( val.isValid() M_show_team_logo = val.toBool();
+
+    val = settings.value( "show_ball" );
+    if ( val.isValid() ) M_show_ball = val.toBool();
+
+    val = settings.value( "show_player" );
+    if ( val.isValid() ) M_show_player = val.toBool();
+
+    val = settings.value( "show_player_number" );
+    if ( val.isValid() ) M_show_player_number = val.toBool();
+
+    val = settings.value( "show_player_type" );
+    if ( val.isValid() ) M_show_player_type = val.toBool();
+
+    val = settings.value( "show_view_area" );
+    if ( val.isValid() ) M_show_view_area = val.toBool();
+
+    val = settings.value( "show_catch_area" );
+    if ( val.isValid() ) M_show_catch_area = val.toBool();
+
+    val = settings.value( "show_tackle_area" );
+    if ( val.isValid() ) M_show_tackle_area = val.toBool();
+
+    val = settings.value( "show_kick_accel_area" );
+    if ( val.isValid() ) M_show_kick_accel_area = val.toBool();
+
+    val = settings.value( "show_stamina" );
+    if ( val.isValid() ) M_show_stamina = val.toBool();
+
+    val = settings.value( "show_pointto" );
+    if ( val.isValid() ) M_show_pointto = val.toBool();
+
+    // val = settings.value( "enlarge" );
+    // if ( val.isValid() ) M_enlarge = val.toBool();
+
+    val = settings.value( "ball_size", M_ball_size );
+    if ( val.isValid() ) M_ball_size = val.toDouble();
+
+    val = settings.value( "player_size", M_player_size );
+    if ( val.isValid() ) M_player_size = val.toDouble();
+
+    val = settings.value( "show_grid_coord", M_show_grid_coord );
+    if ( val.isValid() ) M_show_grid_coord = val.toBool();
+
+    val = settings.value( "grid_step", M_grid_step );
+    if ( val.isValid() ) M_grid_step = val.toDouble();
+
+    val = settings.value( "show_flag", M_show_flag );
+    if ( val.isValid() ) M_show_flag = val.toBool();
+
+    val = settings.value( "show_offside_line", M_show_offside_line );
+    if ( val.isValid() ) M_show_offside_line = val.toBool();
+
+    settings.endGroup();
+}
+
+/*-----------------------------------------------------------------*/
+/*!
+
+ */
+void
+Options::writeSettings()
+{
+#ifndef Q_WS_WIN
+    QSettings settings( QDir::homePath() + "/.rcsslogplayer",
+                        QSettings::IniFormat );
+#else
+    QSettings settings( QDir::currentPath() + "/rcsslogplayer.ini",
+                        QSettings::IniFormat );
+#endif
+
+    settings.beginGroup( "Global" );
+
+    settings.setValue( "game_log_file", QString::fromStdString( M_game_log_file ) );
+
+    settings.setValue( "monitor_port", M_monitor_port );
+    settings.setValue( "auto_loop_mode", M_auto_loop_mode );
+    settings.setValue( "timer_interval", M_timer_interval );
+    settings.setValue( "window_width", M_window_width );
+    settings.setValue( "window_height", M_window_height );
+    settings.setValue( "window_x", M_window_x );
+    settings.setValue( "window_y", M_window_y );
+    settings.setValue( "canvas_width", M_canvas_width );
+    settings.setValue( "canvas_height", M_canvas_height );
+    settings.setValue( "maximize", M_maximize );
+    settings.setValue( "full_screen", M_full_screen );
+    settings.setValue( "hide_menu_bar", M_hide_menu_bar );
+    settings.setValue( "hide_tool_bar", M_hide_tool_bar );
+    settings.setValue( "hide_status_bar", M_hide_status_bar );
+    settings.setValue( "anti_aliasing", M_anti_aliasing );
+    settings.setValue( "show_score_board", M_show_score_board );
+    settings.setValue( "show_keepaway_area", M_show_keepaway_area );
+    // settings.setValue( "show_team_logo", M_show_team_logo );
+    settings.setValue( "show_ball", M_show_ball );
+    settings.setValue( "show_player", M_show_player );
+    settings.setValue( "show_player_number", M_show_player_number );
+    settings.setValue( "show_player_type", M_show_player_type );
+    settings.setValue( "show_view_area", M_show_view_area );
+    settings.setValue( "show_catch_area", M_show_catch_area );
+    settings.setValue( "show_tackle_area", M_show_tackle_area );
+    settings.setValue( "show_kick_accel_area", M_show_kick_accel_area );
+    settings.setValue( "show_stamina", M_show_stamina );
+    settings.setValue( "show_pointto", M_show_pointto );
+    // settings.setValue( "enlarge", M_enlarge );
+    settings.setValue( "ball_size", M_ball_size );
+    settings.setValue( "player_size", M_player_size );
+    settings.setValue( "show_grid_coord", M_show_grid_coord );
+    settings.setValue( "grid_step", M_grid_step );
+    settings.setValue( "show_flag", M_show_flag );
+    settings.setValue( "show_offside_line", M_show_offside_line );
+
+    settings.endGroup();
+}
+
 
 /*-------------------------------------------------------------------*/
 /*!
@@ -166,6 +360,7 @@ bool
 Options::parseCmdLine( int argc,
                        char ** argv )
 {
+#ifdef HAVE_BOOST_PROGRAM_OPTIONS
     namespace po = boost::program_options;
 
     std::string geometry;
@@ -437,7 +632,7 @@ Options::parseCmdLine( int argc,
                       << "]" << std::endl;
         }
     }
-
+#endif
     return true;
 }
 

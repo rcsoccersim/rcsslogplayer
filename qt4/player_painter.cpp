@@ -138,8 +138,13 @@ PlayerPainter::~PlayerPainter()
 void
 PlayerPainter::readSettings()
 {
+#ifndef Q_WS_WIN
     QSettings settings( QDir::homePath() + "/.rcsslogplayer",
                         QSettings::IniFormat );
+#else
+    QSettings settings( QDir::currentPath() + "/rcsslogplayer.ini",
+                        QSettings::IniFormat );
+#endif
 
     settings.beginGroup( "PlayerPainter" );
 
@@ -231,8 +236,13 @@ PlayerPainter::readSettings()
 void
 PlayerPainter::writeSettings()
 {
+#ifndef Q_WS_WIN
     QSettings settings( QDir::homePath() + "/.rcsslogplayer",
                         QSettings::IniFormat );
+#else
+    QSettings settings( QDir::currentPath() + "/rcsslogplayer.ini",
+                        QSettings::IniFormat );
+#endif
 
     settings.beginGroup( "PlayerPainter" );
 

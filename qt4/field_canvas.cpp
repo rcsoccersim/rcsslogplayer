@@ -92,8 +92,13 @@ FieldCanvas::~FieldCanvas()
 void
 FieldCanvas::readSettings()
 {
+#ifndef Q_WS_WIN
     QSettings settings( QDir::homePath() + "/.rcsslogplayer",
                         QSettings::IniFormat );
+#else
+    QSettings settings( QDir::currentPath() + "/rcsslogplayer.ini",
+                        QSettings::IniFormat );
+#endif
 
     settings.beginGroup( "FieldCanvas" );
 
@@ -124,8 +129,13 @@ FieldCanvas::readSettings()
 void
 FieldCanvas::writeSettings()
 {
+#ifndef Q_WS_WIN
     QSettings settings( QDir::homePath() + "/.rcsslogplayer",
                         QSettings::IniFormat );
+#else
+    QSettings settings( QDir::currentPath() + "/rcsslogplayer.ini",
+                        QSettings::IniFormat );
+#endif
 
     settings.beginGroup( "FieldCanvas" );
 

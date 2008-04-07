@@ -33,6 +33,7 @@
 #ifndef RCSSLOGPLAYER_OPTIONS_H
 #define RCSSLOGPLAYER_OPTIONS_H
 
+#include <QPoint>
 #include <QPointF>
 
 #include <rcsslogplayer/types.h>
@@ -192,6 +193,9 @@ private:
     Options( const Options & );
     //! noncopyable
     Options & operator=( const Options & );
+
+    void readSettings();
+    void writeSettings();
 
 public:
     ~Options();

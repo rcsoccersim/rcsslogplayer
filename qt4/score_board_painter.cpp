@@ -53,7 +53,9 @@ ScoreBoardPainter::ScoreBoardPainter( const MainData & main_data )
     , M_pen( QColor( 255, 255, 255 ), 0, Qt::SolidLine )
     , M_brush( QColor( 0, 0, 0 ), Qt::SolidPattern )
     , M_font( "6x13bold", 11, QFont::Bold )
-    , M_minimum_font( "6x13bold", 11, QFont::Bold )
+    , M_mini_pen( QColor( 0, 0, 0 ), 0, Qt::SolidLine )
+    , M_mini_brush( QColor( 255, 255, 255 ), Qt::SolidPattern )
+    , M_mini_font( "6x13bold", 11, QFont::Bold )
 {
     M_font.setPointSize( 11 );
     M_font.setBold( true );
@@ -80,8 +82,13 @@ ScoreBoardPainter::~ScoreBoardPainter()
 void
 ScoreBoardPainter::readSettings()
 {
+#ifndef Q_WS_WIN
     QSettings settings( QDir::homePath() + "/.rcsslogplayer",
                         QSettings::IniFormat );
+#else
+    QSettings settings( QDir::currentPath() + "/rcsslogplayer.ini",
+                        QSettings::IniFormat );
+#endif
 
     settings.beginGroup( "ScoreBoardPainter" );
 
@@ -96,6 +103,15 @@ ScoreBoardPainter::readSettings()
     val = settings.value( "score_board_font" );
     if ( val.isValid() ) M_font.fromString( val.toString() );
 
+    val = settings.value( "mini_score_board_pen" );
+    if ( val.isValid() ) M_mini_pen.setColor( val.toString() );
+
+    val = settings.value( "mini_score_board_brush" );
+    if ( val.isValid() ) M_mini_brush.setColor( val.toString() );
+
+    val = settings.value( "mini_score_board_font" );
+    if ( val.isValid() ) M_mini_font.fromString( val.toString() );
+
     settings.endGroup();
 }
 
@@ -106,14 +122,23 @@ ScoreBoardPainter::readSettings()
 void
 ScoreBoardPainter::writeSettings()
 {
+#ifndef Q_WS_WIN
     QSettings settings( QDir::homePath() + "/.rcsslogplayer",
                         QSettings::IniFormat );
+#else
+    QSettings settings( QDir::currentPath() + "/rcsslogplayer.ini",
+                        QSettings::IniFormat );
+#endif
 
     settings.beginGroup( "ScoreBoardPainter" );
 
     settings.setValue( "score_board_pen", M_pen.color().name() );
     settings.setValue( "score_board_brush", M_brush.color().name() );
     settings.setValue( "score_board_font", M_font.toString() );
+
+    settings.setValue( "mini_score_board_pen", M_mini_pen.color().name() );
+    settings.setValue( "mini_score_board_brush", M_mini_brush.color().name() );
+    settings.setValue( "mini_score_board_font", M_mini_font.toString() );
 
     settings.endGroup();
 }
@@ -286,9 +311,13 @@ ScoreBoardPainter::draw( QPainter & painter )
     QRect rect;
     if ( opt.minimumMode() )
     {
-        painter.setFont( M_minimum_font );
+        painter.setFont( M_mini_font );
 
         rect = painter.window();
+
+        painter.fillRect( rect, M_mini_brush );
+        painter.setPen( M_mini_pen );
+        painter.setBrush( Qt::NoBrush );
     }
     else
     {
@@ -299,12 +328,11 @@ ScoreBoardPainter::draw( QPainter & painter )
         rect.setTop( painter.window().bottom() - bounding_rect.height() + 1 );
         rect.setWidth( bounding_rect.width() );
         rect.setHeight( bounding_rect.height() );
+
+        painter.fillRect( rect, M_brush );
+        painter.setPen( M_pen );
+        painter.setBrush( Qt::NoBrush );
     }
-
-    painter.fillRect( rect, M_brush );
-
-    painter.setPen( M_pen );
-    painter.setBrush( Qt::NoBrush );
 
     painter.drawText( rect,
                       Qt::AlignVCenter,

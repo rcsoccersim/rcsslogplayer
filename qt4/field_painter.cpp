@@ -72,8 +72,13 @@ FieldPainter::~FieldPainter()
 void
 FieldPainter::readSettings()
 {
+#ifndef Q_WS_WIN
     QSettings settings( QDir::homePath() + "/.rcsslogplayer",
                         QSettings::IniFormat );
+#else
+    QSettings settings( QDir::currentPath() + "/rcsslogplayer.ini",
+                        QSettings::IniFormat );
+#endif
 
     settings.beginGroup( "FieldPainter" );
 
@@ -95,8 +100,13 @@ FieldPainter::readSettings()
 void
 FieldPainter::writeSettings()
 {
+#ifndef Q_WS_WIN
     QSettings settings( QDir::homePath() + "/.rcsslogplayer",
                         QSettings::IniFormat );
+#else
+    QSettings settings( QDir::currentPath() + "/rcsslogplayer.ini",
+                        QSettings::IniFormat );
+#endif
 
     settings.beginGroup( "FieldPainter" );
 

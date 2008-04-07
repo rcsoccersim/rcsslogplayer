@@ -50,7 +50,9 @@ private:
     QPen M_pen;
     QBrush M_brush;
     QFont M_font;
-    QFont M_minimum_font;
+    QPen M_mini_pen;
+    QBrush M_mini_brush;
+    QFont M_mini_font;
 
     // not used
     ScoreBoardPainter();

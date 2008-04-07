@@ -1,5 +1,20 @@
 2008-04-07  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 
+	* qt4/ball_painter.cpp:
+	* qt4/field_canvas.cpp:
+	* qt4/field_painter.cpp:
+	* qt4/log_player_tool_bar.cpp:
+	* qt4/main_window.cpp:
+	* qt4/options.cpp:
+	* qt4/options.h:
+	* qt4/player_painter.cpp:
+	* qt4/score_board_painter.cpp:
+	* qt4/score_board_painter.h:
+	- changed size policy for the minimum mode.
+	- added new background and foreground color for the minimum mode.
+	- renamed setting file for the Windows environment.
+	- supported QSettings in Options class.
+
 	* icons/rec.xpm:
 	* qt4/log_player.cpp:
 	* qt4/log_player.h:
