@@ -1007,8 +1007,8 @@ struct LineInfoT {
                const char * color )
         : x1_( x1 )
         , y1_( y1 )
-        , x2_( x1 )
-        , y2_( y1 )
+        , x2_( x2 )
+        , y2_( y2 )
         , color_( color )
       { }
 };

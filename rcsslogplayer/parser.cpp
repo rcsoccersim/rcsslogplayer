@@ -246,6 +246,7 @@ Parser::Parser( Handler & handler )
     : M_handler( handler )
     , M_header_parsed( false )
     , M_line_count( 0 )
+    , M_time( 0 )
 {
 
 }
@@ -354,11 +355,13 @@ Parser::parseDispInfo( std::istream & is )
         {
             ShowInfoT show;
             convert( disp.body.show, show );
+            M_time = show.time_;
             M_handler.handleShowInfo( show );
         }
         return true;
     case MSG_MODE:
-        M_handler.handleMsgInfo( ntohs( disp.body.msg.board ),
+        M_handler.handleMsgInfo( M_time,
+                                 ntohs( disp.body.msg.board ),
                                  disp.body.msg.message );
         return true;
     case DRAW_MODE:
@@ -433,6 +436,8 @@ Parser::parseShowInfo( std::istream & is )
         }
 
         convert( show, new_show );
+
+        M_time = new_show.time_;
         M_handler.handleShowInfo( new_show );
     }
     else
@@ -446,6 +451,8 @@ Parser::parseShowInfo( std::istream & is )
         }
 
         convert( show, new_show );
+
+        M_time = new_show.time_;
         M_handler.handleShowInfo( new_show );
     }
 
@@ -493,7 +500,7 @@ Parser::parseMsgInfo( std::istream & is )
     std::string str( msg );
     delete [] msg;
 
-    M_handler.handleMsgInfo( ntohs( board ), str );
+    M_handler.handleMsgInfo( M_time, ntohs( board ), str );
     return true;
 }
 
@@ -519,21 +526,24 @@ Parser::parseDrawInfo( const std::streampos pos,
 {
     switch ( ntohs( draw.mode ) ) {
     case DrawClear:
-        M_handler.handleDrawClear();
+        M_handler.handleDrawClear( M_time );
         return true;
     case DrawPoint:
-        M_handler.handleDrawPointInfo( PointInfoT( nstohf( draw.object.pinfo.x ),
+        M_handler.handleDrawPointInfo( M_time,
+                                       PointInfoT( nstohf( draw.object.pinfo.x ),
                                                    nstohf( draw.object.pinfo.y ),
                                                    draw.object.pinfo.color ) );
         return true;
     case DrawCircle:
-        M_handler.handleDrawCircleInfo( CircleInfoT( nstohf( draw.object.cinfo.x ),
+        M_handler.handleDrawCircleInfo( M_time,
+                                        CircleInfoT( nstohf( draw.object.cinfo.x ),
                                                      nstohf( draw.object.cinfo.y ),
                                                      nstohf( draw.object.cinfo.r ),
                                                      draw.object.cinfo.color ) );
         return true;
     case DrawLine:
-        M_handler.handleDrawLineInfo( LineInfoT( nstohf( draw.object.linfo.x1 ),
+        M_handler.handleDrawLineInfo( M_time,
+                                      LineInfoT( nstohf( draw.object.linfo.x1 ),
                                                  nstohf( draw.object.linfo.y1 ),
                                                  nstohf( draw.object.linfo.x2 ),
                                                  nstohf( draw.object.linfo.y2 ),
@@ -560,7 +570,7 @@ Parser::parsePlayMode( std::istream & is )
         return strmErr( is );
     }
 
-    M_handler.handlePlayMode( static_cast< PlayMode >( playmode ) );
+    M_handler.handlePlayMode( M_time, static_cast< PlayMode >( playmode ) );
     return true;
 }
 
@@ -580,7 +590,7 @@ Parser::parseTeamInfo( std::istream & is )
     convert( teams[0], new_teams[0] );
     convert( teams[1], new_teams[1] );
 
-    M_handler.handleTeamInfo( new_teams[0], new_teams[1] );
+    M_handler.handleTeamInfo( M_time, new_teams[0], new_teams[1] );
     return true;
 }
 
@@ -744,6 +754,7 @@ Parser::parseShowLine( const int n_line,
     }
     buf += n_read;
 
+    M_time = time;
     show.time_ = static_cast< UInt32 >( time );
 
     // ball
@@ -900,6 +911,8 @@ Parser::parseDrawLine( const int n_line,
     }
     buf += n_read;
 
+    M_time = time;
+
     // parse object
 
     if ( ! std::strncmp( buf, "(point ", 7 ) )
@@ -916,7 +929,7 @@ Parser::parseDrawLine( const int n_line,
             return false;
         }
 
-        M_handler.handleDrawPointInfo( PointInfoT( x, y, col ) );
+        M_handler.handleDrawPointInfo( M_time, PointInfoT( x, y, col ) );
     }
     else if ( ! std::strncmp( buf, "(circle ", 8 ) )
     {
@@ -932,7 +945,7 @@ Parser::parseDrawLine( const int n_line,
             return false;
         }
 
-        M_handler.handleDrawCircleInfo( CircleInfoT( x, y, r, col ) );
+        M_handler.handleDrawCircleInfo( M_time, CircleInfoT( x, y, r, col ) );
     }
     else if ( ! std::strncmp( buf, "(line ", 6 ) )
     {
@@ -941,7 +954,7 @@ Parser::parseDrawLine( const int n_line,
 
         if ( std::sscanf( buf,
                           " (line %f %f %f %f \"%63[^\"]\" ) ",
-                          &x1, &y1, &x2, &y2, col ) != 4 )
+                          &x1, &y1, &x2, &y2, col ) != 5 )
         {
             std::cerr << n_line << ": error: "
                       << "Illegal draw line info \"" << line << "\""
@@ -949,11 +962,11 @@ Parser::parseDrawLine( const int n_line,
             return false;
         }
 
-        M_handler.handleDrawLineInfo( LineInfoT( x1, y1, x2, y2, col ) );
+        M_handler.handleDrawLineInfo( M_time, LineInfoT( x1, y1, x2, y2, col ) );
     }
     else if ( ! std::strncmp( buf, "(clear)", 7 ) )
     {
-        M_handler.handleDrawClear();
+        M_handler.handleDrawClear( M_time );
     }
     else
     {
@@ -989,6 +1002,8 @@ Parser::parseMsgLine( const int n_line,
         return false;
     }
 
+    M_time = time;
+
     std::string msg( line, n_read, std::string::npos );
     if ( msg.length() <= 2 ) // at least, [")] + 1 char
     {
@@ -1005,7 +1020,7 @@ Parser::parseMsgLine( const int n_line,
 
     msg.erase( pos );
 
-    M_handler.handleMsgInfo( board, msg );
+    M_handler.handleMsgInfo( M_time, board, msg );
 
     return true;
 }
@@ -1029,6 +1044,8 @@ Parser::parsePlayModeLine( const int n_line,
         return false;
     }
 
+    M_time = time;
+
     PlayMode pm = PM_Null;
     for ( int n = 0; n < PM_MAX; ++n )
     {
@@ -1039,7 +1056,7 @@ Parser::parsePlayModeLine( const int n_line,
         }
     }
 
-    M_handler.handlePlayMode( pm );
+    M_handler.handlePlayMode( M_time, pm );
 
     return true;
 }
@@ -1069,10 +1086,12 @@ Parser::parseTeamLine( const int n_line,
         return false;
     }
 
+    M_time = time;
+
     TeamT team_l( name_l, score_l, pen_score_l, pen_miss_l );
     TeamT team_r( name_r, score_r, pen_score_r, pen_miss_r );
 
-    M_handler.handleTeamInfo( team_l, team_r );
+    M_handler.handleTeamInfo( M_time, team_l, team_r );
 
     return true;
 }

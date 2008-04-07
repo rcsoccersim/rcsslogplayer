@@ -1003,7 +1003,7 @@ PlayerPainter::drawText( QPainter & painter,
     {
         char buf[16];
         std::snprintf( buf, 16, "%4.0f", param.player_.stamina_ );
-        if ( main_buf[0] != '\0' ) std::strcat( main_buf, " " );
+        if ( main_buf[0] != '\0' ) std::strcat( main_buf, "," );
         std::strcat( main_buf, buf );
     }
 
@@ -1011,7 +1011,7 @@ PlayerPainter::drawText( QPainter & painter,
     {
         char buf[8];
         std::snprintf( buf, 8, "t%d", param.player_.type_ );
-        if ( main_buf[0] != '\0' ) std::strcat( main_buf, ", " );
+        if ( main_buf[0] != '\0' ) std::strcat( main_buf, "," );
         strcat( main_buf, buf );
     }
 

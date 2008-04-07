@@ -122,6 +122,7 @@ Options::Options()
     , M_show_score_board( true )
     , M_show_keepaway_area( false )
     , M_show_team_graphic( true )
+    , M_show_flag( false )
     , M_show_ball( true )
     , M_show_player( true )
     , M_show_player_number( true )
@@ -130,13 +131,12 @@ Options::Options()
     , M_show_tackle_area( false )
     , M_show_stamina( true )
     , M_show_pointto( true )
-    , M_enlarge( true )
+    , M_show_offside_line( false )
+    , M_show_draw_info( true )
     , M_ball_size( 0.35 )
     , M_player_size( 0.0 )
     , M_grid_step( 5.0 )
     , M_show_grid_coord( false )
-    , M_show_flag( false )
-    , M_show_offside_line( false )
     , M_field_scale( 1.0 )
     , M_zoomed( false )
     , M_field_center( 0, 0 )
@@ -206,11 +206,11 @@ Options::readSettings()
     val = settings.value( "window_y" );
     if ( val.isValid() ) M_window_y = val.toInt();
 
-    val = settings.value( "canvas_width" );
-    if ( val.isValid() ) M_canvas_width = val.toInt();
+//     val = settings.value( "canvas_width" );
+//     if ( val.isValid() ) M_canvas_width = val.toInt();
 
-    val = settings.value( "canvas_height" );
-    if ( val.isValid() ) M_canvas_height = val.toInt();
+//     val = settings.value( "canvas_height" );
+//     if ( val.isValid() ) M_canvas_height = val.toInt();
 
     val = settings.value( "maximize" );
     if ( val.isValid() ) M_maximize = val.toBool();
@@ -238,6 +238,9 @@ Options::readSettings()
 
     val = settings.value( "show_team_graphic" );
     if ( val.isValid() ) M_show_team_graphic = val.toBool();
+
+    val = settings.value( "show_draw_info" );
+    if ( val.isValid() ) M_show_draw_info = val.toBool();
 
     val = settings.value( "show_ball" );
     if ( val.isValid() ) M_show_ball = val.toBool();
@@ -268,9 +271,6 @@ Options::readSettings()
 
     val = settings.value( "show_pointto" );
     if ( val.isValid() ) M_show_pointto = val.toBool();
-
-    // val = settings.value( "enlarge" );
-    // if ( val.isValid() ) M_enlarge = val.toBool();
 
     val = settings.value( "ball_size", M_ball_size );
     if ( val.isValid() ) M_ball_size = val.toDouble();
@@ -319,8 +319,8 @@ Options::writeSettings()
     settings.setValue( "window_height", M_window_height );
     settings.setValue( "window_x", M_window_x );
     settings.setValue( "window_y", M_window_y );
-    settings.setValue( "canvas_width", M_canvas_width );
-    settings.setValue( "canvas_height", M_canvas_height );
+//     settings.setValue( "canvas_width", M_canvas_width );
+//     settings.setValue( "canvas_height", M_canvas_height );
     settings.setValue( "maximize", M_maximize );
     settings.setValue( "full_screen", M_full_screen );
     settings.setValue( "hide_menu_bar", M_hide_menu_bar );
@@ -330,6 +330,7 @@ Options::writeSettings()
     settings.setValue( "show_score_board", M_show_score_board );
     settings.setValue( "show_keepaway_area", M_show_keepaway_area );
     settings.setValue( "show_team_graphic", M_show_team_graphic );
+    settings.setValue( "show_draw_info", M_show_draw_info );
     settings.setValue( "show_ball", M_show_ball );
     settings.setValue( "show_player", M_show_player );
     settings.setValue( "show_player_number", M_show_player_number );
@@ -340,7 +341,6 @@ Options::writeSettings()
     settings.setValue( "show_kick_accel_area", M_show_kick_accel_area );
     settings.setValue( "show_stamina", M_show_stamina );
     settings.setValue( "show_pointto", M_show_pointto );
-    // settings.setValue( "enlarge", M_enlarge );
     settings.setValue( "ball_size", M_ball_size );
     settings.setValue( "player_size", M_player_size );
     settings.setValue( "show_grid_coord", M_show_grid_coord );
@@ -400,7 +400,7 @@ Options::parseCmdLine( int argc,
           po::value< int >( &M_monitor_port )->default_value( 6000, "6000" ),
           "set port number to wait the monitor client connection as the logplayer." )
         ( "output-file",
-          po::value< std::string >( &M_monitor_path )->default_value( "self", "self" ),
+          po::value< std::string >( &M_output_file )->default_value( "", "" ),
           "set the path to the monitor client that is invoked by rcsslogplayer." )
         ( "auto-loop-mode",
           po::value< bool >( &M_auto_loop_mode )->default_value( true, "on" ),
@@ -443,6 +443,9 @@ Options::parseCmdLine( int argc,
         ( "show-team-graphic",
           po::value< bool >( &M_show_team_graphic )->default_value( true, "on" ),
           "show team graphic." )
+        ( "show-draw-info",
+          po::value< bool >( &M_show_draw_info )->default_value( true, "on" ),
+          "show team graphic." )
         ( "show-ball",
           po::value< bool >( &M_show_ball )->default_value( true, "on" ),
           "show ball." )
@@ -473,9 +476,6 @@ Options::parseCmdLine( int argc,
         ( "show-pointto",
           po::value< bool >( &M_show_pointto )->default_value( false, "off" ),
           "show player\'s pointing to point." )
-//         ( "enlarge",
-//           po::value< bool >( &M_enlarge )->default_value( true, "on" ),
-//           "show enlarged objects." )
         ( "ball-size",
           po::value< double >( &M_ball_size )->default_value( 0.35, "0.35" ),
           "set a ball radius in enlarge mode." )

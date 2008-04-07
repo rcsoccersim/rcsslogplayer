@@ -73,41 +73,47 @@ private:
           doHandleShowInfo( info );
       }
 
-    void handleMsgInfo( const int board,
+    void handleMsgInfo( const int time,
+                        const int board,
                         const std::string & msg )
       {
-          doHandleMsgInfo( board, msg );
+          doHandleMsgInfo( time, board, msg );
       }
 
-    void handlePlayMode( const PlayMode playmode )
+    void handlePlayMode( const int time,
+                         const PlayMode playmode )
       {
-          doHandlePlayMode( playmode );
+          doHandlePlayMode( time, playmode );
       }
 
-    void handleTeamInfo( const TeamT & team_l,
+    void handleTeamInfo( const int time,
+                         const TeamT & team_l,
                          const TeamT & team_r )
       {
-          doHandleTeamInfo( team_l, team_r );
+          doHandleTeamInfo( time, team_l, team_r );
       }
 
-    void handleDrawClear()
+    void handleDrawClear( const int time )
       {
-          doHandleDrawClear();
+          doHandleDrawClear( time );
       }
 
-    void handleDrawPointInfo( const PointInfoT & p )
+    void handleDrawPointInfo( const int time,
+                              const PointInfoT & p )
       {
-          doHandleDrawPointInfo( p );
+          doHandleDrawPointInfo( time, p );
       }
 
-    void handleDrawCircleInfo( const CircleInfoT & c )
+    void handleDrawCircleInfo( const int time,
+                               const CircleInfoT & c )
       {
-          doHandleDrawCircleInfo( c );
+          doHandleDrawCircleInfo( time, c );
       }
 
-    void handleDrawLineInfo( const LineInfoT & l )
+    void handleDrawLineInfo( const int time,
+                             const LineInfoT & l )
       {
-          doHandleDrawLineInfo( l );
+          doHandleDrawLineInfo( time, l );
       }
 
     void handleServerParam( const ServerParamT & param )
@@ -143,32 +149,38 @@ protected:
 
     virtual
     void doHandleMsgInfo( const int,
+                          const int,
                           const std::string & )
       { }
 
     virtual
-    void doHandlePlayMode( const PlayMode )
+    void doHandlePlayMode( const int,
+                           const PlayMode )
       { }
 
     virtual
-    void doHandleTeamInfo( const TeamT &,
+    void doHandleTeamInfo( const int,
+                           const TeamT &,
                            const TeamT & )
       { }
 
     virtual
-    void doHandleDrawClear()
+    void doHandleDrawClear( const int )
       { }
 
     virtual
-    void doHandleDrawPointInfo( const PointInfoT & )
+    void doHandleDrawPointInfo( const int,
+                                const PointInfoT & )
       { }
 
     virtual
-    void doHandleDrawCircleInfo( const CircleInfoT & )
+    void doHandleDrawCircleInfo( const int,
+                                 const CircleInfoT & )
       { }
 
     virtual
-    void doHandleDrawLineInfo( const LineInfoT & )
+    void doHandleDrawLineInfo( const int,
+                               const LineInfoT & )
       { }
 
     virtual

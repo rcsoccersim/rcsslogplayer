@@ -1,8 +1,8 @@
 // -*-c++-*-
 
 /*!
-  \file score_board_painter.h
-  \brief score board painter class Header File.
+  \file draw_info_painter.h
+  \brief draw info painter class Header File.
 */
 
 /*
@@ -30,8 +30,8 @@
 
 /////////////////////////////////////////////////////////////////////
 
-#ifndef RCSSLOGPLAYER_SCORE_BOARD_PAINTER_H
-#define RCSSLOGPLAYER_SCORE_BOARD_PAINTER_H
+#ifndef RCSSLOGPLAYER_DRAW_INFO_PAINTER_H
+#define RCSSLOGPLAYER_DRAW_INFO_PAINTER_H
 
 #include "painter_interface.h"
 
@@ -41,27 +41,22 @@
 
 class MainData;
 
-class ScoreBoardPainter
+class DrawInfoPainter
     : public PainterInterface {
 private:
 
     const MainData & M_main_data;
 
     QPen M_pen;
-    QBrush M_brush;
-    QFont M_font;
-    QPen M_mini_pen;
-    QBrush M_mini_brush;
-    QFont M_mini_font;
 
     // not used
-    ScoreBoardPainter();
-    ScoreBoardPainter( const ScoreBoardPainter & );
-    const ScoreBoardPainter & operator=( const ScoreBoardPainter & );
+    DrawInfoPainter();
+    DrawInfoPainter( const DrawInfoPainter & );
+    const DrawInfoPainter & operator=( const DrawInfoPainter & );
 public:
 
-    ScoreBoardPainter( const MainData & main_data );
-    ~ScoreBoardPainter();
+    DrawInfoPainter( const MainData & main_data );
+    ~DrawInfoPainter();
 
     void draw( QPainter & painter );
 

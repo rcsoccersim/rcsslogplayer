@@ -234,12 +234,6 @@ ConfigDialog::createObjectSizeControls()
     top_layout->setMargin( 1 );
     top_layout->setSpacing( 0 );
 
-//     M_enlarge_cb = new QCheckBox( tr( "Enlarge Objects" ) );
-//     M_enlarge_cb->setChecked( true );
-//     connect( M_enlarge_cb, SIGNAL( clicked( bool ) ),
-//              this, SLOT( clickEnlarge( bool ) ) );
-//     top_layout->addWidget( M_enlarge_cb );
-
 
     QHBoxLayout * box = new QHBoxLayout();
     //
@@ -427,17 +421,25 @@ ConfigDialog::createShowControls()
                  this, SLOT( clickShowScoreBoard( bool ) ) );
         layout->addWidget( M_show_score_board_cb );
         //
-        M_show_keepaway_area_cb = new QCheckBox( tr( "Keepaway Area" ) );
-        M_show_keepaway_area_cb->setChecked( Options::instance().showKeepawayArea() );
-        connect( M_show_keepaway_area_cb, SIGNAL( clicked( bool ) ),
-                 this, SLOT( clickShowKeepawayArea( bool ) ) );
-        layout->addWidget( M_show_keepaway_area_cb );
-        //
         M_show_team_graphic_cb = new QCheckBox( tr( "Team Graphic" ) );
         M_show_team_graphic_cb->setChecked( Options::instance().showTeamGraphic() );
         connect( M_show_team_graphic_cb, SIGNAL( clicked( bool ) ),
                  this, SLOT( clickShowTeamGraphic( bool ) ) );
         layout->addWidget( M_show_team_graphic_cb );
+
+        top_layout->addLayout( layout );
+    }
+    {
+        QHBoxLayout * layout = new QHBoxLayout();
+        layout->setMargin( 0 );
+        layout->setSpacing( 0 );
+
+        //
+        M_show_keepaway_area_cb = new QCheckBox( tr( "Keepaway Area" ) );
+        M_show_keepaway_area_cb->setChecked( Options::instance().showKeepawayArea() );
+        connect( M_show_keepaway_area_cb, SIGNAL( clicked( bool ) ),
+                 this, SLOT( clickShowKeepawayArea( bool ) ) );
+        layout->addWidget( M_show_keepaway_area_cb );
         //
         M_show_flag_cb = new QCheckBox( tr( "Flag" ) );
         M_show_flag_cb->setChecked( Options::instance().showFlag() );
@@ -469,6 +471,12 @@ ConfigDialog::createShowControls()
         connect( M_show_offside_line_cb, SIGNAL( clicked( bool ) ),
                  this, SLOT( clickShowOffsideLine( bool ) ) );
         layout->addWidget( M_show_offside_line_cb );
+        //
+        M_show_draw_info_cb = new QCheckBox( tr( "Draw Info" ) );
+        M_show_draw_info_cb->setChecked( Options::instance().showDrawInfo() );
+        connect( M_show_draw_info_cb, SIGNAL( clicked( bool ) ),
+                 this, SLOT( clickShowDrawInfo( bool ) ) );
+        layout->addWidget( M_show_draw_info_cb );
 
         top_layout->addLayout( layout );
     }
@@ -821,7 +829,6 @@ ConfigDialog::updateAll()
 {
     const Options & opt = Options::instance();
 
-//    M_enlarge_cb->setChecked( opt.enlarge() );
     M_ball_size_text->setText( QString::number( opt.ballSize() ) );
     M_player_size_text->setText( QString::number( opt.playerSize() ) );
 
@@ -844,6 +851,8 @@ ConfigDialog::updateAll()
     M_show_score_board_cb->setChecked( opt.showScoreBoard() );
     M_show_keepaway_area_cb->setChecked( opt.showKeepawayArea() );
     M_show_team_graphic_cb->setChecked( opt.showTeamGraphic() );
+    M_show_draw_info_cb->setChecked( opt.showDrawInfo() );
+
     M_show_ball_cb->setChecked( opt.showBall() );
     M_show_player_cb->setChecked( opt.showPlayer() );
     M_show_flag_cb->setChecked( opt.showFlag() );
@@ -947,33 +956,6 @@ ConfigDialog::unzoom()
     Options::instance().unzoom();
     updateFieldScale();
     M_focus_fix_rb->setChecked( true );
-
-    emit configured();
-}
-
-/*-------------------------------------------------------------------*/
-/*!
-
-*/
-void
-ConfigDialog::clickEnlarge( bool checked )
-{
-    if ( Options::instance().enlarge() != checked )
-    {
-        Options::instance().toggleEnlarge();
-        emit configured();
-    }
-}
-
-/*-------------------------------------------------------------------*/
-/*!
-
-*/
-void
-ConfigDialog::toggleEnlarge()
-{
-    Options::instance().toggleEnlarge();
-    M_enlarge_cb->setChecked( Options::instance().enlarge() );
 
     emit configured();
 }
@@ -1087,6 +1069,169 @@ ConfigDialog::clickAntiAliasing( bool checked )
 
         emit configured();
     }
+}
+
+
+/*-------------------------------------------------------------------*/
+/*!
+
+*/
+void
+ConfigDialog::clickShowScoreBoard( bool checked )
+{
+    if ( Options::instance().showScoreBoard() != checked )
+    {
+        Options::instance().toggleShowScoreBoard();
+        emit configured();
+    }
+}
+
+/*-------------------------------------------------------------------*/
+/*!
+
+*/
+void
+ConfigDialog::toggleShowScoreBoard()
+{
+    Options::instance().toggleShowScoreBoard();
+    M_show_score_board_cb->setChecked( Options::instance().showScoreBoard() );
+
+    emit configured();
+}
+
+/*-------------------------------------------------------------------*/
+/*!
+
+*/
+void
+ConfigDialog::clickShowKeepawayArea( bool checked )
+{
+    if ( Options::instance().showKeepawayArea() != checked )
+    {
+        Options::instance().toggleShowKeepawayArea();
+        emit configured();
+    }
+}
+
+/*-------------------------------------------------------------------*/
+/*!
+
+*/
+void
+ConfigDialog::toggleShowKeepawayArea()
+{
+    Options::instance().toggleShowKeepawayArea();
+    M_show_keepaway_area_cb->setChecked( Options::instance().showKeepawayArea() );
+
+    emit configured();
+}
+
+/*-------------------------------------------------------------------*/
+/*!
+
+*/
+void
+ConfigDialog::clickShowTeamGraphic( bool checked )
+{
+    if ( Options::instance().showTeamGraphic() != checked )
+    {
+        Options::instance().toggleShowTeamGraphic();
+        emit configured();
+    }
+}
+
+/*-------------------------------------------------------------------*/
+/*!
+
+*/
+void
+ConfigDialog::toggleShowTeamGraphic()
+{
+    Options::instance().toggleShowTeamGraphic();
+    M_show_team_graphic_cb->setChecked( Options::instance().showTeamGraphic() );
+
+    emit configured();
+}
+
+/*-------------------------------------------------------------------*/
+/*!
+
+*/
+void
+ConfigDialog::clickShowFlag( bool checked )
+{
+    if ( Options::instance().showFlag() != checked )
+    {
+        Options::instance().toggleShowFlag();
+        emit configured();
+    }
+}
+
+/*-------------------------------------------------------------------*/
+/*!
+
+*/
+void
+ConfigDialog::toggleShowFlag()
+{
+    Options::instance().toggleShowFlag();
+    M_show_flag_cb->setChecked( Options::instance().showFlag() );
+
+    emit configured();
+}
+
+/*-------------------------------------------------------------------*/
+/*!
+
+*/
+void
+ConfigDialog::clickShowBall( bool checked )
+{
+    if ( Options::instance().showBall() != checked )
+    {
+        Options::instance().toggleShowBall();
+        emit configured();
+    }
+}
+
+/*-------------------------------------------------------------------*/
+/*!
+
+*/
+void
+ConfigDialog::toggleShowBall()
+{
+    Options::instance().toggleShowBall();
+    M_show_ball_cb->setChecked( Options::instance().showBall() );
+
+    emit configured();
+}
+
+/*-------------------------------------------------------------------*/
+/*!
+
+*/
+void
+ConfigDialog::clickShowPlayer( bool checked )
+{
+    if ( Options::instance().showPlayer() != checked )
+    {
+        Options::instance().toggleShowPlayer();
+        emit configured();
+    }
+}
+
+/*-------------------------------------------------------------------*/
+/*!
+
+*/
+void
+ConfigDialog::toggleShowPlayer()
+{
+    Options::instance().toggleShowPlayer();
+    M_show_player_cb->setChecked( Options::instance().showPlayer() );
+
+    emit configured();
 }
 
 /*-------------------------------------------------------------------*/
@@ -1310,141 +1455,6 @@ ConfigDialog::toggleShowPointto()
 
 */
 void
-ConfigDialog::clickShowScoreBoard( bool checked )
-{
-    if ( Options::instance().showScoreBoard() != checked )
-    {
-        Options::instance().toggleShowScoreBoard();
-        emit configured();
-    }
-}
-
-/*-------------------------------------------------------------------*/
-/*!
-
-*/
-void
-ConfigDialog::toggleShowScoreBoard()
-{
-    Options::instance().toggleShowScoreBoard();
-    M_show_score_board_cb->setChecked( Options::instance().showScoreBoard() );
-
-    emit configured();
-}
-
-/*-------------------------------------------------------------------*/
-/*!
-
-*/
-void
-ConfigDialog::clickShowTeamGraphic( bool checked )
-{
-    if ( Options::instance().showTeamGraphic() != checked )
-    {
-        Options::instance().toggleShowTeamGraphic();
-        emit configured();
-    }
-}
-
-/*-------------------------------------------------------------------*/
-/*!
-
-*/
-void
-ConfigDialog::toggleShowTeamGraphic()
-{
-    Options::instance().toggleShowTeamGraphic();
-    M_show_team_graphic_cb->setChecked( Options::instance().showTeamGraphic() );
-
-    emit configured();
-}
-
-/*-------------------------------------------------------------------*/
-/*!
-
-*/
-void
-ConfigDialog::clickShowBall( bool checked )
-{
-    if ( Options::instance().showBall() != checked )
-    {
-        Options::instance().toggleShowBall();
-        emit configured();
-    }
-}
-
-/*-------------------------------------------------------------------*/
-/*!
-
-*/
-void
-ConfigDialog::toggleShowBall()
-{
-    Options::instance().toggleShowBall();
-    M_show_ball_cb->setChecked( Options::instance().showBall() );
-
-    emit configured();
-}
-
-/*-------------------------------------------------------------------*/
-/*!
-
-*/
-void
-ConfigDialog::clickShowPlayer( bool checked )
-{
-    if ( Options::instance().showPlayer() != checked )
-    {
-        Options::instance().toggleShowPlayer();
-        emit configured();
-    }
-}
-
-/*-------------------------------------------------------------------*/
-/*!
-
-*/
-void
-ConfigDialog::toggleShowPlayer()
-{
-    Options::instance().toggleShowPlayer();
-    M_show_player_cb->setChecked( Options::instance().showPlayer() );
-
-    emit configured();
-}
-
-/*-------------------------------------------------------------------*/
-/*!
-
-*/
-void
-ConfigDialog::clickShowFlag( bool checked )
-{
-    if ( Options::instance().showFlag() != checked )
-    {
-        Options::instance().toggleShowFlag();
-        emit configured();
-    }
-}
-
-/*-------------------------------------------------------------------*/
-/*!
-
-*/
-void
-ConfigDialog::toggleShowFlag()
-{
-    Options::instance().toggleShowFlag();
-    M_show_flag_cb->setChecked( Options::instance().showFlag() );
-
-    emit configured();
-}
-
-/*-------------------------------------------------------------------*/
-/*!
-
-*/
-void
 ConfigDialog::clickShowOffsideLine( bool checked )
 {
     if ( Options::instance().showOffsideLine() != checked )
@@ -1467,16 +1477,17 @@ ConfigDialog::toggleShowOffsideLine()
     emit configured();
 }
 
+
 /*-------------------------------------------------------------------*/
 /*!
 
 */
 void
-ConfigDialog::clickShowKeepawayArea( bool checked )
+ConfigDialog::clickShowDrawInfo( bool checked )
 {
-    if ( Options::instance().showKeepawayArea() != checked )
+    if ( Options::instance().showDrawInfo() != checked )
     {
-        Options::instance().toggleShowKeepawayArea();
+        Options::instance().toggleShowDrawInfo();
         emit configured();
     }
 }
@@ -1486,10 +1497,10 @@ ConfigDialog::clickShowKeepawayArea( bool checked )
 
 */
 void
-ConfigDialog::toggleShowKeepawayArea()
+ConfigDialog::toggleShowDrawInfo()
 {
-    Options::instance().toggleShowKeepawayArea();
-    M_show_keepaway_area_cb->setChecked( Options::instance().showKeepawayArea() );
+    Options::instance().toggleShowDrawInfo();
+    M_show_draw_info_cb->setChecked( Options::instance().showDrawInfo() );
 
     emit configured();
 }

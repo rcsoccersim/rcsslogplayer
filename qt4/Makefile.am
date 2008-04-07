@@ -16,6 +16,7 @@ rcsslogplayer_SOURCES = \
 	config_dialog.cpp \
 	detail_dialog.cpp \
 	disp_holder.cpp \
+	draw_info_painter.cpp \
 	field_canvas.cpp \
 	field_painter.cpp \
 	line_2d.cpp \
@@ -56,6 +57,7 @@ noinst_HEADERS = \
 	config_dialog.h \
 	detail_dialog.h \
 	disp_holder.h \
+	draw_info_painter.h \
 	field_canvas.h \
 	field_painter.h \
 	line_2d.h \

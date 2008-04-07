@@ -65,7 +65,6 @@ private:
     QLineEdit * M_scale_text;
 
     // object size
-    QCheckBox * M_enlarge_cb;
     QLineEdit * M_ball_size_text;
     QLineEdit * M_player_size_text;
 
@@ -76,7 +75,15 @@ private:
     // misc options
     QCheckBox * M_anti_aliasing_cb;
 
-    // player info control
+    // show/hide control
+    QCheckBox * M_show_score_board_cb;
+    QCheckBox * M_show_keepaway_area_cb;
+    QCheckBox * M_show_team_graphic_cb;
+    QCheckBox * M_show_flag_cb;
+
+    QCheckBox * M_show_ball_cb;
+    QCheckBox * M_show_player_cb;
+
     QCheckBox * M_player_number_cb;
     QCheckBox * M_player_type_cb;
     QCheckBox * M_stamina_cb;
@@ -86,18 +93,12 @@ private:
     QCheckBox * M_kick_accel_area_cb;
     QCheckBox * M_pointto_cb;
 
-    // show/hide control
-    QCheckBox * M_show_score_board_cb;
-    QCheckBox * M_show_keepaway_area_cb;
-    QCheckBox * M_show_team_graphic_cb;
-    QCheckBox * M_show_ball_cb;
-    QCheckBox * M_show_player_cb;
-    QCheckBox * M_show_flag_cb;
     QCheckBox * M_show_offside_line_cb;
+    QCheckBox * M_show_draw_info_cb;
 
-    QCheckBox * M_show_grid_coord_cb;
     QSlider * M_grid_step_slider;
     QLineEdit * M_grid_step_text;
+    QCheckBox * M_show_grid_coord_cb;
 
     // focus control
     QRadioButton * M_focus_ball_rb;
@@ -160,7 +161,6 @@ private slots:
 
     // connect to itself
     // emit configured()
-    void clickEnlarge( bool checked );
     void slideFieldScale( int value );
     void editFieldScale( const QString & );
 
@@ -176,6 +176,8 @@ private slots:
     void clickShowScoreBoard( bool checked );
     void clickShowKeepawayArea( bool checked );
     void clickShowTeamGraphic( bool checked );
+    void clickShowDrawInfo( bool checked );
+
     void clickShowBall( bool checked );
     void clickShowPlayer( bool checked );
     void clickShowFlag( bool checked );
@@ -222,11 +224,15 @@ public slots:
     void zoomOut();
     void unzoom();
 
-    void toggleEnlarge();
-    void editBallSize( const QString & text );
-    void editPlayerSize( const QString & text );
-
     void applyCanvasSize();
+
+    void toggleShowScoreBoard();
+    void toggleShowKeepawayArea();
+    void toggleShowTeamGraphic();
+    void toggleShowFlag();
+
+    void toggleShowPlayer();
+    void toggleShowBall();
 
     void toggleShowPlayerNumber();
     void toggleShowPlayerType();
@@ -237,13 +243,11 @@ public slots:
     void toggleShowKickAccelArea();
     void toggleShowPointto();
 
-    void toggleShowScoreBoard();
-    void toggleShowKeepawayArea();
-    void toggleShowTeamGraphic();
-    void toggleShowPlayer();
-    void toggleShowBall();
-    void toggleShowFlag();
     void toggleShowOffsideLine();
+    void toggleShowDrawInfo();
+
+    void editBallSize( const QString & text );
+    void editPlayerSize( const QString & text );
 
     void toggleFocusBall();
     void toggleFocusPlayer();

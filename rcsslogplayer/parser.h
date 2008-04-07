@@ -54,6 +54,7 @@ private:
 
     bool M_header_parsed; //!< flag to determin whether the header data is parsed or not
     int M_line_count; //!< total number of parsed line. This variable is used only for v4+ log.
+    int M_time; //!< current time
 
     // not used
     Parser();

@@ -47,6 +47,7 @@
 #include "log_player.h"
 #include "log_player_tool_bar.h"
 #include "log_slider_tool_bar.h"
+#include "score_board_painter.h"
 #include "options.h"
 
 #include <string>
@@ -744,14 +745,6 @@ MainWindow::createConfigDialog()
         this->addAction( act );
         connect( act, SIGNAL( triggered() ),
                  M_config_dialog, SLOT( unzoom() ) );
-    }
-    {
-        // e
-        QAction * act = new QAction( tr( "Toggle Enlarge" ), this );
-        act->setShortcut( Qt::Key_E );
-        this->addAction( act );
-        connect( act, SIGNAL( triggered() ),
-                 M_config_dialog, SLOT( toggleEnlarge() ) );
     }
 
     // field style
@@ -1579,19 +1572,12 @@ MainWindow::toggleFieldCanvas()
     {
         s_old_canvas_size = M_field_canvas->size();
 
-        //QSize new_canvas_size( 270, 76 ); // for 2 lines
-        QSize new_canvas_size( 270, 100 ); // for 3 lines
+        QSize new_canvas_size( 280, 120 ); // for 3 lines
 
         QRect win_rect = this->geometry();
 
-        int new_height =
-            24 //M_log_player_tool_bar->height()
-            + 24 //+ M_log_slider_tool_bar->height()
-            + new_canvas_size.height()
-            + this->statusBar()->height();
         this->setMinimumWidth( win_rect.width() - s_old_canvas_size.width() + new_canvas_size.width() );
-        this->setMinimumHeight( new_height );
-//         this->setMaximumHeight( new_height );
+        this->setMinimumHeight( win_rect.height() - s_old_canvas_size.height() + new_canvas_size.height() );
 
         // relocate toolbars
         this->addToolBar( Qt::TopToolBarArea, M_log_player_tool_bar );
@@ -1613,7 +1599,7 @@ MainWindow::toggleFieldCanvas()
     {
         this->setMinimumWidth( 280 );
         this->setMinimumHeight( 220 );
-//         this->setMaximumHeight( QWIDGETSIZE_MAX );
+        this->setMaximumSize( QWIDGETSIZE_MAX, QWIDGETSIZE_MAX );
 
         this->removeToolBarBreak( M_log_slider_tool_bar );
 
@@ -1769,7 +1755,10 @@ MainWindow::resizeCanvas( const QSize & size )
 
         QRect rect = this->geometry();
 
-        if ( rect.width() - centralWidget()->width() + size.width() < this->minimumWidth() )
+        int width_diff = rect.width() - centralWidget()->width();
+        int height_diff = rect.height() - centralWidget()->height();
+
+        if ( width_diff + size.width() < this->minimumWidth() )
         {
             std::cerr << "Too small canvas width "
                       << size.width() << " "
@@ -1778,7 +1767,7 @@ MainWindow::resizeCanvas( const QSize & size )
             return;
         }
 
-        if ( rect.height() - centralWidget()->height() + size.height() < this->minimumHeight() )
+        if ( height_diff + size.height() < this->minimumHeight() )
         {
             std::cerr << "Too small canvas height "
                       << size.height() << " "
@@ -1786,9 +1775,6 @@ MainWindow::resizeCanvas( const QSize & size )
                       << std::endl;
             return;
         }
-
-        int width_diff = rect.width() - centralWidget()->width();
-        int height_diff = rect.height() - centralWidget()->height();
 
         rect.setWidth( size.width() + width_diff );
         rect.setHeight( size.height() + height_diff );

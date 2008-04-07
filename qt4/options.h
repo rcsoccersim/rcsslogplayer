@@ -138,8 +138,11 @@ private:
     bool M_show_score_board;
     bool M_show_keepaway_area;
     bool M_show_team_graphic;
+    bool M_show_flag;
+
     bool M_show_ball;
     bool M_show_player;
+
     bool M_show_player_number;
     bool M_show_player_type;
     bool M_show_view_area;
@@ -149,15 +152,14 @@ private:
     bool M_show_stamina;
     bool M_show_pointto;
 
-    bool M_enlarge;
+    bool M_show_offside_line;
+    bool M_show_draw_info;
+
     double M_ball_size; //!< fixed ball radius
     double M_player_size; //!< fixed player radius
 
     double M_grid_step;
     bool M_show_grid_coord;
-
-    bool M_show_flag;
-    bool M_show_offside_line;
 
     // zoom
     double M_field_scale;
@@ -393,6 +395,15 @@ public:
           M_show_team_graphic = ! M_show_team_graphic;
       }
 
+    bool showFlag() const
+      {
+          return M_show_flag;
+      }
+    void toggleShowFlag()
+      {
+          M_show_flag = ! M_show_flag;
+      }
+
     bool showBall() const
       {
           return M_show_ball;
@@ -483,13 +494,22 @@ public:
           M_show_pointto = ! M_show_pointto;
       }
 
-    bool enlarge() const
+    bool showOffsideLine() const
       {
-          return M_enlarge;
+          return M_show_offside_line;
       }
-    void toggleEnlarge()
+    void toggleShowOffsideLine()
       {
-          M_enlarge = ! M_enlarge;
+          M_show_offside_line = ! M_show_offside_line;
+      }
+
+    bool showDrawInfo() const
+      {
+          return M_show_draw_info;
+      }
+    void toggleShowDrawInfo()
+      {
+          M_show_draw_info = ! M_show_draw_info;
       }
 
     const
@@ -531,24 +551,6 @@ public:
     void toggleShowGridCoord()
       {
           M_show_grid_coord = ! M_show_grid_coord;
-      }
-
-    bool showFlag() const
-      {
-          return M_show_flag;
-      }
-    void toggleShowFlag()
-      {
-          M_show_flag = ! M_show_flag;
-      }
-
-    bool showOffsideLine() const
-      {
-          return M_show_offside_line;
-      }
-    void toggleShowOffsideLine()
-      {
-          M_show_offside_line = ! M_show_offside_line;
       }
 
     // field scale

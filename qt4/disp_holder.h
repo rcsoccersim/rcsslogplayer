@@ -70,6 +70,10 @@ private:
     std::vector< std::pair< int, rcss::rcg::PlayMode > > M_penalty_scores_left;
     std::vector< std::pair< int, rcss::rcg::PlayMode > > M_penalty_scores_right;
 
+    std::multimap< int, rcss::rcg::PointInfoT > M_point_map;
+    std::multimap< int, rcss::rcg::LineInfoT > M_line_map;
+    std::multimap< int, rcss::rcg::CircleInfoT > M_circle_map;
+
     // team graphic holder
     TeamGraphic M_team_graphic_left;
     TeamGraphic M_team_graphic_right;
@@ -137,6 +141,26 @@ public:
           return M_penalty_scores_right;
       }
 
+
+    const
+    std::multimap< int, rcss::rcg::PointInfoT > & pointMap() const
+      {
+          return M_point_map;
+      }
+
+    const
+    std::multimap< int, rcss::rcg::CircleInfoT > & circleMap() const
+      {
+          return M_circle_map;
+      }
+
+    const
+    std::multimap< int, rcss::rcg::LineInfoT > & lineMap() const
+      {
+          return M_line_map;
+      }
+
+
     const
     TeamGraphic & teamGraphicLeft() const
       {
@@ -163,12 +187,26 @@ private:
     void doHandleShowInfo( const rcss::rcg::ShowInfoT & );
     virtual
     void doHandleMsgInfo( const int,
+                          const int,
                           const std::string & );
     virtual
-    void doHandlePlayMode( const rcss::rcg::PlayMode );
+    void doHandlePlayMode( const int,
+                           const rcss::rcg::PlayMode );
     virtual
-    void doHandleTeamInfo( const rcss::rcg::TeamT &,
+    void doHandleTeamInfo( const int,
+                           const rcss::rcg::TeamT &,
                            const rcss::rcg::TeamT & );
+    virtual
+    void doHandleDrawClear( const int );
+    virtual
+    void doHandleDrawPointInfo( const int,
+                                const rcss::rcg::PointInfoT & );
+    virtual
+    void doHandleDrawLineInfo( const int,
+                               const rcss::rcg::LineInfoT & );
+    virtual
+    void doHandleDrawCircleInfo( const int,
+                                 const rcss::rcg::CircleInfoT & );
     virtual
     void doHandleServerParam( const rcss::rcg::ServerParamT & );
     virtual

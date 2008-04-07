@@ -1,5 +1,26 @@
 2008-04-07  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 
+	* qt4/draw_info_painter.cpp:
+	* qt4/draw_info_painter.h:
+	* qt4/Makefile.am:
+	* qt4/config_dialog.cpp:
+	* qt4/config_dialog.h:
+	* qt4/disp_holder.cpp:
+	* qt4/disp_holder.h:
+	* qt4/field_canvas.cpp:
+	* qt4/main_window.cpp:
+	* qt4/options.cpp:
+	* qt4/options.h:
+	* qt4/player_painter.cpp:
+	* qt4/score_board_painter.cpp:
+	* qt4/score_board_painter.h:
+	* rcsslogplayer/handler.h:
+	* rcsslogplayer/parser.cpp:
+	* rcsslogplayer/parser.h:
+	* rcsslogplayer/types.h:
+	- fixed bugs about draw info parsing.
+	- supported draw info painting.
+
 	* qt4/Makefile.am:
 	* qt4/team_graphic.cpp:
 	* qt4/team_graphic.h:

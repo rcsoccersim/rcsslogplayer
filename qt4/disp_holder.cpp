@@ -77,6 +77,9 @@ DispHolder::clear()
     M_player_param = rcss::rcg::PlayerParamT();
     M_player_types.clear();
 
+    M_point_map.clear();
+    M_line_map.clear();
+    M_circle_map.clear();
 
     M_team_graphic_left.clear();
     M_team_graphic_right.clear();
@@ -228,7 +231,8 @@ DispHolder::doHandleShowInfo( const rcss::rcg::ShowInfoT & show )
 
 */
 void
-DispHolder::doHandleMsgInfo( const int,
+DispHolder::doHandleMsgInfo( const int time,
+                             const int board,
                              const std::string & msg )
 {
     if ( ! msg.compare( 0, std::strlen( "(team_graphic_" ), "(team_graphic_" ) )
@@ -249,25 +253,26 @@ DispHolder::doHandleMsgInfo( const int,
 
 */
 void
-DispHolder::doHandlePlayMode( const rcss::rcg::PlayMode pmode )
+DispHolder::doHandlePlayMode( const int time,
+                              const rcss::rcg::PlayMode pmode )
 {
     if ( M_playmode != pmode )
     {
         if ( pmode == rcss::rcg::PM_PenaltyScore_Left
              || pmode == rcss::rcg::PM_PenaltyMiss_Left )
         {
-            int cycle = ( M_last_disp
-                          ? M_last_disp->show_.time_
-                          : 0 );
-            M_penalty_scores_left.push_back( std::make_pair( cycle, pmode ) );
+//             int cycle = ( M_last_disp
+//                           ? M_last_disp->show_.time_
+//                           : 0 );
+            M_penalty_scores_left.push_back( std::make_pair( time, pmode ) );
         }
         else if ( pmode == rcss::rcg::PM_PenaltyScore_Right
                   || pmode == rcss::rcg::PM_PenaltyMiss_Right )
         {
-            int cycle = ( M_last_disp
-                          ? M_last_disp->show_.time_
-                          : 0 );
-            M_penalty_scores_right.push_back( std::make_pair( cycle, pmode ) );
+//             int cycle = ( M_last_disp
+//                           ? M_last_disp->show_.time_
+//                           : 0 );
+            M_penalty_scores_right.push_back( std::make_pair( time, pmode ) );
         }
     }
 
@@ -279,7 +284,8 @@ DispHolder::doHandlePlayMode( const rcss::rcg::PlayMode pmode )
 
 */
 void
-DispHolder::doHandleTeamInfo( const rcss::rcg::TeamT & team_l,
+DispHolder::doHandleTeamInfo( const int time,
+                              const rcss::rcg::TeamT & team_l,
                               const rcss::rcg::TeamT & team_r )
 {
     if ( M_teams[0].score_ != team_l.score_
@@ -290,6 +296,51 @@ DispHolder::doHandleTeamInfo( const rcss::rcg::TeamT & team_l,
 
     M_teams[0] = team_l;
     M_teams[1] = team_r;
+}
+
+/*-------------------------------------------------------------------*/
+/*!
+
+*/
+void
+DispHolder::doHandleDrawClear( const int time )
+{
+    M_point_map.erase( time );
+    M_circle_map.erase( time );
+    M_line_map.erase( time );
+}
+
+/*-------------------------------------------------------------------*/
+/*!
+
+*/
+void
+DispHolder::doHandleDrawPointInfo( const int time,
+                                   const rcss::rcg::PointInfoT & point )
+{
+    M_point_map.insert( std::pair< int, rcss::rcg::PointInfoT >( time, point ) );
+}
+
+/*-------------------------------------------------------------------*/
+/*!
+
+*/
+void
+DispHolder::doHandleDrawCircleInfo( const int time,
+                                    const rcss::rcg::CircleInfoT & circle )
+{
+    M_circle_map.insert( std::pair< int, rcss::rcg::CircleInfoT >( time, circle ) );
+}
+
+/*-------------------------------------------------------------------*/
+/*!
+
+*/
+void
+DispHolder::doHandleDrawLineInfo( const int time,
+                                  const rcss::rcg::LineInfoT & line )
+{
+    M_line_map.insert( std::pair< int, rcss::rcg::LineInfoT >( time, line ) );
 }
 
 /*-------------------------------------------------------------------*/
