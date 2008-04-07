@@ -219,14 +219,31 @@ private:
 
     void doHandleShowInfo( const rcss::rcg::ShowInfoT & );
     void doHandleMsgInfo( const int,
+                          const int,
                           const std::string & );
-    void doHandlePlayMode( const rcss::rcg::PlayMode );
-    void doHandleTeamInfo( const rcss::rcg::TeamT &,
+    void doHandlePlayMode( const int,
+                           const rcss::rcg::PlayMode );
+    void doHandleTeamInfo( const int,
+                           const rcss::rcg::TeamT &,
                            const rcss::rcg::TeamT & );
+    void doHandleDrawClear( const int )
+      { };
+    void doHandleDrawPointInfo( const int,
+                                const rcss::rcg::PointInfoT & )
+      { }
+    void doHandleDrawCircleInfo( const int,
+                                 const rcss::rcg::CircleInfoT & )
+      { }
+    void doHandleDrawLineInfo( const int,
+                               const rcss::rcg::LineInfoT & )
+      { }
+
     void doHandlePlayerType( const rcss::rcg::PlayerTypeT & );
     void doHandlePlayerParam( const rcss::rcg::PlayerParamT & );
     void doHandleServerParam( const rcss::rcg::ServerParamT & );
 
+    void doHandleEOF()
+      { }
 };
 
 #endif

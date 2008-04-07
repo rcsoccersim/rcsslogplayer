@@ -1278,6 +1278,9 @@ MainWindow::startMonitor()
 
     QString command = QString::fromStdString( Options::instance().monitorPath() );
 
+    std::cout << "starting monitor \"" << command.toStdString() << "\" ..."
+              << std::endl;
+
     M_monitor_process->start( command );
 
     //QProcess::startDetached( command );

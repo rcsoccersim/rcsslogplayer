@@ -46,6 +46,7 @@
 
 #include <string>
 #include <fstream>
+#include <cstdio>
 #include <cstdlib>
 #include <cmath>
 
@@ -118,14 +119,36 @@ private:
 
     virtual
     void doHandleMsgInfo( const int,
+                          const int,
                           const std::string & );
 
     virtual
-    void doHandlePlayMode( const PlayMode );
+    void doHandlePlayMode( const int,
+                           const PlayMode );
 
     virtual
-    void doHandleTeamInfo( const TeamT &,
+    void doHandleTeamInfo( const int,
+                           const TeamT &,
                            const TeamT & );
+
+    virtual
+    void doHandleDrawClear( const int )
+      { };
+
+    virtual
+    void doHandleDrawPointInfo( const int,
+                                const PointInfoT & )
+      { }
+
+    virtual
+    void doHandleDrawCircleInfo( const int,
+                                 const CircleInfoT & )
+      { }
+
+    virtual
+    void doHandleDrawLineInfo( const int,
+                               const LineInfoT & )
+      { }
 
     virtual
     void doHandlePlayerType( const PlayerTypeT & );
@@ -144,7 +167,7 @@ private:
 /*--------------------------------------------------------------------*/
 bool
 RCG3to4::parseCmdLine( int argc,
-                           char ** argv )
+                       char ** argv )
 {
     namespace po = boost::program_options;
 
@@ -360,8 +383,9 @@ RCG3to4::doHandleShowInfo( const ShowInfoT & show )
 
 /*--------------------------------------------------------------------*/
 void
-RCG3to4::doHandleMsgInfo( const int board,
-                              const std::string & msg )
+RCG3to4::doHandleMsgInfo( const int time,
+                          const int board,
+                          const std::string & msg )
 {
     if ( ! M_fout.is_open() )
     {
@@ -374,6 +398,7 @@ RCG3to4::doHandleMsgInfo( const int board,
                   << std::endl;
     }
 
+    M_time = time;
     M_fout << "(msg " << M_time
            << " " << board
            << " \"" << msg << "\")\n";
@@ -402,16 +427,20 @@ RCG3to4::doHandleEOF()
 
 /*--------------------------------------------------------------------*/
 void
-RCG3to4::doHandlePlayMode( const PlayMode pm )
+RCG3to4::doHandlePlayMode( const int time,
+                           const PlayMode pm )
 {
+    M_time = time;
     M_playmode = pm;
 }
 
 /*--------------------------------------------------------------------*/
 void
-RCG3to4::doHandleTeamInfo( const TeamT & team_l,
+RCG3to4::doHandleTeamInfo( const int time,
+                           const TeamT & team_l,
                            const TeamT & team_r )
 {
+    M_time = time;
     M_team_l = team_l;
     M_team_r = team_r;
 }
@@ -482,9 +511,14 @@ main( int argc, char ** argv )
     }
 
     rcss::rcg::Parser parser( converter );
+    int count = 0;
     while ( parser.parse( fin ) )
     {
-
+        if ( ++count % 500 == 0 )
+        {
+            std::fprintf( stdout, "parsing... %d\r", count );
+            std::fflush( stdout );
+        }
     }
 
     return 0;

@@ -151,7 +151,7 @@ private:
       }
 
 
-    void doHandleServerParams( const ServerParamT & param )
+    void doHandleServerParam( const ServerParamT & param )
       {
           std::cout << "<ServerParam>\n";
           printParam( "goal_width", param.goal_width_ );
@@ -344,7 +344,7 @@ private:
           std::cout << "</ServerParam>\n";
       }
 
-    void doHandlePlayerParams( const PlayerParamT & param )
+    void doHandlePlayerParam( const PlayerParamT & param )
       {
           std::cout << "<PlayerParam>\n";
           printParam( "player_types", param.player_types_ );
@@ -537,7 +537,8 @@ private:
           std::cout << "</Team>\n";
       }
 
-    void doHandleMsgInfo( const int board,
+    void doHandleMsgInfo( const int,
+                          const int board,
                           const std::string & msg )
       {
           // format the string
@@ -551,17 +552,39 @@ private:
           std::cout << ">" << msgcopy << "</MsgInfo>\n";
       }
 
-    void doHandlePlayMode( const PlayMode pmode )
+    void doHandlePlayMode( const int,
+                           const PlayMode pmode )
       {
           printPlayMode( pmode );
       }
 
-    void doHandleTeamInfo( const TeamT & left,
+    void doHandleTeamInfo( const int,
+                           const TeamT & left,
                            const TeamT & right )
       {
           printTeam( 'l', left );
           printTeam( 'r', right );
       }
+
+
+    virtual
+    void doHandleDrawClear( const int )
+      { };
+
+    virtual
+    void doHandleDrawPointInfo( const int,
+                                const PointInfoT & )
+      { }
+
+    virtual
+    void doHandleDrawCircleInfo( const int,
+                                 const CircleInfoT & )
+      { }
+
+    virtual
+    void doHandleDrawLineInfo( const int,
+                               const LineInfoT & )
+      { }
 
 };
 

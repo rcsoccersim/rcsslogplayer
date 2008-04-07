@@ -144,60 +144,48 @@ protected:
     int doGetLogVersion() const = 0;
 
     virtual
-    void doHandleShowInfo( const ShowInfoT & )
-      { }
+    void doHandleShowInfo( const ShowInfoT & ) = 0;
 
     virtual
     void doHandleMsgInfo( const int,
                           const int,
-                          const std::string & )
-      { }
+                          const std::string & ) = 0;
 
     virtual
     void doHandlePlayMode( const int,
-                           const PlayMode )
-      { }
+                           const PlayMode ) = 0;
 
     virtual
     void doHandleTeamInfo( const int,
                            const TeamT &,
-                           const TeamT & )
-      { }
+                           const TeamT & ) = 0;
 
     virtual
-    void doHandleDrawClear( const int )
-      { }
+    void doHandleDrawClear( const int ) = 0;
 
     virtual
     void doHandleDrawPointInfo( const int,
-                                const PointInfoT & )
-      { }
+                                const PointInfoT & ) = 0;
 
     virtual
     void doHandleDrawCircleInfo( const int,
-                                 const CircleInfoT & )
-      { }
+                                 const CircleInfoT & ) = 0;
 
     virtual
     void doHandleDrawLineInfo( const int,
-                               const LineInfoT & )
-      { }
+                               const LineInfoT & ) = 0;
 
     virtual
-    void doHandleServerParam( const ServerParamT & )
-      { }
+    void doHandleServerParam( const ServerParamT & ) = 0;
 
     virtual
-    void doHandlePlayerParam( const PlayerParamT & )
-      { }
+    void doHandlePlayerParam( const PlayerParamT & ) = 0;
 
     virtual
-    void doHandlePlayerType( const PlayerTypeT & )
-      { }
+    void doHandlePlayerType( const PlayerTypeT & ) = 0;
 
     virtual
-    void doHandleEOF()
-      { }
+    void doHandleEOF() = 0;
 
 };
 

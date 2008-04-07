@@ -1,5 +1,15 @@
 2008-04-07  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 
+	* classic/logplayer.cpp:
+	* classic/logplayer.h:
+	* qt4/main_window.cpp:
+	* rcsslogplayer/handler.h:
+	* tool/rcg2xml.cpp:
+	* tool/rcg3to4.cpp:
+	* tool/rcg4to3.cpp:
+	* tool/rcgsplit.cpp:
+	- fixed bugs in log parsing.
+
 	* qt4/disp_holder.cpp:
 	* qt4/disp_holder.h:
 	* qt4/log_player.cpp:

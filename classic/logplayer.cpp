@@ -1251,19 +1251,22 @@ Player::doHandleShowInfo( const rcss::rcg::ShowInfoT & info )
 
 void
 Player::doHandleMsgInfo( const int,
+                         const int,
                          const std::string & )
 {
 
 }
 
 void
-Player::doHandlePlayMode( const rcss::rcg::PlayMode pm )
+Player::doHandlePlayMode( const int,
+                          const rcss::rcg::PlayMode pm )
 {
     M_playmode = pm;
 }
 
 void
-Player::doHandleTeamInfo( const rcss::rcg::TeamT & team_l,
+Player::doHandleTeamInfo( const int,
+                          const rcss::rcg::TeamT & team_l,
                           const rcss::rcg::TeamT & team_r )
 {
     M_teams[0] = team_l;

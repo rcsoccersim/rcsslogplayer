@@ -46,6 +46,7 @@
 
 #include <string>
 #include <fstream>
+#include <cstdio>
 #include <cstdlib>
 
 #ifdef HAVE_NETINET_IN_H
@@ -114,14 +115,36 @@ private:
 
     virtual
     void doHandleMsgInfo( const int,
+                          const int,
                           const std::string & );
 
     virtual
-    void doHandlePlayMode( const PlayMode );
+    void doHandlePlayMode( const int,
+                           const PlayMode );
 
     virtual
-    void doHandleTeamInfo( const TeamT &,
+    void doHandleTeamInfo( const int,
+                           const TeamT &,
                            const TeamT & );
+
+    virtual
+    void doHandleDrawClear( const int )
+      { };
+
+    virtual
+    void doHandleDrawPointInfo( const int,
+                                const PointInfoT & )
+      { }
+
+    virtual
+    void doHandleDrawCircleInfo( const int,
+                                 const CircleInfoT & )
+      { }
+
+    virtual
+    void doHandleDrawLineInfo( const int,
+                               const LineInfoT & )
+      { }
 
     virtual
     void doHandlePlayerType( const PlayerTypeT & );
@@ -257,13 +280,13 @@ RCG4to3::doHandleShowInfo( const ShowInfoT & show )
         return;
     }
 
-    M_time = show.time_;
-
     if ( M_verbose )
     {
         std::cout << "rcg4to3: handle show info. time = " << M_time
                   << std::endl;
     }
+
+    M_time = show.time_;
 
     std::ostream & os = M_fout;
 
@@ -311,8 +334,9 @@ RCG4to3::doHandleShowInfo( const ShowInfoT & show )
 
 /*--------------------------------------------------------------------*/
 void
-RCG4to3::doHandleMsgInfo( const int board,
-                              const std::string & msg )
+RCG4to3::doHandleMsgInfo( const int time,
+                          const int board,
+                          const std::string & msg )
 {
     if ( ! M_fout.is_open() )
     {
@@ -324,6 +348,8 @@ RCG4to3::doHandleMsgInfo( const int board,
         std::cout << "rcg4to3: handle msg info. time = " << M_time
                   << std::endl;
     }
+
+    M_time = time;
 
     Int16 mode = htons( MSG_MODE );
     Int16 tmp_board = htons( static_cast< Int16 >( board ) );
@@ -361,16 +387,20 @@ RCG4to3::doHandleEOF()
 
 /*--------------------------------------------------------------------*/
 void
-RCG4to3::doHandlePlayMode( const PlayMode pm )
+RCG4to3::doHandlePlayMode( const int time,
+                           const PlayMode pm )
 {
+    M_time = time;
     M_playmode = pm;
 }
 
 /*--------------------------------------------------------------------*/
 void
-RCG4to3::doHandleTeamInfo( const TeamT & team_l,
+RCG4to3::doHandleTeamInfo( const int time,
+                           const TeamT & team_l,
                            const TeamT & team_r )
 {
+    M_time = time;
     M_team_l = team_l;
     M_team_r = team_r;
 }
@@ -462,9 +492,14 @@ main( int argc, char ** argv )
     }
 
     rcss::rcg::Parser parser( converter );
+    int count = 0;
     while ( parser.parse( fin ) )
     {
-
+        if ( ++count % 500 == 0 )
+        {
+            std::fprintf( stdout, "parsing... %d\r", count );
+            std::fflush( stdout );
+        }
     }
 
     return 0;
