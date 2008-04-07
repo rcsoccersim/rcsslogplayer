@@ -97,10 +97,10 @@ MainData::openRCG( const QString & file_path )
     clear();
 
     rcss::rcg::Parser parser( M_disp_holder );
-    int count = -1;
+    int count = 0;
     while (  parser.parse( fin ) )
     {
-        if ( ++count % 1000 == 0 )
+        if ( ++count % 20 == 0 )
         {
             std::fprintf( stdout, "parsing... %d\r", M_disp_holder.dispInfoCont().size() );
             std::fflush( stdout );

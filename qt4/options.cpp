@@ -121,7 +121,7 @@ Options::Options()
     , M_anti_aliasing( true )
     , M_show_score_board( true )
     , M_show_keepaway_area( false )
-    , M_show_team_logo( true )
+    , M_show_team_graphic( true )
     , M_show_ball( true )
     , M_show_player( true )
     , M_show_player_number( true )
@@ -236,8 +236,8 @@ Options::readSettings()
     val = settings.value( "show_keepaway_area" );
     if ( val.isValid() ) M_show_keepaway_area = val.toBool();
 
-    // val = settings.value( "show_team_logo" );
-    // if ( val.isValid() M_show_team_logo = val.toBool();
+    val = settings.value( "show_team_graphic" );
+    if ( val.isValid() ) M_show_team_graphic = val.toBool();
 
     val = settings.value( "show_ball" );
     if ( val.isValid() ) M_show_ball = val.toBool();
@@ -329,7 +329,7 @@ Options::writeSettings()
     settings.setValue( "anti_aliasing", M_anti_aliasing );
     settings.setValue( "show_score_board", M_show_score_board );
     settings.setValue( "show_keepaway_area", M_show_keepaway_area );
-    // settings.setValue( "show_team_logo", M_show_team_logo );
+    settings.setValue( "show_team_graphic", M_show_team_graphic );
     settings.setValue( "show_ball", M_show_ball );
     settings.setValue( "show_player", M_show_player );
     settings.setValue( "show_player_number", M_show_player_number );
@@ -440,9 +440,9 @@ Options::parseCmdLine( int argc,
         ( "show-keepaway-area",
           po::value< bool >( &M_show_keepaway_area )->default_value( false, "off" ),
           "show keepaway area." )
-//         ( "show-team-logo",
-//           po::value< bool >( &M_show_team_logo )->default_value( true, "on" ),
-//           "show team logo." )
+        ( "show-team-graphic",
+          po::value< bool >( &M_show_team_graphic )->default_value( true, "on" ),
+          "show team graphic." )
         ( "show-ball",
           po::value< bool >( &M_show_ball )->default_value( true, "on" ),
           "show ball." )
@@ -498,13 +498,13 @@ Options::parseCmdLine( int argc,
 
     po::options_description invisibles( "Invisibles" );
     invisibles.add_options()
-        ( "game-log",
+        ( "game-log-file",
           po::value< std::string >( &M_game_log_file )->default_value( "" ),
           "set the path to Game Log file(.rcg) to be opened.")
         ;
 
     po::positional_options_description pdesc;
-    pdesc.add( "game-log", 1 );
+    pdesc.add( "game-log-file", 1 );
 
     po::options_description all_desc( "All options:" );
     all_desc.add( visibles ).add( invisibles );

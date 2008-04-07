@@ -971,18 +971,39 @@ bool
 Parser::parseMsgLine( const int n_line,
                       const std::string & line )
 {
+    /*
+      (msg <Time> <Board> "<Message>")
+
+      NOTE: <Message> may include '"', e.g. xpm line in team_graphic_[lr] message.
+    */
+    int n_read = 0;
     int time = 0;
-    Int16 board = 0;
-    char msg[8192];
+    int board = 0;
 
     if ( std::sscanf( line.c_str(),
-                      " ( msg %d %hd \"%8191[^\"]\" ) ",
-                      &time, &board, msg ) != 3 )
+                      " ( msg %d %d \"%n",
+                      &time, &board, &n_read ) != 2 )
     {
         std::cerr << n_line << ": error: "
                   << "Illegal msg line. \"" << line << "\"" << std::endl;;
         return false;
     }
+
+    std::string msg( line, n_read, std::string::npos );
+    if ( msg.length() <= 2 ) // at least, [")] + 1 char
+    {
+        return false;
+    }
+
+    std::string::size_type pos = msg.rfind( "\")" );
+    if ( pos == std::string::npos )
+    {
+        std::cerr << n_line << ": error: "
+                  << "Illegal msg [" << line << "]" << std::endl;;
+        return false;
+    }
+
+    msg.erase( pos );
 
     M_handler.handleMsgInfo( board, msg );
 

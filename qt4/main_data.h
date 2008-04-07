@@ -101,7 +101,6 @@ public:
 
     bool openRCG( const QString & file_path );
 
-
 public:
 
     bool setIndexFirst();

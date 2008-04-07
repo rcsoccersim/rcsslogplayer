@@ -41,7 +41,6 @@
 #include "main_data.h"
 #include "options.h"
 #include "circle_2d.h"
-#include "line_2d.h"
 #include "vector_2d.h"
 
 #include <rcsslogplayer/types.h>
@@ -781,7 +780,6 @@ PlayerPainter::drawKickAccelArea( QPainter & painter,
     if ( max_speed_circle.intersection( max_accel_circle,
                                         &intersection_1,
                                         &intersection_2 ) != 2 )
-
     {
         // no intersection points
 

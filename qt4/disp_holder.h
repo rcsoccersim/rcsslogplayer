@@ -33,10 +33,13 @@
 #ifndef RCSSLOGPLAYER_DISP_HOLDER_H
 #define RCSSLOGPLAYER_DISP_HOLDER_H
 
+#include "team_graphic.h"
+
 #include <rcsslogplayer/types.h>
 #include <rcsslogplayer/handler.h>
 
 #include <boost/shared_ptr.hpp>
+
 #include <map>
 #include <vector>
 #include <iostream>
@@ -67,6 +70,9 @@ private:
     std::vector< std::pair< int, rcss::rcg::PlayMode > > M_penalty_scores_left;
     std::vector< std::pair< int, rcss::rcg::PlayMode > > M_penalty_scores_right;
 
+    // team graphic holder
+    TeamGraphic M_team_graphic_left;
+    TeamGraphic M_team_graphic_right;
 
     // not used
     DispHolder( const DispHolder & );
@@ -131,6 +137,18 @@ public:
           return M_penalty_scores_right;
       }
 
+    const
+    TeamGraphic & teamGraphicLeft() const
+      {
+          return M_team_graphic_left;
+      }
+
+    const
+    TeamGraphic & teamGraphicRight() const
+      {
+          return M_team_graphic_right;
+      }
+
 
     bool addDispInfo1( const rcss::rcg::dispinfo_t & disp );
     bool addDispInfo2( const rcss::rcg::dispinfo_t2 & disp );
@@ -159,6 +177,9 @@ private:
     void doHandlePlayerType( const rcss::rcg::PlayerTypeT & );
     virtual
     void doHandleEOF();
+
+private:
+    void analyzeTeamGraphic( const std::string & msg );
 
 };
 

@@ -137,7 +137,7 @@ private:
 
     bool M_show_score_board;
     bool M_show_keepaway_area;
-    bool M_show_team_logo;
+    bool M_show_team_graphic;
     bool M_show_ball;
     bool M_show_player;
     bool M_show_player_number;
@@ -384,13 +384,13 @@ public:
           M_show_keepaway_area = ! M_show_keepaway_area;
       }
 
-    bool showTeamLogo() const
+    bool showTeamGraphic() const
       {
-          return M_show_team_logo;
+          return M_show_team_graphic;
       }
-    void toggleShowTeamLogo()
+    void toggleShowTeamGraphic()
       {
-          M_show_team_logo = ! M_show_team_logo;
+          M_show_team_graphic = ! M_show_team_graphic;
       }
 
     bool showBall() const

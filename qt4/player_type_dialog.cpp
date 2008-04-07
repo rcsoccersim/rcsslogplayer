@@ -247,7 +247,7 @@ PlayerTypeDialog::updateData()
 
 //         // consume
 //         text.sprintf( "%.2f",
-//                       param.getOneStepStaminaComsumption( rcsc::ServerParam::i() ) );
+//                       param.getOneStepStaminaComsumption( ServerParamT ) );
 //         M_model->setData( M_model->index( row, i ),
 //                           text );
 //         ++i;

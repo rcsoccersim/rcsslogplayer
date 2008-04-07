@@ -38,12 +38,11 @@
 
 #include "field_canvas.h"
 
-//#include "draw_config.h"
 #include "field_painter.h"
 #include "score_board_painter.h"
 #include "ball_painter.h"
 #include "player_painter.h"
-//#include "team_graphic_painter.h"
+#include "team_graphic_painter.h"
 
 // model
 #include "main_data.h"
@@ -159,8 +158,8 @@ FieldCanvas::createPainters()
 
     M_field_painter = boost::shared_ptr< FieldPainter >( new FieldPainter( M_main_data ) );
 
-//     M_painters.push_back( boost::shared_ptr< PainterInterface >
-//                           ( new TeamGraphicPainter( *this, M_main_data ) ) );
+    M_painters.push_back( boost::shared_ptr< PainterInterface >
+                          ( new TeamGraphicPainter( M_main_data ) ) );
     M_painters.push_back( boost::shared_ptr< PainterInterface >
                           ( new PlayerPainter( M_main_data ) ) );
     M_painters.push_back( boost::shared_ptr< PainterInterface >

@@ -32,6 +32,8 @@ rcsslogplayer_SOURCES = \
 	player_type_dialog.cpp \
 	remote_monitor.cpp \
 	score_board_painter.cpp \
+	team_graphic.cpp \
+	team_graphic_painter.cpp \
 	vector_2d.cpp
 
 nodist_rcsslogplayer_SOURCES = \
@@ -69,6 +71,8 @@ noinst_HEADERS = \
 	player_type_dialog.h \
 	remote_monitor.h \
 	score_board_painter.h \
+	team_graphic.h \
+	team_graphic_painter.h \
 	vector_2d.h
 
 rcsslogplayer_CPPFLAGS = -I$(top_srcdir) $(QT4_CPPFLAGS)

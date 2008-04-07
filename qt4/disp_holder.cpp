@@ -76,6 +76,10 @@ DispHolder::clear()
     M_server_param = rcss::rcg::ServerParamT();
     M_player_param = rcss::rcg::PlayerParamT();
     M_player_types.clear();
+
+
+    M_team_graphic_left.clear();
+    M_team_graphic_right.clear();
 }
 
 /*-------------------------------------------------------------------*/
@@ -229,10 +233,15 @@ DispHolder::doHandleMsgInfo( const int,
 {
     if ( ! msg.compare( 0, std::strlen( "(team_graphic_" ), "(team_graphic_" ) )
     {
-        // TODO
-        // analyzeTeamGraphic( msg );
+        analyzeTeamGraphic( msg );
         return;
     }
+    else if ( ! msg.compare( 0, std::strlen( "(change_player_type" ), "(change_player_type" ) )
+    {
+        return;
+    }
+
+    std::cerr << "DispHolder::handle Msg [" << msg << "]" << std::endl;
 }
 
 /*-------------------------------------------------------------------*/
@@ -321,4 +330,47 @@ void
 DispHolder::doHandleEOF()
 {
 
+}
+
+/*-------------------------------------------------------------------*/
+/*!
+
+*/
+void
+DispHolder::analyzeTeamGraphic( const std::string & msg )
+{
+    char side = 'n';
+    int x = -1, y = -1;
+
+    if ( std::sscanf( msg.c_str(),
+                      "(team_graphic_%c ( %d %d ",
+                      &side, &x, &y ) != 3
+         || ( side != 'l' && side != 'r' )
+         || x < 0
+         || y < 0 )
+    {
+        std::cerr << "Illegal team_graphic message ["
+                  << msg << "]" << std::endl;
+        return;
+    }
+
+    if ( side == 'l' )
+    {
+        if ( ! M_team_graphic_left.parse( msg.c_str() ) )
+        {
+            std::cerr << "Illegal team_graphic message ["
+                      << msg << "]" << std::endl;
+        }
+        return;
+    }
+
+    if ( side == 'r' )
+    {
+        if ( ! M_team_graphic_right.parse( msg.c_str() ) )
+        {
+            std::cerr << "Illegal team_graphic message ["
+                      << msg << "]" << std::endl;
+        }
+        return;
+    }
 }

@@ -1,5 +1,30 @@
 2008-04-07  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 
+	* qt4/Makefile.am:
+	* qt4/team_graphic.cpp:
+	* qt4/team_graphic.h:
+	* qt4/team_graphic_painter.cpp:
+	* qt4/team_graphic_painter.h:
+	* qt4/config_dialog.cpp:
+	* qt4/config_dialog.h:
+	* qt4/disp_holder.cpp:
+	* qt4/disp_holder.h:
+	* qt4/field_canvas.cpp:
+	* qt4/main_data.cpp:
+	* qt4/main_data.h:
+	* qt4/options.cpp:
+	* qt4/options.h:
+	* qt4/player_painter.cpp:
+	* qt4/player_type_dialog.cpp:
+	- supported team_graphic data.
+
+	* qt4/log_slider_tool_bar.cpp:
+	* qt4/log_slider_tool_bar.h:
+	- implemented a click action in the cycle slider.
+
+	* rcsslogplayer/parser.cpp:
+	- fixed a defect of msg info parsing.
+
 	* qt4/ball_painter.cpp:
 	* qt4/field_canvas.cpp:
 	* qt4/field_painter.cpp:

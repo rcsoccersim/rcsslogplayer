@@ -42,6 +42,7 @@
 #include "main_data.h"
 
 #include <iostream>
+#include <cmath>
 #include <cassert>
 
 class CycleEdit
@@ -78,6 +79,44 @@ public:
               size.setHeight( 24 );
           }
           return size;
+      }
+
+};
+
+class CycleSlider
+    : public QSlider {
+private:
+
+public:
+
+    CycleSlider( Qt::Orientation orientation,
+                 QWidget * parent = 0 )
+        : QSlider( orientation, parent )
+      { }
+
+protected:
+
+    void mousePressEvent( QMouseEvent * event )
+      {
+          double rate = 0;
+          if ( this->orientation() == Qt::Horizontal )
+          {
+              rate = static_cast< double >( event->pos().x() )
+                  / static_cast< double >( this->width() );
+
+          }
+          else
+          {
+              rate = static_cast< double >( this->height() - event->pos().y() )
+                  / static_cast< double >( this->height() );
+          }
+
+          int val = this->minimum()
+              + static_cast< int >( rint( ( this->maximum() - this->minimum() ) * rate ) );
+
+          this->setValue( val );
+
+          QSlider::mousePressEvent( event );
       }
 
 };
@@ -128,7 +167,7 @@ LogSliderToolBar::createControls( LogPlayer * log_player,
 {
     // visible widgets
 
-    M_cycle_slider = new QSlider( this->orientation() );
+    M_cycle_slider = new CycleSlider( this->orientation() );
     connect( this, SIGNAL( orientationChanged( Qt::Orientation ) ),
              M_cycle_slider, SLOT( setOrientation( Qt::Orientation ) ) );
     M_cycle_slider->setStatusTip( tr( "Cycle Slider." ) );
@@ -139,10 +178,17 @@ LogSliderToolBar::createControls( LogPlayer * log_player,
     M_cycle_slider->setMaximumSize( 640, 640 );
     M_cycle_slider->setMinimumWidth( 200 );
     //M_cycle_slider->setMinimumSize( 400, 400 );
-    connect( M_cycle_slider, SIGNAL( sliderMoved( int ) ),
+//     connect( M_cycle_slider, SIGNAL( sliderMoved( int ) ),
+//              log_player, SLOT( goToIndex( int ) ) );
+    connect( M_cycle_slider, SIGNAL( valueChanged( int ) ),
              log_player, SLOT( goToIndex( int ) ) );
 
+    connect( M_cycle_slider, SIGNAL( sliderPressed() ),
+             this, SLOT( pressSlider() ) );
+
     this->addWidget( M_cycle_slider );
+
+    //
 
     M_cycle_edit = new CycleEdit();
     M_cycle_edit->setStatusTip( tr( "Cycle Input Box." ) );
@@ -192,23 +238,6 @@ LogSliderToolBar::createControls( LogPlayer * log_player,
 /*!
 
 */
-void
-LogSliderToolBar::editCycle()
-{
-    bool ok = true;
-    int cycle = M_cycle_edit->text().toInt( &ok );
-
-    if ( ok
-         && cycle >= 0 )
-    {
-        emit cycleChanged( cycle );
-    }
-}
-
-/*-------------------------------------------------------------------*/
-/*!
-
-*/
 // void
 // LogSliderToolBar::moveEvent( QMoveEvent * event )
 // {
@@ -229,6 +258,34 @@ LogSliderToolBar::editCycle()
 
 //     event->accept();
 // }
+
+/*-------------------------------------------------------------------*/
+/*!
+
+*/
+void
+LogSliderToolBar::editCycle()
+{
+    bool ok = true;
+    int cycle = M_cycle_edit->text().toInt( &ok );
+
+    if ( ok
+         && cycle >= 0 )
+    {
+        emit cycleChanged( cycle );
+    }
+}
+
+/*-------------------------------------------------------------------*/
+/*!
+
+*/
+void
+LogSliderToolBar::pressSlider()
+{
+    std::cerr << "press slider" << std::endl;
+
+}
 
 /*-------------------------------------------------------------------*/
 /*!

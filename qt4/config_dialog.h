@@ -89,7 +89,7 @@ private:
     // show/hide control
     QCheckBox * M_show_score_board_cb;
     QCheckBox * M_show_keepaway_area_cb;
-    QCheckBox * M_show_team_logo_cb;
+    QCheckBox * M_show_team_graphic_cb;
     QCheckBox * M_show_ball_cb;
     QCheckBox * M_show_player_cb;
     QCheckBox * M_show_flag_cb;
@@ -175,7 +175,7 @@ private slots:
 
     void clickShowScoreBoard( bool checked );
     void clickShowKeepawayArea( bool checked );
-    void clickShowTeamLogo( bool checked );
+    void clickShowTeamGraphic( bool checked );
     void clickShowBall( bool checked );
     void clickShowPlayer( bool checked );
     void clickShowFlag( bool checked );
@@ -239,7 +239,7 @@ public slots:
 
     void toggleShowScoreBoard();
     void toggleShowKeepawayArea();
-    void toggleShowTeamLogo();
+    void toggleShowTeamGraphic();
     void toggleShowPlayer();
     void toggleShowBall();
     void toggleShowFlag();

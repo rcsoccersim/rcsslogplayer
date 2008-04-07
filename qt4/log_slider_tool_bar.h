@@ -77,6 +77,7 @@ protected:
 private slots:
 
     void editCycle();
+    void pressSlider();
 
 public slots:
 

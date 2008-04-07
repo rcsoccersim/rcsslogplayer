@@ -432,12 +432,12 @@ ConfigDialog::createShowControls()
         connect( M_show_keepaway_area_cb, SIGNAL( clicked( bool ) ),
                  this, SLOT( clickShowKeepawayArea( bool ) ) );
         layout->addWidget( M_show_keepaway_area_cb );
-//         //
-//         M_show_team_logo_cb = new QCheckBox( tr( "Team Logo" ) );
-//         M_show_team_logo_cb->setChecked( Options::instance().showTeamLogo() );
-//         connect( M_show_team_logo_cb, SIGNAL( clicked( bool ) ),
-//                  this, SLOT( clickShowTeamLogo( bool ) ) );
-//         layout->addWidget( M_show_team_logo_cb );
+        //
+        M_show_team_graphic_cb = new QCheckBox( tr( "Team Graphic" ) );
+        M_show_team_graphic_cb->setChecked( Options::instance().showTeamGraphic() );
+        connect( M_show_team_graphic_cb, SIGNAL( clicked( bool ) ),
+                 this, SLOT( clickShowTeamGraphic( bool ) ) );
+        layout->addWidget( M_show_team_graphic_cb );
         //
         M_show_flag_cb = new QCheckBox( tr( "Flag" ) );
         M_show_flag_cb->setChecked( Options::instance().showFlag() );
@@ -843,7 +843,7 @@ ConfigDialog::updateAll()
 
     M_show_score_board_cb->setChecked( opt.showScoreBoard() );
     M_show_keepaway_area_cb->setChecked( opt.showKeepawayArea() );
-//    M_show_team_logo_cb->setChecked( opt.showTeamLogo() );
+    M_show_team_graphic_cb->setChecked( opt.showTeamGraphic() );
     M_show_ball_cb->setChecked( opt.showBall() );
     M_show_player_cb->setChecked( opt.showPlayer() );
     M_show_flag_cb->setChecked( opt.showFlag() );
@@ -1337,11 +1337,11 @@ ConfigDialog::toggleShowScoreBoard()
 
 */
 void
-ConfigDialog::clickShowTeamLogo( bool checked )
+ConfigDialog::clickShowTeamGraphic( bool checked )
 {
-    if ( Options::instance().showTeamLogo() != checked )
+    if ( Options::instance().showTeamGraphic() != checked )
     {
-        Options::instance().toggleShowTeamLogo();
+        Options::instance().toggleShowTeamGraphic();
         emit configured();
     }
 }
@@ -1351,10 +1351,10 @@ ConfigDialog::clickShowTeamLogo( bool checked )
 
 */
 void
-ConfigDialog::toggleShowTeamLogo()
+ConfigDialog::toggleShowTeamGraphic()
 {
-    Options::instance().toggleShowTeamLogo();
-    M_show_score_board_cb->setChecked( Options::instance().showTeamLogo() );
+    Options::instance().toggleShowTeamGraphic();
+    M_show_team_graphic_cb->setChecked( Options::instance().showTeamGraphic() );
 
     emit configured();
 }
