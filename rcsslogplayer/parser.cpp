@@ -43,6 +43,7 @@
 #include <string>
 #include <map>
 #include <cmath>
+#include <cstdlib>
 
 #ifdef HAVE_NETINET_IN_H
 #include <netinet/in.h>
@@ -66,48 +67,48 @@ clean_string( std::string str )
 {
     if( str.empty() )
     {
-				return str;
+        return str;
     }
 
     if ( *str.begin() == '\'' )
     {
-				if( *str.rbegin() == '\''  )
+        if( *str.rbegin() == '\''  )
         {
             str = str.substr( 1, str.length() - 2 );
         }
-				else
+        else
         {
             return str;
         }
 
         // replace escape character
-				for ( std::string::size_type escape_pos = str.find( "\\'" );
+        for ( std::string::size_type escape_pos = str.find( "\\'" );
               escape_pos != std::string::npos;
               escape_pos = str.find( "\\'" ) )
-				{
+        {
             // replace "\'" with "'"
             str.replace( escape_pos, 2, "'" );
-				}
+        }
     }
     else if ( *str.begin() == '"' )
     {
-				if ( *str.rbegin() == '"'  )
+        if ( *str.rbegin() == '"'  )
         {
             str = str.substr( 1, str.length() - 2 );
         }
-				else
+        else
         {
             return str;
         }
 
         // replace escape character
-				for( std::string::size_type escape_pos = str.find( "\\\"" );
+        for( std::string::size_type escape_pos = str.find( "\\\"" );
              escape_pos != std::string::npos;
              escape_pos = str.find( "\\\"" ) )
-				{
+        {
             // replace "\"" with """
             str.replace( escape_pos, 2, "\"" );
-				}
+        }
     }
 
     return str;
@@ -244,6 +245,7 @@ namespace rcg {
 
 Parser::Parser( Handler & handler )
     : M_handler( handler )
+    , M_safe_mode( false )
     , M_header_parsed( false )
     , M_line_count( 0 )
     , M_time( 0 )
@@ -752,133 +754,297 @@ Parser::parseShowLine( const int n_line,
 
     ShowInfoT show;
 
-    int n_read = 0;
-
-    // time
-    int time = 0;
-
-    if ( std::sscanf( buf, "(show %d %n",
-                      &time, &n_read ) != 1 )
+    if ( M_safe_mode )
     {
-        std::cerr << n_line << ": error: "
-                  << "Illegal time info \"" << line << "\""
-                  << std::endl;
-        return false;
-    }
-    buf += n_read;
+        int n_read = 0;
 
-    M_time = time;
-    show.time_ = static_cast< UInt32 >( time );
+        // time
+        int time = 0;
 
-    // ball
-    {
-        BallT & ball = show.ball_;
-        if ( std::sscanf( buf, " ((b) %f %f %f %f) %n",
-                          &ball.x_, &ball.y_, &ball.vx_, &ball.vy_,
-                          &n_read ) != 4 )
+        if ( std::sscanf( buf, "(show %d %n",
+                          &time, &n_read ) != 1 )
         {
             std::cerr << n_line << ": error: "
-                      << "Illegal ball info \"" << line << "\""
-                      << std::endl;
-            return false;
-        }
-        buf += n_read;
-    }
-
-    // players
-    char side;
-    short unum;
-    short type;
-    int state;
-    float x, y, vx, vy, body, neck;
-    for ( int i = 0; i < MAX_PLAYER * 2; ++i )
-    {
-        if ( *buf == ')' ) break;
-
-        if ( std::sscanf( buf,
-                          " ((%c %hd) %hd %x %f %f %f %f %f %f %n",
-                          &side, &unum,
-                          &type, &state,
-                          &x, &y, &vx, &vy, &body, &neck,
-                          &n_read ) != 10 )
-        {
-            std::cerr << n_line << ": error: "
-                      << " Illegal player id or pos. " << side << ' ' << unum
-                      << " \"" << line << "\""
+                      << "Illegal time info \"" << line << "\""
                       << std::endl;
             return false;
         }
         buf += n_read;
 
-        int idx = unum - 1;
-        if ( side == 'r' ) idx += MAX_PLAYER;
-        if ( idx < 0 || MAX_PLAYER*2 <= idx )
-        {
-            std::cerr << n_line << ": error: "
-                      << " Illegal player id. " << side << ' ' << unum
-                      << " \"" << line << "\""
-                      << std::endl;;
-            return false;
-        }
+        M_time = time;
+        show.time_ = static_cast< UInt32 >( time );
 
-        PlayerT & p = show.player_[idx];
-        p.side_ = side;
-        p.unum_ = unum;
-        p.type_ = type;
-        p.state_ = state;
-        p.x_ = x;
-        p.y_ = y;
-        p.vx_ = vx;
-        p.vy_ = vy;
-        p.body_ = body;
-        p.neck_ = neck;
-
-        if ( *buf != '('
-             && std::sscanf( buf,
-                             "%f %f %n",
-                             &p.point_x_, &p.point_y_,
-                             &n_read ) == 2 )
+        // ball
         {
+            BallT & ball = show.ball_;
+            if ( std::sscanf( buf, " ((b) %f %f %f %f) %n",
+                              &ball.x_, &ball.y_, &ball.vx_, &ball.vy_,
+                              &n_read ) != 4 )
+            {
+                std::cerr << n_line << ": error: "
+                          << "Illegal ball info \"" << line << "\""
+                          << std::endl;
+                return false;
+            }
             buf += n_read;
         }
 
-        if ( std::sscanf( buf,
-                          " (v %c %f) (s %f %f %f) %n",
-                          &p.view_quality_, &p.view_width_,
-                          &p.stamina_, &p.effort_, &p.recovery_,
-                          &n_read ) != 5 )
+        // players
+        char side;
+        short unum;
+        short type;
+        int state;
+        float x, y, vx, vy, body, neck;
+        for ( int i = 0; i < MAX_PLAYER * 2; ++i )
         {
-            std::cerr << n_line << ": error: "
-                      << " Illegal player view or stamina. " << side << ' ' << unum
-                      << " \"" << line << "\""
-                      << std::endl;;
-            return false;
-        }
-        buf += n_read;
+            if ( *buf == '\0' || *buf == ')' ) break;
 
-        if ( *(buf + 1) == 'f'
-             && std::sscanf( buf,
-                             " (f %c %hd) %n",
-                             &p.focus_side_, &p.focus_unum_,
-                             &n_read ) == 2 )
-        {
+            if ( std::sscanf( buf,
+                              " ((%c %hd) %hd %x %f %f %f %f %f %f %n",
+                              &side, &unum,
+                              &type, &state,
+                              &x, &y, &vx, &vy, &body, &neck,
+                              &n_read ) != 10 )
+            {
+                std::cerr << n_line << ": error: "
+                          << " Illegal player id or pos. " << side << ' ' << unum
+                          << " \"" << line << "\""
+                          << std::endl;
+                return false;
+            }
+            buf += n_read;
+
+            int idx = unum - 1;
+            if ( side == 'r' ) idx += MAX_PLAYER;
+            if ( idx < 0 || MAX_PLAYER*2 <= idx )
+            {
+                std::cerr << n_line << ": error: "
+                          << " Illegal player id. " << side << ' ' << unum
+                          << " \"" << line << "\""
+                          << std::endl;;
+                return false;
+            }
+
+            PlayerT & p = show.player_[idx];
+            p.side_ = side;
+            p.unum_ = unum;
+            p.type_ = type;
+            p.state_ = state;
+            p.x_ = x;
+            p.y_ = y;
+            p.vx_ = vx;
+            p.vy_ = vy;
+            p.body_ = body;
+            p.neck_ = neck;
+
+            if ( *buf != '('
+                 && std::sscanf( buf,
+                                 "%f %f %n",
+                                 &p.point_x_, &p.point_y_,
+                                 &n_read ) == 2 )
+            {
+                buf += n_read;
+            }
+
+            if ( std::sscanf( buf,
+                              " (v %c %f) (s %f %f %f) %n",
+                              &p.view_quality_, &p.view_width_,
+                              &p.stamina_, &p.effort_, &p.recovery_,
+                              &n_read ) != 5 )
+            {
+                std::cerr << n_line << ": error: "
+                          << " Illegal player view or stamina. " << side << ' ' << unum
+                          << " \"" << line << "\""
+                          << std::endl;;
+                return false;
+            }
+            buf += n_read;
+
+            if ( *(buf + 1) == 'f'
+                 && std::sscanf( buf,
+                                 " (f %c %hd) %n",
+                                 &p.focus_side_, &p.focus_unum_,
+                                 &n_read ) == 2 )
+            {
+                buf += n_read;
+            }
+
+            if ( std::sscanf( buf,
+                              " (c %hd %hd %hd %hd %hd %hd %hd %hd %hd %hd %hd )) %n",
+                              &p.kick_count_, &p.dash_count_, &p.turn_count_, &p.catch_count_, &p.move_count_,
+                              &p.turn_neck_count_, &p.change_view_count_, &p.say_count_, &p.tackle_count_,
+                              &p.pointto_count_, &p.attentionto_count_,
+                              &n_read ) != 11 )
+            {
+                std::cerr << n_line << ": error: "
+                          << " Illegal player count. " << side << ' ' << unum
+                          << " \"" << line << "\""
+                          << std::endl;;
+                return false;
+            }
             buf += n_read;
         }
 
-        if ( std::sscanf( buf,
-                          " (c %hd %hd %hd %hd %hd %hd %hd %hd %hd %hd %hd )) %n",
-                          &p.kick_count_, &p.dash_count_, &p.turn_count_, &p.catch_count_, &p.move_count_,
-                          &p.turn_neck_count_, &p.change_view_count_, &p.say_count_, &p.tackle_count_,
-                          &p.pointto_count_, &p.attentionto_count_,
-                          &n_read ) != 11 )
+    }
+    else
+    {
+        char * next;
+
+        // time
+        while ( *buf == ' ' ) ++buf;
+        while ( *buf != '\0' && *buf != ' ' ) ++buf;
+        long time = std::strtol( buf, &next, 10 ); buf = next;
+
+        if ( time == LONG_MIN || time == LONG_MAX )
         {
             std::cerr << n_line << ": error: "
-                      << " Illegal player count. " << side << ' ' << unum
+                      << " Illegal show info time. "
                       << " \"" << line << "\""
-                      << std::endl;;
+                      << std::endl;
             return false;
         }
-        buf += n_read;
+
+        M_time = static_cast< int >( time );
+        show.time_ = static_cast< UInt32 >( M_time );
+
+        // ball
+        {
+            // ((b) x y vx vy)
+            while ( *buf == ' ' ) ++buf;
+            while ( *buf != '\0' && *buf != ')' ) ++buf;
+            while ( *buf == ')' ) ++buf;
+            BallT & ball = show.ball_;
+            ball.x_ = std::strtof( buf, &next ); buf = next;
+            ball.y_ = std::strtof( buf, &next ); buf = next;
+            ball.vx_ = std::strtof( buf, &next ); buf = next;
+            ball.vy_ = std::strtof( buf, &next ); buf = next;
+            while ( *buf == ')' ) ++buf;
+            while ( *buf == ' ' ) ++buf;
+
+            if ( ball.vy_ == HUGE_VALF )
+            {
+                std::cerr << n_line << ": error: "
+                          << " Illegal ball info. "
+                          << " \"" << line << "\""
+                          << std::endl;;
+                return false;
+            }
+        }
+
+        // players
+        // ((side unum) type state x y vx vy body neck [pointx pointy] (v h 90) (s 4000 1 1)[(f side unum)])
+        //              (c 1 1 1 1 1 1 1 1 1 1 1))
+        for ( int i = 0; i < MAX_PLAYER * 2; ++i )
+        {
+            if ( *buf == '\0' || *buf == ')' ) break;
+
+            // ((side unum)
+            while ( *buf == ' ' ) ++buf;
+            while ( *buf == '(' ) ++buf;
+            char side = *buf;
+            if ( side != 'l' && side != 'r' )
+            {
+                std::cerr << n_line << ": error: "
+                          << " Illegal player side. " << side << ' ' << i
+                          << " \"" << buf << "\""
+                          << std::endl;;
+                return false;
+            }
+
+            ++buf;
+            long unum = std::strtol( buf, &next, 10 ); buf = next;
+            if ( unum < 0 || MAX_PLAYER < unum )
+            {
+                std::cerr << n_line << ": error: "
+                          << " Illegal player unum. " << side << ' ' << i
+                          << " \"" << buf << "\""
+                          << std::endl;;
+                return false;
+            }
+
+            while ( *buf == ')' ) ++buf;
+
+            const int idx = ( side == 'l' ? unum - 1 : unum - 1 + MAX_PLAYER );
+
+            PlayerT & p = show.player_[idx];
+            p.side_ = side;
+            p.unum_ = static_cast< Int16 >( unum );
+
+            // x y vx vy body neck
+            p.type_ = static_cast< Int16 >( std::strtol( buf, &next, 10 ) ); buf = next;
+            p.state_ = static_cast< Int32 >( std::strtol( buf, &next, 16 ) ); buf = next;
+            p.x_ = std::strtof( buf, &next ); buf = next;
+            p.y_ = std::strtof( buf, &next ); buf = next;
+            p.vx_ = std::strtof( buf, &next ); buf = next;
+            p.vy_ = std::strtof( buf, &next ); buf = next;
+            p.body_ = std::strtof( buf, &next ); buf = next;
+            p.neck_ = std::strtof( buf, &next ); buf = next;
+            while ( *buf == ' ' ) ++buf;
+
+            // x y vx vy body neck
+            if ( *buf != '\0' && *buf != '(' )
+            {
+                p.point_x_ = std::strtof( buf, &next ); buf = next;
+                p.point_y_ = std::strtof( buf, &next ); buf = next;
+            }
+
+            // (v quality width)
+            while ( *buf != '\0' && *buf != 'v' ) ++buf;
+            ++buf; // skip 'v'
+            while ( *buf == ' ' ) ++buf;
+            p.view_quality_ = *buf; ++buf;
+            p.view_width_ = std::strtof( buf, &next ); buf = next;
+
+            // (s stamina effort recovery)
+            while ( *buf != '\0' && *buf != 's' ) ++buf;
+            ++buf; // skip 's' //while ( *buf != '\0' && *buf != ' ' ) ++buf;
+            p.stamina_ = std::strtof( buf, &next ); buf = next;
+            p.effort_ = std::strtof( buf, &next ); buf = next;
+            p.recovery_ = std::strtof( buf, &next ); buf = next;
+            while ( *buf != '\0' && *buf != ')' ) ++buf;
+            while ( *buf == ')' ) ++buf;
+
+            while ( *buf != '\0' && *buf != '(' ) ++buf;
+
+            // (f side unum)
+            if ( *(buf + 1) == 'f' )
+            {
+                while ( *buf != '\0' && *buf != ' ' ) ++buf;
+                while ( *buf == ' ' ) ++buf;
+                p.focus_side_ = *buf; ++buf;
+                p.focus_unum_ = static_cast< Int16 >( std::strtol( buf, &next, 10 ) ); buf = next;
+                while ( *buf == ' ' ) ++buf;
+                while ( *buf == ')' ) ++buf;
+                while ( *buf == ' ' ) ++buf;
+            }
+
+            // (c kick dash turn catch move tneck cview say tackle pointto atttention)
+            while ( *buf == '(' ) ++buf;
+            ++buf; // skip 'c' //while ( *buf != '\0' && *buf != ' ' ) ++buf;
+            p.kick_count_ = static_cast< UInt16 >( std::strtol( buf, &next, 10 ) ); buf = next;
+            p.dash_count_ = static_cast< UInt16 >( std::strtol( buf, &next, 10 ) ); buf = next;
+            p.turn_count_ = static_cast< UInt16 >( std::strtol( buf, &next, 10 ) ); buf = next;
+            p.catch_count_ = static_cast< UInt16 >( std::strtol( buf, &next, 10 ) ); buf = next;
+            p.move_count_ = static_cast< UInt16 >( std::strtol( buf, &next, 10 ) ); buf = next;
+            p.turn_neck_count_ = static_cast< UInt16 >( std::strtol( buf, &next, 10 ) ); buf = next;
+            p.change_view_count_ = static_cast< UInt16 >( std::strtol( buf, &next, 10 ) ); buf = next;
+            p.say_count_ = static_cast< UInt16 >( std::strtol( buf, &next, 10 ) ); buf = next;
+            p.tackle_count_ = static_cast< UInt16 >( std::strtol( buf, &next, 10 ) ); buf = next;
+            p.pointto_count_ = static_cast< UInt16 >( std::strtol( buf, &next, 10 ) ); buf = next;
+            p.attentionto_count_ = static_cast< UInt16 >( std::strtol( buf, &next, 10 ) ); buf = next;
+            while ( *buf == ')' ) ++buf;
+            while ( *buf == ' ' ) ++buf;
+
+            if ( *buf == '\0'
+                 && i != MAX_PLAYER*2 - 1 )
+            {
+                std::cerr << n_line << ": error: "
+                          << " Illegal player info. " << side << ' ' << unum
+                          << " \"" << line << "\""
+                          << std::endl;;
+                return false;
+            }
+        }
     }
 
     M_handler.handleShowInfo( show );

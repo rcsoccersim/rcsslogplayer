@@ -825,7 +825,7 @@ MainWindow::createConfigDialog()
         act->setShortcut( Qt::Key_P );
         this->addAction( act );
         connect( act, SIGNAL( triggered() ),
-                 M_config_dialog, SLOT( toggleShowKickAccelArea() ) );
+                 M_config_dialog, SLOT( toggleShowPointto() ) );
     }
 
     // show/hide

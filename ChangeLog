@@ -1,5 +1,13 @@
 2008-04-08  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 
+	* qt4/main_window.cpp:
+	- fixed an incorrect handler assignment.
+
+	* rcsslogplayer/parser.cpp:
+	* rcsslogplayer/parser.h:
+	- fixed bugs in v4 parser.
+	- added safe mode option
+
 	* qt4/log_slider_tool_bar.cpp:
 	- restricted press event to the left button.
 

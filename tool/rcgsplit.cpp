@@ -462,7 +462,7 @@ RCGSplitter::printShowV3( const ShowInfoT & show )
 void
 RCGSplitter::printShowV2( const ShowInfoT & show )
 {
-    bool new_file = createOutputFile( show.time_ );
+    createOutputFile( show.time_ );
 
     if ( ! M_fout.is_open() )
     {
@@ -490,7 +490,7 @@ RCGSplitter::printShowV2( const ShowInfoT & show )
 void
 RCGSplitter::printShowOld( const ShowInfoT & show )
 {
-    bool new_file = createOutputFile( show.time_ );
+    createOutputFile( show.time_ );
 
     if ( ! M_fout.is_open() )
     {

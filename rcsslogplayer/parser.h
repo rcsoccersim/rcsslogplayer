@@ -52,6 +52,7 @@ private:
     //! reference to the data handler instance
     Handler & M_handler;
 
+    bool M_safe_mode; //!< if this variable is true, parser uses safety but slow algorithm.
     bool M_header_parsed; //!< flag to determin whether the header data is parsed or not
     int M_line_count; //!< total number of parsed line. This variable is used only for v4+ log.
     int M_time; //!< current time
@@ -81,6 +82,15 @@ public:
       \return true if successfuly parsed.
      */
     bool parse( std::istream & is );
+
+    /*!
+      \brief set safety parsing mode.
+      \param on if this value is true, parser uses safety but slow algorithm.
+     */
+    void setSafeMode( const bool on )
+      {
+          M_safe_mode = on;
+      }
 
 private:
 
