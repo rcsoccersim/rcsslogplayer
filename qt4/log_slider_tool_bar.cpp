@@ -186,9 +186,6 @@ LogSliderToolBar::createControls( LogPlayer * log_player,
     connect( M_cycle_slider, SIGNAL( valueChanged( int ) ),
              log_player, SLOT( goToIndex( int ) ) );
 
-    connect( M_cycle_slider, SIGNAL( sliderPressed() ),
-             this, SLOT( pressSlider() ) );
-
     this->addWidget( M_cycle_slider );
 
     //
@@ -277,17 +274,6 @@ LogSliderToolBar::editCycle()
     {
         emit cycleChanged( cycle );
     }
-}
-
-/*-------------------------------------------------------------------*/
-/*!
-
-*/
-void
-LogSliderToolBar::pressSlider()
-{
-    std::cerr << "press slider" << std::endl;
-
 }
 
 /*-------------------------------------------------------------------*/
