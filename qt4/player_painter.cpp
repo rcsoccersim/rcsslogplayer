@@ -907,7 +907,7 @@ PlayerPainter::drawPointto( QPainter & painter,
  */
 void
 PlayerPainter::drawTrace( QPainter & painter,
-                          const PlayerPainter::Param & param ) const
+                          const PlayerPainter::Param & ) const
 {
     const Options & opt = Options::instance();
 

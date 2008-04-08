@@ -156,7 +156,7 @@ DispHolder::playerType( const int id ) const
 
 */
 bool
-DispHolder::addDispInfo1( const rcss::rcg::dispinfo_t & disp )
+DispHolder::addDispInfo1( const rcss::rcg::dispinfo_t & )
 {
     return true;
 }
@@ -166,7 +166,7 @@ DispHolder::addDispInfo1( const rcss::rcg::dispinfo_t & disp )
 
 */
 bool
-DispHolder::addDispInfo2( const rcss::rcg::dispinfo_t2 & disp )
+DispHolder::addDispInfo2( const rcss::rcg::dispinfo_t2 & )
 {
     return true;
 }
@@ -176,7 +176,7 @@ DispHolder::addDispInfo2( const rcss::rcg::dispinfo_t2 & disp )
 
 */
 bool
-DispHolder::addDispInfo3( const char * msg )
+DispHolder::addDispInfo3( const char * )
 {
     return true;
 }
@@ -231,8 +231,8 @@ DispHolder::doHandleShowInfo( const rcss::rcg::ShowInfoT & show )
 
 */
 void
-DispHolder::doHandleMsgInfo( const int time,
-                             const int board,
+DispHolder::doHandleMsgInfo( const int,
+                             const int,
                              const std::string & msg )
 {
     if ( ! msg.compare( 0, std::strlen( "(team_graphic_" ), "(team_graphic_" ) )
@@ -285,7 +285,7 @@ DispHolder::doHandlePlayMode( const int time,
 
 */
 void
-DispHolder::doHandleTeamInfo( const int time,
+DispHolder::doHandleTeamInfo( const int,
                               const rcss::rcg::TeamT & team_l,
                               const rcss::rcg::TeamT & team_r )
 {

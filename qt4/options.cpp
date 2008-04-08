@@ -182,8 +182,8 @@ Options::readSettings()
 
     QVariant val;
 
-    val = settings.value( "game_log_file" );
-    if ( val.isValid() ) M_game_log_file = val.toString().toStdString();
+//     val = settings.value( "game_log_file" );
+//     if ( val.isValid() ) M_game_log_file = val.toString().toStdString();
 
     val = settings.value( "monitor_port" );
     if ( val.isValid() ) M_monitor_port = val.toInt();
@@ -310,7 +310,7 @@ Options::writeSettings()
 
     settings.beginGroup( "Global" );
 
-    settings.setValue( "game_log_file", QString::fromStdString( M_game_log_file ) );
+//     settings.setValue( "game_log_file", QString::fromStdString( M_game_log_file ) );
 
     settings.setValue( "monitor_port", M_monitor_port );
     settings.setValue( "auto_loop_mode", M_auto_loop_mode );

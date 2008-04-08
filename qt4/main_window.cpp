@@ -203,7 +203,7 @@ MainWindow::init()
     if ( ! Options::instance().monitorPath().empty()
          && Options::instance().monitorPath() != "self" )
     {
-        QTimer::singleShot( 500,
+        QTimer::singleShot( 100,
                             this, SLOT( startMonitor() ) );
     }
 }
@@ -228,6 +228,7 @@ MainWindow::readSettings()
     QVariant val;
 
     M_window_style = settings.value( "window_style", "plastique" ).toString();
+    M_game_log_path = settings.value( "game_log_path", "" ).toString();
 
     settings.endGroup();
 }
@@ -250,6 +251,7 @@ MainWindow::writeSettings()
     settings.beginGroup( "Global" );
 
     settings.setValue( "window_style", M_window_style );
+    settings.setValue( "game_log_path", M_game_log_path );
 
     settings.endGroup();
 }
@@ -1120,6 +1122,10 @@ MainWindow::openRCG()
     QString filter( tr( "Game Log files (*.rcg);;"
                         "All files (*)" ) );
 #endif
+    if ( ! Options::instance().gameLogFile().empty() )
+    {
+        M_game_log_path = QString::fromStdString( Options::instance().gameLogFile() );
+    }
 
     QString file_path = QFileDialog::getOpenFileName( this,
                                                       tr( "Choose a game log file to open" ),
@@ -1190,6 +1196,7 @@ MainWindow::openRCG( const QString & file_path )
     // update last opened file path
     QFileInfo file_info( file_path );
     M_game_log_path = file_info.absoluteFilePath();
+    Options::instance().setGameLogFile( M_game_log_path.toStdString() );
 
     if ( M_player_type_dialog )
     {

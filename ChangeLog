@@ -1,5 +1,17 @@
 2008-04-08  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 
+	* classic/Makefile.am:
+	* icons/rcss.ico:
+	* rcsslogplayer.pro:
+	* rcsslogplayer/rcsslogplayer.pro:
+	* qt4/disp_holder.cpp:
+	* qt4/main.cpp:
+	* qt4/main_window.cpp:
+	* qt4/options.cpp:
+	* qt4/player_painter.cpp:
+	* qt4/rcsslogplayer.rc:
+	- added qmake project files.
+
 	* qt4/main_data.cpp:
 	* rcsslogplayer/parser.cpp:
 	- added code for profiling.
