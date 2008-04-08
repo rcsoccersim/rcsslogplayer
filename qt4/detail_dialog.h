@@ -38,6 +38,7 @@
 class QLabel;
 class QShowEvent;
 class QWidget;
+class QWheelEvent;
 
 class MainData;
 
@@ -116,6 +117,7 @@ private:
 protected:
 
     void showEvent( QShowEvent * event );
+    void wheelEvent( QWheelEvent * event );
 
 public slots:
 

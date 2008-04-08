@@ -98,23 +98,26 @@ protected:
 
     void mousePressEvent( QMouseEvent * event )
       {
-          double rate = 0;
-          if ( this->orientation() == Qt::Horizontal )
+          if ( event->button() == Qt::LeftButton )
           {
-              rate = static_cast< double >( event->pos().x() )
-                  / static_cast< double >( this->width() );
+              double rate = 0;
+              if ( this->orientation() == Qt::Horizontal )
+              {
+                  rate = static_cast< double >( event->pos().x() )
+                      / static_cast< double >( this->width() );
 
+              }
+              else
+              {
+                  rate = static_cast< double >( this->height() - event->pos().y() )
+                      / static_cast< double >( this->height() );
+              }
+
+              int val = this->minimum()
+                  + static_cast< int >( rint( ( this->maximum() - this->minimum() ) * rate ) );
+
+              this->setValue( val );
           }
-          else
-          {
-              rate = static_cast< double >( this->height() - event->pos().y() )
-                  / static_cast< double >( this->height() );
-          }
-
-          int val = this->minimum()
-              + static_cast< int >( rint( ( this->maximum() - this->minimum() ) * rate ) );
-
-          this->setValue( val );
 
           QSlider::mousePressEvent( event );
       }

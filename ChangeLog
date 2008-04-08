@@ -1,5 +1,14 @@
 2008-04-08  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 
+	* qt4/log_slider_tool_bar.cpp:
+	- restricted press event to the left button.
+
+	* qt4/detail_dialog.cpp:
+	* qt4/detail_dialog.h:
+	* qt4/player_type_dialog.cpp:
+	* qt4/player_type_dialog.h:
+	- implemented a transparent dialog using wheel event.
+
 	* classic/logplayer.cpp:
 	* classic/logplayer.h:
 	* classic/nowindow.cpp:

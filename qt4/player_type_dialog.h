@@ -39,6 +39,7 @@ class QAbstractItemModel;
 class QShowEvent;
 class QStandardItemModel;
 class QTableView;
+class QWheelEvent;
 
 class MainData;
 
@@ -75,6 +76,7 @@ private:
 protected:
 
     void showEvent( QShowEvent * event );
+    void wheelEvent( QWheelEvent * event );
 
 public slots:
 

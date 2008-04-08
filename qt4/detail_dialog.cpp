@@ -308,6 +308,25 @@ DetailDialog::showEvent( QShowEvent * event )
 
 */
 void
+DetailDialog::wheelEvent( QWheelEvent * event )
+{
+    if ( event->delta() < 0 )
+    {
+        this->setWindowOpacity( std::max( 0.1, this->windowOpacity() - 0.05 ) );
+    }
+    else
+    {
+        this->setWindowOpacity( std::min( 1.0, this->windowOpacity() + 0.05 ) );
+    }
+
+    event->accept();
+}
+
+/*-------------------------------------------------------------------*/
+/*!
+
+*/
+void
 DetailDialog::updateLabels()
 {
     if ( ! this->isVisible() )
