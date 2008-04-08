@@ -390,9 +390,9 @@ Options::parseCmdLine( int argc,
 //           po::value< bool >( &M_time_shift_replay )->default_value( true, "on" ),
 //           "enable time shift replay mode." )
         // logplayer options
-//         ( "minimum-mode",
-//           po::bool_switch( &M_minimum_mode ),
-//           "start logplayer only with log server interface." )
+        ( "minimum-mode",
+          po::bool_switch( &M_minimum_mode ),
+          "start logplayer with minimum mode." )
         ( "monitor-path,m",
           po::value< std::string >( &M_monitor_path )->default_value( "self", "self" ),
           "set the path to the monitor client that is invoked by rcsslogplayer." )

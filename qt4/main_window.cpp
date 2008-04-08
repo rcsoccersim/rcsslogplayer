@@ -129,6 +129,9 @@ MainWindow::MainWindow()
     {
         this->menuBar()->hide();
     }
+
+//     QTimer::singleShot( 100,
+//                         this, SLOT( init() ) );
 }
 
 /*-------------------------------------------------------------------*/
@@ -147,6 +150,12 @@ MainWindow::~MainWindow()
 void
 MainWindow::init()
 {
+    if ( Options::instance().minimumMode() )
+    {
+        Options::instance().toggleMinimumMode();
+        toggleFieldCanvas();
+    }
+
     if ( ! Options::instance().gameLogFile().empty() )
     {
         openRCG( QString::fromStdString( Options::instance().gameLogFile() ) );
@@ -194,12 +203,6 @@ MainWindow::init()
     if ( ! Options::instance().monitorPath().empty()
          && Options::instance().monitorPath() != "self" )
     {
-        if ( Options::instance().minimumMode() )
-        {
-            Options::instance().toggleMinimumMode();
-        }
-        toggleFieldCanvas();
-
         QTimer::singleShot( 500,
                             this, SLOT( startMonitor() ) );
     }
@@ -1110,7 +1113,7 @@ MainWindow::dropEvent( QDropEvent * event )
 void
 MainWindow::openRCG()
 {
-#ifdef HAVE_LIBRCSSGZ
+#ifdef HAVE_LIBZ
     QString filter( tr( "Game Log files (*.rcg *.rcg.gz);;"
                         "All files (*)" ) );
 #else
@@ -1156,7 +1159,7 @@ MainWindow::openRCG( const QString & file_path )
     M_log_player_tool_bar->enableRecord( false );
     M_main_data.closeOutputFile();
 
-    if ( ! M_main_data.openRCG( file_path ) )
+    if ( ! M_main_data.openRCG( file_path, this ) )
     {
         QString err_msg = tr( "Failed to read [" );
         err_msg += file_path;

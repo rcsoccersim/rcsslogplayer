@@ -245,8 +245,8 @@ DispHolder::doHandleMsgInfo( const int time,
         return;
     }
 
-    std::cerr << "handle message: time=" << time << " board=" << board
-              << " [" << msg << "]" << std::endl;
+//     std::cerr << "handle message: time=" << time << " board=" << board
+//               << " [" << msg << "]" << std::endl;
 }
 
 /*-------------------------------------------------------------------*/

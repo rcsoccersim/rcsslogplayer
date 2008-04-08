@@ -40,10 +40,12 @@
 #include <rcsslogplayer/util.h>
 
 #ifdef HAVE_LIBZ
-#include <rcssbase/gzip/gzfstream.hpp>
+#include <rcsslogplayer/gzfstream.h>
 #endif
 
+#ifdef HAVE_BOOST_PROGRAM_OPTIONS
 #include <boost/program_options.hpp>
+#endif
 
 #include <string>
 #include <vector>
@@ -183,6 +185,7 @@ bool
 RCGSplitter::parseCmdLine( int argc,
                            char ** argv )
 {
+#ifdef HAVE_BOOST_PROGRAM_OPTIONS
     namespace po = boost::program_options;
 
     po::options_description visibles( "Allowed options:" );
@@ -248,8 +251,10 @@ RCGSplitter::parseCmdLine( int argc,
         std::cout << visibles << std::endl;
         return false;
     }
-
     return true;
+#else // HAVE_BOOST_PROGRAM_OPTIONS
+    return false
+#endif
 }
 
 /*--------------------------------------------------------------------*/
@@ -759,7 +764,7 @@ main( int argc, char ** argv )
     }
 
 #ifdef HAVE_LIBZ
-    rcss::gz::gzifstream fin( splitter.filepath().c_str() );
+    rcss::gzifstream fin( splitter.filepath().c_str() );
 #else
     std::ifstream fin( splitter.filepath().c_str() );
 #endif

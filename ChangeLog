@@ -1,3 +1,26 @@
+2008-04-08  Hidehisa Akiyama  <akky@users.sourceforge.jp>
+
+	* configure.ac:
+	* classic/Makefile.am:
+	* classic/logplayer.cpp:
+	* qt4/disp_holder.cpp:
+	* qt4/main.cpp:
+	* qt4/main_data.cpp:
+	* qt4/main_data.h:
+	* qt4/main_window.cpp:
+	* qt4/main_window.h:
+	* qt4/options.cpp:
+	* qt4/rcsslogplay:
+	* rcsslogplayer/Makefile.am:
+	* rcsslogplayer/gzfstream.cpp:
+	* rcsslogplayer/gzfstream.h:
+	* tool/Makefile.am:
+	* tool/rcg3to4.cpp:
+	* tool/rcg4to3.cpp:
+	* tool/rcgsplit.cpp:
+	- added gzfstream to the rcgparser library.
+	- added progress dialog while log parsing.
+
 2008-04-07  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 
 	* qt4/main.cpp:

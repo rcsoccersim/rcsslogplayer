@@ -2,6 +2,7 @@
 lib_LTLIBRARIES = librcssrcgparser.la
 
 librcssrcgparser_la_SOURCES = \
+	gzfstream.cpp \
 	parser.cpp \
 	types.cpp \
 	util.cpp
@@ -9,6 +10,7 @@ librcssrcgparser_la_SOURCES = \
 librcssrcgparserincludedir = $(includedir)/rcsslogplayer
 
 librcssrcgparserinclude_HEADERS = \
+	gzfstream.h \
 	parser.h \
 	handler.h \
 	util.h \

@@ -39,10 +39,12 @@
 #include <rcsslogplayer/util.h>
 
 #ifdef HAVE_LIBZ
-#include <rcssbase/gzip/gzfstream.hpp>
+#include <rcsslogplayer/gzfstream.h>
 #endif
 
+#ifdef HAVE_BOOST_PROGRAM_OPTIONS
 #include <boost/program_options.hpp>
+#endif
 
 #include <string>
 #include <fstream>
@@ -165,6 +167,7 @@ bool
 RCG4to3::parseCmdLine( int argc,
                        char ** argv )
 {
+#ifdef HAVE_BOOST_PROGRAM_OPTIONS
     namespace po = boost::program_options;
 
     po::options_description visibles( "Allowed options:" );
@@ -236,6 +239,9 @@ RCG4to3::parseCmdLine( int argc,
     }
 
     return true;
+#else // HAVE_BOOST_PROGRAM_OPTIONS
+    return false;
+#endif
 }
 
 /*--------------------------------------------------------------------*/
@@ -478,7 +484,7 @@ main( int argc, char ** argv )
     }
 
 #ifdef HAVE_LIBZ
-    rcss::gz::gzifstream fin( converter.input().c_str() );
+    rcss::gzifstream fin( converter.input().c_str() );
 #else
     std::ifstream fin( converter.input().c_str() );
 #endif
@@ -492,10 +498,10 @@ main( int argc, char ** argv )
     }
 
     rcss::rcg::Parser parser( converter );
-    int count = 0;
+    int count = -1;
     while ( parser.parse( fin ) )
     {
-        if ( ++count % 500 == 0 )
+        if ( ++count % 512 == 0 )
         {
             std::fprintf( stdout, "parsing... %d\r", count );
             std::fflush( stdout );

@@ -35,9 +35,18 @@
 #endif
 
 #include <QApplication>
+#include <QThread>
 
 #include "main_window.h"
 #include "options.h"
+
+class SleeperThread : public QThread {
+public:
+    static void msleep(unsigned long msecs)
+      {
+          QThread::msleep(msecs);
+      }
+};
 
 int
 main( int argc,

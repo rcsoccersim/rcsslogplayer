@@ -34,17 +34,17 @@
 #include <config.h>
 #endif
 
-#include <QString>
+#include <QtGui>
 
 #include "main_data.h"
 
 #include "options.h"
 
+#ifdef HAVE_LIBZ
+#include <rcsslogplayer/gzfstream.h>
+#endif
 #include <rcsslogplayer/util.h>
 #include <rcsslogplayer/parser.h>
-#ifdef HAVE_LIBRCSSGZ
-#include <rcssbase/gzip/gzfstream.hpp>
-#endif
 
 #include <fstream>
 #include <iostream>
@@ -107,10 +107,11 @@ MainData::clear()
   \todo multi-threaded
 */
 bool
-MainData::openRCG( const QString & file_path )
+MainData::openRCG( const QString & file_path,
+                   QWidget * parent )
 {
-#ifdef HAVE_LIBRCSSGZ
-    rcss::gz::gzifstream fin( file_path.toAscii() );
+#ifdef HAVE_LIBZ
+    rcss::gzifstream fin( file_path.toAscii() );
 #else
     std::ifstream fin( file_path.toAscii() );
 #endif
@@ -124,13 +125,40 @@ MainData::openRCG( const QString & file_path )
 
     clear();
 
+
+    // show progress dialog
+    QProgressDialog progress_dialog( parent );
+    progress_dialog.setWindowTitle( QObject::tr( "parsing rcg file..." ) );
+    progress_dialog.setRange( 0, 6000 );
+    progress_dialog.setValue( 0 );
+    progress_dialog.setLabelText( QObject::tr( "0" ) );
+    progress_dialog.setCancelButton( 0 ); // no cancel button
+    progress_dialog.setMinimumDuration( 1 ); // no duration
+
     rcss::rcg::Parser parser( M_disp_holder );
     int count = 0;
     while (  parser.parse( fin ) )
     {
-        if ( ++count % 20 == 0 )
+        ++count;
+
+        if ( count % 32 == 1 )
         {
-            std::fprintf( stdout, "parsing... %d\r", M_disp_holder.dispInfoCont().size() );
+            if ( ! M_disp_holder.dispInfoCont().empty() )
+            {
+                int time = M_disp_holder.dispInfoCont().back()->show_.time_;
+                if ( time > progress_dialog.maximum() )
+                {
+                    progress_dialog.setMaximum( progress_dialog.maximum() + 6000 );
+                }
+                progress_dialog.setValue( time );
+                progress_dialog.setLabelText( QString::number( time ) );
+            }
+        }
+
+        if ( count % 512 == 1 )
+        {
+            qApp->processEvents();
+            std::fprintf( stdout, "parsing... %d\r", count );
             std::fflush( stdout );
         }
     }

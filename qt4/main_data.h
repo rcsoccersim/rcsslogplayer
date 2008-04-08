@@ -38,6 +38,7 @@
 #include <ostream>
 
 class QString;
+class QWidget;
 
 class MainData {
 private:
@@ -105,7 +106,8 @@ public:
       }
 
 
-    bool openRCG( const QString & file_path );
+    bool openRCG( const QString & file_path,
+                  QWidget * parant );
 
     bool openOutputFile( const QString & file_path );
     void setEnableRecord( bool checked );

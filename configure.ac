@@ -82,13 +82,13 @@ if test "$RCSSBASE"; then
   fi
 fi
 
-AC_CHECK_LIB([rcssgz], [main],
-             [],
-             [AC_MSG_ERROR([Could not find the rcssbase/gz library or it is out of
-                            date. Please (re)install rcssbase before proceeding, or
-                            specify where it was installed with the RCSSBASE
-                            environment variable.
-])])
+#  AC_CHECK_LIB([rcssgz], [main],
+#               [],
+#               [AC_MSG_ERROR([Could not find the rcssbase/gz library or it is out of
+#                              date. Please (re)install rcssbase before proceeding, or
+#                              specify where it was installed with the RCSSBASE
+#                              environment variable.
+#  ])])
 
 # ----------------------------------------------------------
 # check Qt4

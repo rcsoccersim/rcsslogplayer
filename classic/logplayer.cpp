@@ -46,7 +46,7 @@
 #include <rcsslogplayer/util.h>
 
 #ifdef HAVE_LIBZ
-#include <rcssbase/gzip/gzfstream.hpp>
+#include <rcsslogplayer/gzfstream.h>
 #endif
 
 #include <boost/program_options.hpp>
@@ -954,7 +954,7 @@ Player::openGameLog()
 {
     // open the file
 #ifdef HAVE_LIBZ
-    rcss::gz::gzifstream fin( M_input_file.c_str() );
+    rcss::gzifstream fin( M_input_file.c_str() );
 #else
     std::ifstream fin( M_input_file.c_str(),
                        std::ios_base::in
@@ -968,10 +968,10 @@ Player::openGameLog()
     }
 
     rcss::rcg::Parser parser( *this );
-    int count = 0;
+    int count = -1;
     while ( parser.parse( fin ) )
     {
-        if ( ++count % 1000 == 0 )
+        if ( ++count % 512 == 0 )
         {
             std::fprintf( stdout, "parsing... %d\r", M_dispinfo_cache.size() );
             std::fflush( stdout );

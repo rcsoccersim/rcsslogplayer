@@ -121,7 +121,6 @@ public:
     MainWindow();
     ~MainWindow();
 
-    //! initialize application settings using command line options.
     void init();
 
 private:
@@ -165,7 +164,6 @@ private:
     void connectMonitorTo( const char * hostname );
 
 private slots:
-
     // file menu actions slots
     void openRCG();
     void openOutputFile();

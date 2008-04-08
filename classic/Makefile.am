@@ -21,14 +21,14 @@ noinst_HEADERS = \
 	logplayer.h \
 	fallback.h
 
-rcsslogplayer_classic_CPPFLAGS = $(CLASSIC_CPPFLAGS)
+rcsslogplayer_classic_CPPFLAGS = $(CLASSIC_CPPFLAGS) -I$(top_srcdir)
 rcsslogplayer_classic_CXXFLAGS = $(CLASSIC_CXXFLAGS)
 rcsslogplayer_classic_LDFLAGS = $(CLASSIC_LDFLAGS) -L$(top_builddir)/rcsslogplayer
 rcsslogplayer_classic_LDADD = $(CLASSIC_LIBS) -lrcssrcgparser $(BOOST_PROGRAM_OPTIONS_LIB)
 
 pkgdata_DATA =
 
-AM_CPPFLAGS = -I$(top_srcdir)
+AM_CPPFLAGS =
 AM_CFLAGS = -Wall
 AM_CXXFLAGS = -Wall
 AM_LDFLAGS =

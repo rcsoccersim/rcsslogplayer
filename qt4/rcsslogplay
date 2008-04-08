@@ -81,4 +81,4 @@ fi
 
 echo "Starting logplayer..."
 
-$PLAYER -m $MON $LOG
+$PLAYER --minimum-mode -m $MON $LOG
