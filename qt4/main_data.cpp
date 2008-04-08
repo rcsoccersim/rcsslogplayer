@@ -57,6 +57,10 @@
 #include <windows.h>
 #endif
 
+//#define PROFILE
+#ifdef PROFILE
+#include <sys/time.h>
+#endif
 
 namespace {
 
@@ -131,9 +135,14 @@ MainData::openRCG( const QString & file_path,
     progress_dialog.setWindowTitle( QObject::tr( "parsing rcg file..." ) );
     progress_dialog.setRange( 0, 6000 );
     progress_dialog.setValue( 0 );
-    progress_dialog.setLabelText( QObject::tr( "0" ) );
+    progress_dialog.setLabelText( QObject::tr( "Time: 0" ) );
     progress_dialog.setCancelButton( 0 ); // no cancel button
-    progress_dialog.setMinimumDuration( 1 ); // no duration
+    progress_dialog.setMinimumDuration( 0 ); // no duration
+
+#ifdef PROFILE
+    struct timeval start_time; // has long tv_sec and long tv_usec
+    ::gettimeofday( &start_time, NULL );
+#endif
 
     rcss::rcg::Parser parser( M_disp_holder );
     int count = 0;
@@ -151,7 +160,7 @@ MainData::openRCG( const QString & file_path,
                     progress_dialog.setMaximum( progress_dialog.maximum() + 6000 );
                 }
                 progress_dialog.setValue( time );
-                progress_dialog.setLabelText( QString::number( time ) );
+                progress_dialog.setLabelText( QString( "Time: %1" ).arg( time ) );
             }
         }
 
@@ -162,6 +171,27 @@ MainData::openRCG( const QString & file_path,
             std::fflush( stdout );
         }
     }
+
+#ifdef PROFILE
+    struct timeval end_time; // has long tv_sec and long tv_usec
+
+    ::gettimeofday( &end_time, NULL );
+
+    long sec_diff = end_time.tv_sec - start_time.tv_sec;
+    long usec_diff = end_time.tv_usec - start_time.tv_usec;
+    while ( usec_diff >= (1000 * 1000) )
+    {
+        usec_diff -= 1000 * 1000;
+        ++sec_diff;
+    }
+    while ( usec_diff < 0 && sec_diff > 0 )
+    {
+        usec_diff += (1000 * 1000);
+        --sec_diff;
+    }
+    std::cerr << "parsing elapsed " << sec_diff * 1000.0 + usec_diff * 0.001
+              << " [ms]" << std::endl;
+#endif
 
     if ( ! fin.eof() )
     {

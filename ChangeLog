@@ -1,5 +1,10 @@
 2008-04-08  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 
+	* qt4/main_data.cpp:
+	* rcsslogplayer/parser.cpp:
+	- added code for profiling.
+	- improved parser performance.
+
 	* configure.ac:
 	* classic/Makefile.am:
 	* classic/logplayer.cpp:

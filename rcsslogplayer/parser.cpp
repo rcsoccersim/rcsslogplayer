@@ -757,7 +757,7 @@ Parser::parseShowLine( const int n_line,
     // time
     int time = 0;
 
-    if ( std::sscanf( buf, " ( show %d %n ",
+    if ( std::sscanf( buf, "(show %d %n",
                       &time, &n_read ) != 1 )
     {
         std::cerr << n_line << ": error: "
@@ -773,7 +773,7 @@ Parser::parseShowLine( const int n_line,
     // ball
     {
         BallT & ball = show.ball_;
-        if ( std::sscanf( buf, " ( ( b ) %f %f %f %f ) %n ",
+        if ( std::sscanf( buf, " ((b) %f %f %f %f) %n",
                           &ball.x_, &ball.y_, &ball.vx_, &ball.vy_,
                           &n_read ) != 4 )
         {
@@ -786,21 +786,26 @@ Parser::parseShowLine( const int n_line,
     }
 
     // players
+    char side;
+    short unum;
+    short type;
+    int state;
+    float x, y, vx, vy, body, neck;
     for ( int i = 0; i < MAX_PLAYER * 2; ++i )
     {
         if ( *buf == ')' ) break;
 
-        char side = 'n';
-        short unum = 0;
-
         if ( std::sscanf( buf,
-                          " ( ( %c %hd ) %n ",
+                          " ((%c %hd) %hd %x %f %f %f %f %f %f %n",
                           &side, &unum,
-                          &n_read ) != 2 )
+                          &type, &state,
+                          &x, &y, &vx, &vy, &body, &neck,
+                          &n_read ) != 10 )
         {
             std::cerr << n_line << ": error: "
-                      << " Illegal player " << i << " \"" << line << "\""
-                      << std::endl;;
+                      << " Illegal player id or pos. " << side << ' ' << unum
+                      << " \"" << line << "\""
+                      << std::endl;
             return false;
         }
         buf += n_read;
@@ -819,65 +824,49 @@ Parser::parseShowLine( const int n_line,
         PlayerT & p = show.player_[idx];
         p.side_ = side;
         p.unum_ = unum;
+        p.type_ = type;
+        p.state_ = state;
+        p.x_ = x;
+        p.y_ = y;
+        p.vx_ = vx;
+        p.vy_ = vy;
+        p.body_ = body;
+        p.neck_ = neck;
 
-        if ( std::sscanf( buf,
-                          " %hd %x %f %f %f %f %f %f %n ",
-                          &p.type_, &p.state_,
-                          &p.x_, &p.y_, &p.vx_, &p.vy_, &p.body_, &p.neck_,
-                          &n_read ) != 8 )
-        {
-            std::cerr << n_line << ": error: "
-                      << " Illegal player pos. " << side << ' ' << unum
-                      << " \"" << line << "\""
-                      << std::endl;;
-            return false;
-        }
-        buf += n_read;
-
-        if ( std::sscanf( buf,
-                          " %f %f %n ",
-                          &p.point_x_, &p.point_y_,
-                          &n_read ) == 2 )
+        if ( *buf != '('
+             && std::sscanf( buf,
+                             "%f %f %n",
+                             &p.point_x_, &p.point_y_,
+                             &n_read ) == 2 )
         {
             buf += n_read;
         }
 
         if ( std::sscanf( buf,
-                          " ( v %c %f ) %n ",
+                          " (v %c %f) (s %f %f %f) %n",
                           &p.view_quality_, &p.view_width_,
-                          &n_read ) != 2 )
-        {
-            std::cerr << n_line << ": error: "
-                      << " Illegal player view. " << side << ' ' << unum
-                      << " \"" << line << "\""
-                      << std::endl;;
-            return false;
-        }
-        buf += n_read;
-
-        if ( std::sscanf( buf,
-                          " ( s %f %f %f ) %n ",
                           &p.stamina_, &p.effort_, &p.recovery_,
-                          &n_read ) != 3 )
+                          &n_read ) != 5 )
         {
             std::cerr << n_line << ": error: "
-                      << " Illegal player stamina. " << side << ' ' << unum
+                      << " Illegal player view or stamina. " << side << ' ' << unum
                       << " \"" << line << "\""
                       << std::endl;;
             return false;
         }
         buf += n_read;
 
-        if ( std::sscanf( buf,
-                          " ( f %c %hd ) %n ",
-                          &p.focus_side_, &p.focus_unum_,
-                          &n_read ) == 2 )
+        if ( *(buf + 1) == 'f'
+             && std::sscanf( buf,
+                             " (f %c %hd) %n",
+                             &p.focus_side_, &p.focus_unum_,
+                             &n_read ) == 2 )
         {
             buf += n_read;
         }
 
         if ( std::sscanf( buf,
-                          " ( c %hd %hd %hd %hd %hd %hd %hd %hd %hd %hd %hd ) ) %n ",
+                          " (c %hd %hd %hd %hd %hd %hd %hd %hd %hd %hd %hd )) %n",
                           &p.kick_count_, &p.dash_count_, &p.turn_count_, &p.catch_count_, &p.move_count_,
                           &p.turn_neck_count_, &p.change_view_count_, &p.say_count_, &p.tackle_count_,
                           &p.pointto_count_, &p.attentionto_count_,
