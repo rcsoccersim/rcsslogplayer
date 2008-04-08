@@ -3,7 +3,12 @@ TEMPLATE = lib
 TARGET = rcssrcgparser
 DESTDIR = ../lib
 DEPENDPATH += .
-INCLUDEPATH += . .. ../../boost_1_34_1
+
+INCLUDEPATH += . ..
+win32 {
+  INCLUDEPATH += ../../boost_1_34_1
+}
+
 LIBS +=
 
 DEFINES += HAVE_LIBZ

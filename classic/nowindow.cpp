@@ -420,7 +420,6 @@ Player::nwLoop()
         else if ( ! std::strcmp( com, "sleep" ) )
         {
             unsigned wait_time = 0;
-            char tmp[64];
             if ( std::sscanf( buf.c_str(), "%63s %d", com, &wait_time ) == 2 )
             {
                 if ( ! stdin_flag )

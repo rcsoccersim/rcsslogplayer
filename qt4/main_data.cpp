@@ -57,11 +57,6 @@
 #include <windows.h>
 #endif
 
-//#define PROFILE
-#ifdef PROFILE
-#include <sys/time.h>
-#endif
-
 namespace {
 
 inline
@@ -139,10 +134,8 @@ MainData::openRCG( const QString & file_path,
     progress_dialog.setCancelButton( 0 ); // no cancel button
     progress_dialog.setMinimumDuration( 0 ); // no duration
 
-#ifdef PROFILE
-    struct timeval start_time; // has long tv_sec and long tv_usec
-    ::gettimeofday( &start_time, NULL );
-#endif
+    QTime timer;
+    timer.start();
 
     rcss::rcg::Parser parser( M_disp_holder );
     int count = 0;
@@ -172,26 +165,7 @@ MainData::openRCG( const QString & file_path,
         }
     }
 
-#ifdef PROFILE
-    struct timeval end_time; // has long tv_sec and long tv_usec
-
-    ::gettimeofday( &end_time, NULL );
-
-    long sec_diff = end_time.tv_sec - start_time.tv_sec;
-    long usec_diff = end_time.tv_usec - start_time.tv_usec;
-    while ( usec_diff >= (1000 * 1000) )
-    {
-        usec_diff -= 1000 * 1000;
-        ++sec_diff;
-    }
-    while ( usec_diff < 0 && sec_diff > 0 )
-    {
-        usec_diff += (1000 * 1000);
-        --sec_diff;
-    }
-    std::cerr << "parsing elapsed " << sec_diff * 1000.0 + usec_diff * 0.001
-              << " [ms]" << std::endl;
-#endif
+    std::cerr << "parsing elapsed " << timer.elapsed() << " [ms]" << std::endl;
 
     if ( ! fin.eof() )
     {

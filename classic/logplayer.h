@@ -96,31 +96,31 @@ private:
     static const int PLAY_CYCLE; // [msec]
     static const int FEED_CYCLE; // [msec]
     static const int STEP_CYCLE; // [msec]
-    static const int MAX_SHOWINFO;
+    static const std::size_t MAX_SHOWINFO;
 
-		std::string M_input_file; /* input file name */
-		std::string M_output_file; /* output file name */
-		std::string M_command_file; /* command file name */
+    std::string M_input_file; /* input file name */
+    std::string M_output_file; /* output file name */
+    std::string M_command_file; /* command file name */
 
-		std::ofstream M_out_strm; /* output file */
-		std::ifstream M_com_strm; /* command file */
+    std::ofstream M_out_strm; /* output file */
+    std::ifstream M_com_strm; /* command file */
 
-		int M_sent; /* send counter timer */
-		int M_rect; /* recv counter timer */
-		int M_limit; /* loop time */
-		int	M_state; /* status */
-		int M_current; /* current time */
-		int M_to_time; /* jump to [to_time] */
-		int	M_rec_state; /* recording state */
+    int	M_state; /* status */
+    int M_sent; /* send counter timer */
+    int M_rect; /* recv counter timer */
+    int M_limit; /* loop time */
+    int M_current; /* current time */
+    int M_to_time; /* jump to [to_time] */
+    int	M_rec_state; /* recording state */
 
     int M_monitor_child; // child process id
     std::string M_monitor_command; // monitor client command path
-		bool M_no_window; /* no window? */
+    bool M_no_window; /* no window? */
 
-		Port M_port; /* communication port */
+    Port M_port; /* communication port */
 
 #if !X_DISPLAY_MISSING
-		Controler * M_controler; /* controler interface */
+    Controler * M_controler; /* controler interface */
 #endif //!X_DISPLAY_MISSING
 
     int M_version; /* version of the file format */
@@ -137,10 +137,10 @@ private:
 
 public:
 
-		Player();
-		~Player();
+    Player();
+    ~Player();
 
-		void run( int argc, char **argv );
+    void run( int argc, char **argv );
 
     bool hasOutputFile()
       {
@@ -158,7 +158,7 @@ public:
       }
 
 #if !X_DISPLAY_MISSING
-		void initTimer();
+    void initTimer();
     void comRewind();
     void comReverse();
     void comMinus();
@@ -171,22 +171,22 @@ public:
     void comJump();
 #endif //!X_DISPLAY_MISSING
 
-		void quit();
+    void quit();
 
     void stepForward();
     void stepBackward();
     void stop();
-		void jump();
+    void jump();
 
-		void sendBlank();
+    void sendBlank();
 
     void nwPrintHelp();
-		void nwInit();
-		void nwInitTimer();
-		void nwLoop();
+    void nwInit();
+    void nwInitTimer();
+    void nwLoop();
 
-		bool openGameLog();
-		bool openSavedLog();
+    bool openGameLog();
+    bool openSavedLog();
 
     void sendParams();
 
@@ -194,11 +194,11 @@ public:
 
     std::string statusString() const;
 private:
-		bool parseCmdLine( int argc,
+    bool parseCmdLine( int argc,
                        char ** argv );
     int startMonitor( const std::string & command );
-		void sendLog( const std::size_t index );
-		void writeLog( const std::size_t index );
+    void sendLog( const std::size_t index );
+    void writeLog( const std::size_t index );
 
 
     void serializeDisp( const rcss::rcg::DispInfoT & disp,

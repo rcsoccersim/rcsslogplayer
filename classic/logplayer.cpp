@@ -139,17 +139,17 @@ const int Player::TIMEDELTA = 10;
 const int Player::PLAY_CYCLE = 100;
 const int Player::FEED_CYCLE = 50;
 const int Player::STEP_CYCLE = 450;
-const int Player::MAX_SHOWINFO = 18000;
+const std::size_t Player::MAX_SHOWINFO = 18000;
 
 
 Player::Player()
     : M_state( STATE_WAIT )
-    , M_limit( 10000 )
     , M_sent( 0 )
     , M_rect( 0 )
+    , M_limit( 10000 )
+    , M_current( 1 )
     , M_to_time( NONE )
     , M_rec_state( REC_OFF )
-    , M_current( 1 )
     , M_monitor_child( 0 )
     , M_no_window( false )
     , M_version( 0 )
@@ -1079,8 +1079,6 @@ Player::serializeDisp( const rcss::rcg::DispInfoT & disp,
                        const bool disp_mode,
                        std::string & msg )
 {
-    static const char * s_playmode_strings[] = PLAYMODE_STRINGS;
-
     const float PREC = 0.0001f;
     const float DPREC = 0.001f;
 

@@ -9,7 +9,7 @@ rcg2xml_SOURCES = \
 	rcg2xml.cpp
 
 rcg2xml_CPPFLAGS = -I$(top_srcdir)
-rcg2xml_CXXFLAGS =
+rcg2xml_CXXFLAGS = -Wall
 rcg2xml_LDFLAGS = -L$(top_builddir)/rcsslogplayer
 rcg2xml_LDADD = -lrcssrcgparser
 
@@ -17,7 +17,7 @@ rcg2xml_LDADD = -lrcssrcgparser
 rcgsplit_SOURCES = rcgsplit.cpp
 
 rcgsplit_CPPFLAGS = -I$(top_srcdir)
-rcgsplit_CXXFLAGS =
+rcgsplit_CXXFLAGS = -Wall
 rcgsplit_LDFLAGS = -L$(top_builddir)/rcsslogplayer
 rcgsplit_LDADD = -lrcssrcgparser $(BOOST_PROGRAM_OPTIONS_LIB)
 
@@ -25,7 +25,7 @@ rcgsplit_LDADD = -lrcssrcgparser $(BOOST_PROGRAM_OPTIONS_LIB)
 rcg3to4_SOURCES = rcg3to4.cpp
 
 rcg3to4_CPPFLAGS = -I$(top_srcdir)
-rcg3to4_CXXFLAGS =
+rcg3to4_CXXFLAGS = -Wall
 rcg3to4_LDFLAGS = -L$(top_builddir)/rcsslogplayer
 rcg3to4_LDADD = -lrcssrcgparser $(BOOST_PROGRAM_OPTIONS_LIB)
 
@@ -33,7 +33,7 @@ rcg3to4_LDADD = -lrcssrcgparser $(BOOST_PROGRAM_OPTIONS_LIB)
 rcg4to3_SOURCES = rcg4to3.cpp
 
 rcg4to3_CPPFLAGS = -I$(top_srcdir)
-rcg4to3_CXXFLAGS =
+rcg4to3_CXXFLAGS = -Wall
 rcg4to3_LDFLAGS = -L$(top_builddir)/rcsslogplayer
 rcg4to3_LDADD = -lrcssrcgparser $(BOOST_PROGRAM_OPTIONS_LIB)
 
