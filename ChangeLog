@@ -1,5 +1,12 @@
 2008-04-10  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 
+	* classic/logplayer.cpp:
+	* qt4/Makefile.am:
+	* tool/rcg3to4.cpp:
+	* tool/rcg4to3.cpp:
+	* tool/rcgsplit.cpp:
+	- fixed include dependency.
+
 	* qt4/qt4.pro:
 	* classic/Makefile.am:
 	* classic/logplayer.cpp:

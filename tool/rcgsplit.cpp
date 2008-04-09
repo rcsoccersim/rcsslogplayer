@@ -47,6 +47,7 @@
 #include <boost/program_options.hpp>
 #endif
 
+#include <iostream>
 #include <string>
 #include <vector>
 #include <fstream>
