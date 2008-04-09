@@ -289,8 +289,8 @@ convert( const PlayerT & from,
 {
     to.enable = htons( static_cast< Int16 >( from.state_ ) );
 
-    to.side = ( from.side_ == 'l' ? htons( LEFT )
-                : from.side_ == 'r' ? htons( RIGHT )
+    to.side = ( from.side_ == 'l' ? htons( static_cast< Int16 >( LEFT ) )
+                : from.side_ == 'r' ? htons( static_cast< Int16 >( RIGHT ) )
                 : htons( NEUTRAL ) );
 
     to.unum = ntohs( from.unum_ );

@@ -64,8 +64,15 @@
 #include <csignal>
 #include <cerrno> // errno
 
+#ifdef HAVE_UNISTD_H
 #include <unistd.h> // fork, execlp
+#endif
+#ifdef HAVE_SYS_TIME_H
 #include <sys/time.h> // itimerval, setitimer
+#endif
+#ifdef HAVE_SYS_TYPES_H
+#include <sys/types.h> // SIGCLD, SIGCHLD
+#endif
 
 #ifdef HAVE_NETINET_IN_H
 #include <netinet/in.h>
@@ -400,7 +407,11 @@ Player::startMonitor( const std::string & command )
     }
 
     // watch the status of child process
+#ifdef SIGCLD
     std::signal( SIGCLD, sig_handle );
+#elif SIGCHLD
+    std::signal( SIGCHLD, sig_handle );
+#endif
 
     return pid;
 }
@@ -973,7 +984,8 @@ Player::openGameLog()
     {
         if ( ++count % 512 == 0 )
         {
-            std::fprintf( stdout, "parsing... %d\r", M_dispinfo_cache.size() );
+            std::fprintf( stdout, "parsing... %d\r", // %zd, size_t
+                          static_cast< int >( M_dispinfo_cache.size() ) );
             std::fflush( stdout );
         }
     }

@@ -8,6 +8,9 @@ INCLUDEPATH += . ..
 win32 {
   INCLUDEPATH += ../../boost_1_34_1
 }
+macx {
+  INCLUDEPATH += /opt/local/include
+}
 
 LIBS +=
 
@@ -16,6 +19,9 @@ win32 {
   DEFINES += HAVE_WINDOWS_H
 }
 unix {
+  DEFINES += HAVE_NETINET_IN_H
+}
+macx {
   DEFINES += HAVE_NETINET_IN_H
 }
 
