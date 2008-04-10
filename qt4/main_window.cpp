@@ -766,7 +766,7 @@ MainWindow::createConfigDialog()
     }
     {
         // i
-        QAction * act = new QAction( tr( "Fit" ), this );
+        QAction * act = new QAction( tr( "Fit Field Size" ), this );
         act->setShortcut( Qt::Key_I );
         this->addAction( act );
         connect( act, SIGNAL( triggered() ),
@@ -1828,9 +1828,11 @@ MainWindow::printShortcutKeys()
     {
         if ( ! (*it)->shortcut().isEmpty() )
         {
-            std::cout << QString( (*it)->text() ).remove( QChar( '&' ) ).toStdString()
-                      << " ->  ["
-                      << (*it)->shortcut().toString().toStdString() << "]\n";
+            std::cout << '[' << (*it)->shortcut().toString().toStdString() << "] "
+                      << QString( (*it)->text() ).remove( QChar( '&' ) ).toStdString()
+                //<< ", " << (*it)->statusTip().toStdString()
+                      << '\n';
+
         }
     }
     std::cout << std::flush;
