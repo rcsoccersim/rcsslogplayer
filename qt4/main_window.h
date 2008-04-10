@@ -89,6 +89,7 @@ private:
     // file actions
     QAction * M_open_act;
     QAction * M_open_output_act;
+    QAction * M_save_image_act;
     QAction * M_exit_act;
 
     // monitor actions
@@ -168,6 +169,7 @@ private slots:
     void openRCG();
     void openOutputFile();
     void outputCurrentData();
+    void saveImage();
     // QWidget::close() can be used as the slot for a quit action.
 
     void startMonitor();

@@ -44,6 +44,7 @@
 #include "field_canvas.h"
 #include "monitor_client.h"
 #include "monitor_server.h"
+#include "image_save_dialog.h"
 #include "log_player.h"
 #include "log_player_tool_bar.h"
 #include "log_slider_tool_bar.h"
@@ -301,6 +302,13 @@ MainWindow::createActionsFile()
     connect( M_open_output_act, SIGNAL( triggered() ),
              this, SLOT( openOutputFile() ) );
     this->addAction( M_open_output_act );
+    //
+    M_save_image_act = new QAction( tr( "Save images" ), this );
+    M_save_image_act->setEnabled( false );
+    M_save_image_act->setStatusTip( tr( "Save field statua as image data." ) );
+    connect( M_save_image_act, SIGNAL( triggered() ),
+             this, SLOT( saveImage() ) );
+    this->addAction( M_save_image_act );
 
     //
     M_exit_act = new QAction( tr( "&Quit" ), this );
@@ -515,6 +523,9 @@ MainWindow::createMenuFile()
 
     menu->addAction( M_open_act );
     menu->addAction( M_open_output_act );
+
+    menu->addSeparator();
+    menu->addAction( M_save_image_act );
 
     menu->addSeparator();
     menu->addAction( M_exit_act );
@@ -1161,6 +1172,7 @@ MainWindow::openRCG( const QString & file_path )
     M_log_player->stop();
     disconnectMonitor();
     M_open_output_act->setEnabled( false );
+    M_save_image_act->setEnabled( false );
     M_log_player_tool_bar->checkRecord( false );
     M_log_player_tool_bar->enableRecord( false );
     M_main_data.closeOutputFile();
@@ -1219,6 +1231,7 @@ MainWindow::openRCG( const QString & file_path )
 
     createMonitorServer();
     M_open_output_act->setEnabled( true );
+    M_save_image_act->setEnabled( true );
 
     emit viewUpdated();
 }
@@ -1250,6 +1263,22 @@ MainWindow::openOutputFile()
     {
         M_log_player_tool_bar->enableRecord( true );
     }
+}
+
+/*-------------------------------------------------------------------*/
+/*!
+
+ */
+void
+MainWindow::saveImage()
+{
+    M_log_player->stop();
+
+    ImageSaveDialog dlg( this,
+                         M_field_canvas,
+                         M_main_data );
+
+    dlg.exec();
 }
 
 /*-------------------------------------------------------------------*/

@@ -103,7 +103,7 @@ Options::Options()
     , M_monitor_port( 6000 )
     , M_game_log_file( "" )
     , M_output_file( "" )
-    , M_auto_loop_mode( true )
+    , M_auto_loop_mode( false )
     , M_timer_interval( Options::DEFAULT_TIMER_INTERVAL )
       // window options
     , M_window_x( -1 )

@@ -265,10 +265,6 @@ FieldCanvas::paintEvent( QPaintEvent * )
         //painter.setRenderHint( QPainter::HighQualityAntialiasing );
     }
 
-    updateFocus();
-    // update field scale and related things
-    Options::instance().updateFieldSize( this->width(), this->height() );
-
     draw( painter );
 
     // draw mouse measure
@@ -546,6 +542,11 @@ FieldCanvas::mouseMoveEvent( QMouseEvent * event )
 void
 FieldCanvas::draw( QPainter & painter )
 {
+    updateFocus();
+    // update field scale and related things
+    Options::instance().updateFieldSize( this->width(), this->height() );
+
+
     M_field_painter->draw( painter );
 
     if ( ! M_main_data.getDispInfo( M_main_data.index() ) )

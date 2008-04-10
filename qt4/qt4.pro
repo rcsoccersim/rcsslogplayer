@@ -62,6 +62,7 @@ HEADERS += \
 	draw_info_painter.h \
 	field_canvas.h \
 	field_painter.h \
+    image_save_dialog.h \
 	line_2d.h \
 	log_player.h \
 	log_player_tool_bar.h \
@@ -89,6 +90,7 @@ SOURCES += \
 	draw_info_painter.cpp \
 	field_canvas.cpp \
 	field_painter.cpp \
+    image_save_dialog.cpp \
 	line_2d.cpp \
 	log_player.cpp \
 	log_player_tool_bar.cpp \
@@ -111,6 +113,7 @@ nodist_rcsslogplayer_SOURCES = \
 	moc_config_dialog.cpp \
 	moc_detail_dialog.cpp \
 	moc_field_canvas.cpp \
+    moc_image_save_dialog.cpp \
 	moc_log_player.cpp \
 	moc_log_player_tool_bar.cpp \
 	moc_log_slider_tool_bar.cpp \

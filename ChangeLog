@@ -1,5 +1,15 @@
 2008-04-10  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 
+	* qt4/image_save_dialog.cpp:
+	* qt4/image_save_dialog.h:
+	* qt4/Makefile.am:
+	* qt4/field_canvas.cpp:
+	* qt4/main_window.cpp:
+	* qt4/main_window.h:
+	* qt4/options.cpp:
+	* qt4/qt4.pro:
+	- implemented an image save dialog.
+
 	* classic/logplayer.cpp:
 	* qt4/Makefile.am:
 	* tool/rcg3to4.cpp:
