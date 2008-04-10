@@ -280,9 +280,9 @@ MainWindow::createActionsFile()
     M_open_act = new QAction( QIcon( QPixmap( open_xpm ) ),
                               tr( "&Open rcg file..." ), this );
 #ifdef Q_WS_MAC
-    M_open_act->setShortcut( tr( "Meta+O" ) );
+    M_open_act->setShortcut( Qt::META + Qt::Key_O );
 #else
-    M_open_act->setShortcut( tr( "Ctrl+O" ) );
+    M_open_act->setShortcut( Qt::CTRL + Qt::Key_O );
 #endif
     M_open_act->setStatusTip( tr( "Open RoboCup Game Log file" ) );
     connect( M_open_act, SIGNAL( triggered() ),
@@ -293,9 +293,9 @@ MainWindow::createActionsFile()
                                     tr( "Record data as..." ), this );
     M_open_output_act->setEnabled( false );
 #ifdef Q_WS_MAC
-    M_open_output_act->setShortcut( tr( "Meta+S" ) );
+    M_open_output_act->setShortcut( Qt::META + Qt::ALT + Qt::Key_O );
 #else
-    M_open_output_act->setShortcut( tr( "Ctrl+S" ) );
+    M_open_output_act->setShortcut( Qt::CTRL + Qt::ALT + Qt::Key_O );
 #endif
     M_open_output_act->setStatusTip( tr( "Output log data segments to the file." ) );
     connect( M_open_output_act, SIGNAL( triggered() ),
@@ -312,9 +312,9 @@ MainWindow::createActionsFile()
     //
     M_exit_act = new QAction( tr( "&Quit" ), this );
 #ifdef Q_WS_MAC
-    M_exit_act->setShortcut( tr( "Meta+Q" ) );
+    M_exit_act->setShortcut( Qt::META + Qt::Key_Q );
 #else
-    M_exit_act->setShortcut( tr( "Ctrl+Q" ) );
+    M_exit_act->setShortcut( Qt::CTRL + Qt::Key_Q );
 #endif
     M_exit_act->setStatusTip( tr( "Exit the application." ) );
     connect( M_exit_act, SIGNAL( triggered() ),
@@ -347,9 +347,9 @@ MainWindow::createActionsMonitor()
                                       tr( "&Live Mode" ),
                                       this );
 #ifdef Q_WS_MAC
-    M_set_live_mode_act->setShortcut( tr( "Meta+L" ) );
+    M_set_live_mode_act->setShortcut( Qt::META + Qt::Key_L );
 #else
-    M_set_live_mode_act->setShortcut( tr( "Ctrl+L" ) );
+    M_set_live_mode_act->setShortcut( Qt::CTRL + Qt::Key_L );
 #endif
     M_set_live_mode_act->setStatusTip( tr( "set monitor to live mode" ) );
     M_set_live_mode_act->setEnabled( false );
@@ -361,9 +361,9 @@ MainWindow::createActionsMonitor()
     //
     M_connect_monitor_act = new QAction( tr( "&Connect" ), this );
 #ifdef Q_WS_MAC
-    M_connect_monitor_act->setShortcut( tr( "Meta+C" ) );
+    M_connect_monitor_act->setShortcut( Qt::META + Qt::Key_C );
 #else
-    M_connect_monitor_act->setShortcut( tr( "Ctrl+C" ) );
+    M_connect_monitor_act->setShortcut( Qt::CTRL + Qt::Key_C );
 #endif
     M_connect_monitor_act
         ->setStatusTip( "Connect to the rcssserver on localhost" );
@@ -401,9 +401,9 @@ MainWindow::createActionsView()
 {
     M_toggle_menu_bar_act = new QAction( tr( "&Menu Bar" ), this );
 #ifdef Q_WS_MAC
-    M_toggle_menu_bar_act->setShortcut( tr( "Meta+M" ) );
+    M_toggle_menu_bar_act->setShortcut( Qt::META + Qt::Key_M );
 #else
-    M_toggle_menu_bar_act->setShortcut( tr( "Ctrl+M" ) );
+    M_toggle_menu_bar_act->setShortcut( Qt::CTRL + Qt::Key_M );
 #endif
     M_toggle_menu_bar_act->setStatusTip( tr( "Show/Hide Menu Bar" ) );
     connect( M_toggle_menu_bar_act, SIGNAL( triggered() ),
@@ -445,9 +445,9 @@ MainWindow::createActionsView()
     //
     M_show_player_type_dialog_act = new QAction( tr( "&Player Type List" ), this );
 #ifdef Q_WS_MAC
-    M_show_player_type_dialog_act->setShortcut( tr( "Meta+T" ) );
+    M_show_player_type_dialog_act->setShortcut( Qt::META + Qt::Key_H );
 #else
-    M_show_player_type_dialog_act->setShortcut( tr( "Ctrl+T" ) );
+    M_show_player_type_dialog_act->setShortcut( Qt::CTRL + Qt::Key_H );
 #endif
     M_show_player_type_dialog_act
         ->setStatusTip( tr( "Show player type parameters dialog" ) );
@@ -457,9 +457,9 @@ MainWindow::createActionsView()
     //
     M_show_detail_dialog_act = new QAction( tr( "&Object Detail" ), this );
 #ifdef Q_WS_MAC
-    M_show_detail_dialog_act->setShortcut( tr( "Meta+D" ) );
+    M_show_detail_dialog_act->setShortcut( Qt::META + Qt::Key_D );
 #else
-    M_show_detail_dialog_act->setShortcut( tr( "Ctrl+D" ) );
+    M_show_detail_dialog_act->setShortcut( Qt::CTRL + Qt::Key_D );
 #endif
     M_show_detail_dialog_act
         ->setStatusTip( tr( "Show detail information dialog" ) );
@@ -866,13 +866,13 @@ MainWindow::createConfigDialog()
 
     // show/hide
     {
-        // Ctrl + t
+        // Ctrl + s
         QAction * act = new QAction( tr( "Show Score Board" ), this );
-#ifdef Q_WS_MAC
-        act->setShortcut( Qt::META + Qt::Key_T );
-#else
-        act->setShortcut( Qt::CTRL + Qt::Key_T );
-#endif
+// #ifdef Q_WS_MAC
+//         act->setShortcut( Qt::META + Qt::Key_S );
+// #else
+//         act->setShortcut( Qt::CTRL + Qt::Key_S );
+// #endif
         this->addAction( act );
         connect( act, SIGNAL( triggered() ),
                  M_config_dialog, SLOT( toggleShowScoreBoard() ) );

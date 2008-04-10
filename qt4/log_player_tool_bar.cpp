@@ -219,11 +219,11 @@ LogPlayerToolBar::createControls( LogPlayer * log_player,
                            tr( "Record" ), this );
         M_toggle_record_act->setCheckable( true );
         M_toggle_record_act->setEnabled( false );
-#ifdef Q_WS_MAC
-        M_toggle_record_act->setShortcut( Qt::META + Qt::Key_R );
-#else
-        M_toggle_record_act->setShortcut( Qt::CTRL + Qt::Key_R );
-#endif
+// #ifdef Q_WS_MAC
+//         M_toggle_record_act->setShortcut( Qt::META + Qt::Key_R );
+// #else
+//         M_toggle_record_act->setShortcut( Qt::CTRL + Qt::Key_R );
+// #endif
         M_toggle_record_act->setStatusTip( tr( "Record.(" )
                                            + M_toggle_record_act->shortcut().toString()
                                            + tr( ")" ) );

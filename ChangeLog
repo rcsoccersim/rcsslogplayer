@@ -1,5 +1,9 @@
 2008-04-10  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 
+	* qt4/log_player_tool_bar.cpp:
+	* qt4/main_window.cpp:
+	- fixed shortcut keys.
+
 	* qt4/disp_holder.cpp:
 	* qt4/log_player.cpp:
 	* qt4/main_window.cpp:
