@@ -319,6 +319,16 @@ convert( const char playmode,
   \param to destination variable
 */
 void
+convert( const showinfo_t2 & from,
+         ShowInfoT & to );
+
+/*-------------------------------------------------------------------*/
+/*!
+  \brief convert showinfot_t2 to ShowInfoT
+  \param from source variable
+  \param to destination variable
+*/
+void
 convert( const short_showinfo_t2 & from,
          ShowInfoT & to );
 

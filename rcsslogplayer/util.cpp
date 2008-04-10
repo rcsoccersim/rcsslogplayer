@@ -501,6 +501,29 @@ convert( const char playmode,
 
  */
 void
+convert( const showinfo_t2 & from,
+         ShowInfoT & to )
+{
+    // ball
+    convert( from.ball, to.ball_ );
+
+    // players
+    for ( int i = 0; i < MAX_PLAYER*2; ++i )
+    {
+        to.player_[i].side_ = ( i < MAX_PLAYER ? 'l' : 'r' );
+        to.player_[i].unum_ = ( i < MAX_PLAYER ? i + 1 : i + 1 - MAX_PLAYER );
+        convert( from.pos[i], to.player_[i] );
+    }
+
+    // time
+    to.time_ = static_cast< UInt32 >( ntohs( from.time ) );
+}
+
+/*-------------------------------------------------------------------*/
+/*!
+
+ */
+void
 convert( const short_showinfo_t2 & from,
          ShowInfoT & to )
 {

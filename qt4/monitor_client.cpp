@@ -181,6 +181,7 @@ MonitorClient::handleReceive()
                                             &from_port );
             if ( n > 0 )
             {
+                buf[n] = '\0';
                 if ( ! M_disp_holder.addDispInfo3( buf ) )
                 {
                     std::cerr << "recv: " << buf << std::endl;
@@ -350,7 +351,7 @@ MonitorClient::sendDispBye()
 void
 MonitorClient::sendKickOff()
 {
-    sendCommand( "dispstart" );
+    sendCommand( "(dispstart)" );
 }
 
 /*-------------------------------------------------------------------*/
