@@ -112,6 +112,7 @@ private:
 
     // help actions
     QAction * M_about_act;
+    QAction * M_shortcut_keys_act;
 
     // not used
     MainWindow( const MainWindow & );
@@ -148,6 +149,7 @@ private:
     void createConfigDialog();
 
     void createMonitorServer();
+    void closeMonitorServer();
 protected:
 
     // overrided method (virtual in super)
@@ -197,6 +199,7 @@ private slots:
 
     // help menu actions slots
     void about();
+    void printShortcutKeys();
 
     void resizeCanvas( const QSize & size );
 

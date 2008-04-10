@@ -93,7 +93,8 @@ Options::instance()
 
  */
 Options::Options()
-    : M_connect( false )
+    : M_monitor_client_mode( false )
+    , M_connect( false )
     , M_server_host( "127.0.0.1" )
     , M_server_port( 6000 )
     , M_client_version( 3 )
@@ -184,6 +185,18 @@ Options::readSettings()
 
 //     val = settings.value( "game_log_file" );
 //     if ( val.isValid() ) M_game_log_file = val.toString().toStdString();
+
+//     val = settings.value( "connect" );
+//     if ( val.isValid() ) M_connect  = val.toBool();
+
+//     val = settings.value( "server-host" );
+//     if ( val.isValid() ) M_server_host = val.toString().toStdString();
+
+//     val = settings.value( "server-port" );
+//     if ( val.isValid() ) M_server_port = val.toInt();
+
+//     val = settings.value( "client-version" );
+//     if ( val.isValid() ) M_client_version = val.toInt();
 
     val = settings.value( "monitor_port" );
     if ( val.isValid() ) M_monitor_port = val.toInt();
@@ -312,6 +325,11 @@ Options::writeSettings()
 
 //     settings.setValue( "game_log_file", QString::fromStdString( M_game_log_file ) );
 
+//     settings.setValue( "connect", M_connect );
+//     settings.setValue( "server-host", QString::fromStdString( M_server_host ) );
+//     settings.setValue( "server-port", M_server_port );
+//     settings.setValue( "client-version", M_client_version );
+
     settings.setValue( "monitor_port", M_monitor_port );
     settings.setValue( "auto_loop_mode", M_auto_loop_mode );
     settings.setValue( "timer_interval", M_timer_interval );
@@ -395,15 +413,15 @@ Options::parseCmdLine( int argc,
           "start logplayer with minimum mode." )
         ( "monitor-path,m",
           po::value< std::string >( &M_monitor_path )->default_value( "self", "self" ),
-          "set the path to the monitor client that is invoked by rcsslogplayer." )
+          "set the path to the monitor client invoked by rcsslogplayer." )
         ( "monitor-port",
           po::value< int >( &M_monitor_port )->default_value( 6000, "6000" ),
-          "set port number to wait the monitor client connection as the logplayer." )
-        ( "output-file",
-          po::value< std::string >( &M_output_file )->default_value( "", "" ),
-          "set the path to the monitor client that is invoked by rcsslogplayer." )
+          "set a port number to wait monitor client connections." )
+//         ( "output-file",
+//           po::value< std::string >( &M_output_file )->default_value( "", "" ),
+//           "set the output file path." )
         ( "auto-loop-mode",
-          po::value< bool >( &M_auto_loop_mode )->default_value( true, "on" ),
+          po::value< bool >( &M_auto_loop_mode )->default_value( false, "off" ),
           "enable automatic replay loop mode." )
         ( "timer-interval",
           po::value< int >( &M_timer_interval )->default_value( DEFAULT_TIMER_INTERVAL ),

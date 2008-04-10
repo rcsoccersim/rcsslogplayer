@@ -334,8 +334,8 @@ MainWindow::createActionsMonitor()
     M_kick_off_act->setShortcut( Qt::Key_S );
     M_kick_off_act->setStatusTip( tr( "Start the game" ) );
     M_kick_off_act->setEnabled( false );
-    //     connect( M_kick_off_act, SIGNAL( triggered() ),
-    //              this, SLOT( kickOff() ) );
+//     connect( M_kick_off_act, SIGNAL( triggered() ),
+//              this, SLOT( kickOff() ) );
     this->addAction( M_kick_off_act );
     //
     M_set_live_mode_act = new QAction( //QIcon( QPixmap( logplayer_live_mode_xpm ) ),
@@ -348,8 +348,8 @@ MainWindow::createActionsMonitor()
 #endif
     M_set_live_mode_act->setStatusTip( tr( "set monitor to live mode" ) );
     M_set_live_mode_act->setEnabled( false );
-    //     connect( M_set_live_mode_act, SIGNAL( triggered() ),
-    //              this, SLOT( setLiveMode() ) );
+//     connect( M_set_live_mode_act, SIGNAL( triggered() ),
+//              this, SLOT( setLiveMode() ) );
     this->addAction( M_set_live_mode_act );
     //
     M_connect_monitor_act = new QAction( tr( "&Connect" ), this );
@@ -361,23 +361,23 @@ MainWindow::createActionsMonitor()
     M_connect_monitor_act
         ->setStatusTip( "Connect to the rcssserver on localhost" );
     M_connect_monitor_act->setEnabled( true );
-    //     connect( M_connect_monitor_act, SIGNAL( triggered() ),
-    //              this, SLOT( connectMonitor() ) );
+//     connect( M_connect_monitor_act, SIGNAL( triggered() ),
+//              this, SLOT( connectMonitor() ) );
     this->addAction( M_connect_monitor_act );
     //
     M_connect_monitor_to_act = new QAction( tr( "Connect &to ..." ), this );
     M_connect_monitor_to_act
-        ->setStatusTip( tr( "Connect to the rcssserver on other host" ) );
+        ->setStatusTip( tr( "Connect to the rcssserver on the other host" ) );
     M_connect_monitor_to_act->setEnabled( true );
-    //     connect( M_connect_monitor_to_act, SIGNAL( triggered() ),
-    //              this, SLOT( connectMonitorTo() ) );
+    connect( M_connect_monitor_to_act, SIGNAL( triggered() ),
+             this, SLOT( connectMonitorTo() ) );
     this->addAction( M_connect_monitor_to_act );
     //
     M_disconnect_monitor_act = new QAction( tr( "&Disconnect" ), this );
     M_disconnect_monitor_act->setStatusTip( tr( "Disonnect from rcssserver" ) );
     M_disconnect_monitor_act->setEnabled( false );
-    //     connect( M_disconnect_monitor_act, SIGNAL( triggered() ),
-    //              this, SLOT( disconnectMonitor() ) );
+//     connect( M_disconnect_monitor_act, SIGNAL( triggered() ),
+//              this, SLOT( disconnectMonitor() ) );
     this->addAction( M_disconnect_monitor_act );
 }
 
@@ -497,6 +497,12 @@ MainWindow::createActionsHelp()
     M_about_act->setStatusTip( tr( "Show the about dialog." ) );
     connect( M_about_act, SIGNAL( triggered() ), this, SLOT( about() ) );
     this->addAction( M_about_act );
+
+    M_shortcut_keys_act = new QAction( tr( "Shortcut Keys" ), this );
+    M_shortcut_keys_act->setStatusTip( tr( "Print available shortcut keys." ) );
+    connect( M_shortcut_keys_act, SIGNAL( triggered() ),
+             this, SLOT( printShortcutKeys() ) );
+    this->addAction( M_shortcut_keys_act );
 }
 
 /*-------------------------------------------------------------------*/
@@ -535,7 +541,7 @@ MainWindow::createMenuFile()
 /*!
 
  */
-#if 0
+#if 1
 void
 MainWindow::createMenuMonitor()
 {
@@ -595,7 +601,9 @@ MainWindow::createMenuHelp()
 {
     QMenu * menu = menuBar()->addMenu( tr( "&Help" ) );
     menu->addAction( M_about_act );
+    menu->addAction( M_shortcut_keys_act );
 
+    menu->addSeparator();
     menu->addAction( tr( "About Qt" ), qApp, SLOT( aboutQt() ) );
 }
 
@@ -675,14 +683,14 @@ MainWindow::createFieldCanvas()
     {
         QMenu * menu = new QMenu( M_field_canvas );
         menu->addAction( M_open_act );
-        //        menu->addAction( M_connect_monitor_act );
+//         menu->addAction( M_connect_monitor_act );
 
         M_field_canvas->setNormalMenu( menu );
     }
     {
         QMenu * menu = new QMenu( M_field_canvas );
         menu->addAction( M_open_act );
-        //        menu->addAction( M_connect_monitor_act );
+//         menu->addAction( M_connect_monitor_act );
 
         M_field_canvas->setSystemMenu( menu );
     }
@@ -997,11 +1005,7 @@ MainWindow::createConfigDialog()
 void
 MainWindow::createMonitorServer()
 {
-    if ( M_monitor_server )
-    {
-        delete M_monitor_server;
-        M_monitor_server = static_cast< MonitorServer * >( 0 );
-    }
+    closeMonitorServer();
 
     M_monitor_server = new MonitorServer( this,
                                           M_main_data,
@@ -1009,6 +1013,22 @@ MainWindow::createMonitorServer()
 
     connect( M_log_player, SIGNAL( updated() ),
              M_monitor_server, SLOT( sendToClients() ) );
+}
+
+/*-------------------------------------------------------------------*/
+/*!
+
+ */
+void
+MainWindow::closeMonitorServer()
+{
+    if ( M_monitor_server )
+    {
+        disconnect( M_log_player, SIGNAL( updated() ),
+                    M_monitor_server, SLOT( sendToClients() ) );
+        delete M_monitor_server;
+        M_monitor_server = static_cast< MonitorServer * >( 0 );
+    }
 }
 
 /*-------------------------------------------------------------------*/
@@ -1464,7 +1484,11 @@ MainWindow::connectMonitorTo( const char * hostname )
         return;
     }
 
-    std::cerr << "Connect to rcssserver on [" << hostname << "]" << std::endl;
+    M_open_output_act->setEnabled( false );
+
+    closeMonitorServer();
+
+    std::cerr << "Connect to [" << hostname << "] ..." << std::endl;
 
     M_monitor_client = new MonitorClient( this,
                                           M_main_data.dispHolder(),
@@ -1493,8 +1517,14 @@ MainWindow::connectMonitorTo( const char * hostname )
         M_config_dialog->unzoom();
     }
 
-    //Options::instance().setMonitorClientMode( true );
+    createMonitorServer();
+
+    Options::instance().setMonitorClientMode( true );
     Options::instance().setServerHost( hostname );
+
+    M_save_image_act->setEnabled( false );
+
+    M_open_output_act->setEnabled( true );
 
     M_kick_off_act->setEnabled( true );
     M_set_live_mode_act->setEnabled( true );
@@ -1504,8 +1534,8 @@ MainWindow::connectMonitorTo( const char * hostname )
 
     connect( M_monitor_client, SIGNAL( received() ),
              this, SLOT( receiveMonitorPacket() ) );
-    connect( M_monitor_client, SIGNAL( timeout() ),
-             this, SLOT( disconnectMonitor() ) );
+//     connect( M_monitor_client, SIGNAL( timeout() ),
+//              this, SLOT( disconnectMonitor() ) );
 
     M_log_player->setLiveMode();
 
@@ -1541,15 +1571,7 @@ MainWindow::disconnectMonitor()
         M_monitor_client = static_cast< MonitorClient * >( 0 );
     }
 
-    if ( M_monitor_server )
-    {
-        disconnect( M_log_player, SIGNAL( updated() ),
-                    M_monitor_server, SLOT( sendToClients() ) );
-        delete M_monitor_server;
-        M_monitor_server = static_cast< MonitorServer * >( 0 );
-    }
-
-    //Options::instance().setMonitorClientMode( false );
+    Options::instance().setMonitorClientMode( false );
 
     M_kick_off_act->setEnabled( false );
     M_set_live_mode_act->setEnabled( false );
@@ -1795,6 +1817,30 @@ MainWindow::about()
 
  */
 void
+MainWindow::printShortcutKeys()
+{
+    QList< QAction * > acts = this->actions();
+
+    const QList< QAction * >::const_iterator end = acts.end();
+    for ( QList< QAction * >::const_iterator it = acts.begin();
+          it != end;
+          ++it )
+    {
+        if ( ! (*it)->shortcut().isEmpty() )
+        {
+            std::cout << QString( (*it)->text() ).remove( QChar( '&' ) ).toStdString()
+                      << " ->  ["
+                      << (*it)->shortcut().toString().toStdString() << "]\n";
+        }
+    }
+    std::cout << std::flush;
+}
+
+/*-------------------------------------------------------------------*/
+/*!
+
+ */
+void
 MainWindow::resizeCanvas( const QSize & size )
 {
     if ( centralWidget() )
@@ -1842,13 +1888,14 @@ MainWindow::resizeCanvas( const QSize & size )
 void
 MainWindow::receiveMonitorPacket()
 {
+    std::cerr << "receiveMonitorPacket" << std::endl;
     if ( M_log_player->isLiveMode() )
     {
         M_log_player->showLive();
     }
     else
     {
-        //M_log_player_tool_bar->updateSlider();
+        std::cerr << "receiveMonitorPacket updateSlider" << std::endl;
         M_log_slider_tool_bar->updateSlider();
     }
 }

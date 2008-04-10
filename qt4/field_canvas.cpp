@@ -431,14 +431,14 @@ FieldCanvas::mouseReleaseEvent( QMouseEvent * event )
         }
         else if ( M_mouse_state[0].pressedPoint() == event->pos() )
         {
-//             if ( Options::instance().monitorClientMode() )
-//             {
-//                 if ( M_monitor_menu
-//                      && ! M_monitor_menu->exec( event->globalPos() ) )
-//                 {
-//                     M_mouse_state[0].setMenuFailed( true );
-//                 }
-//             }
+            if ( Options::instance().monitorClientMode() )
+            {
+                if ( M_monitor_menu
+                     && ! M_monitor_menu->exec( event->globalPos() ) )
+                {
+                    M_mouse_state[0].setMenuFailed( true );
+                }
+            }
         }
         else
         {
@@ -459,15 +459,15 @@ FieldCanvas::mouseReleaseEvent( QMouseEvent * event )
         }
         else if ( M_mouse_state[2].pressedPoint() == event->pos() )
         {
-//             if ( Options::instance().monitorClientMode() )
-//             {
-//                 if ( M_system_menu
-//                      && ! M_system_menu->exec( event->globalPos() ) )
-//                 {
-//                     M_mouse_state[2].setMenuFailed( true );
-//                 }
-//             }
-//             else
+            if ( Options::instance().monitorClientMode() )
+            {
+                if ( M_system_menu
+                     && ! M_system_menu->exec( event->globalPos() ) )
+                {
+                    M_mouse_state[2].setMenuFailed( true );
+                }
+            }
+            else
             {
                 if ( M_normal_menu
                      && ! M_normal_menu->exec( event->globalPos() ) )

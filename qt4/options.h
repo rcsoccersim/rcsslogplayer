@@ -95,6 +95,7 @@ private:
     //
     // monitor client options
     //
+    bool M_monitor_client_mode;
     bool M_connect;
     std::string M_server_host;
     int M_server_port;
@@ -215,6 +216,15 @@ public:
     //
     // monitor options
     //
+
+    bool monitorClientMode() const
+      {
+          return M_monitor_client_mode;
+      }
+    void setMonitorClientMode( const bool on )
+      {
+          M_monitor_client_mode = on;
+      }
 
     bool connect() const
       {

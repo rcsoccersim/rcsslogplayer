@@ -427,6 +427,7 @@ LogPlayer::showLive()
 {
     if ( M_main_data.setIndexLast() )
     {
+        std::cerr << "LogPlayer::showLive()" << std::endl;
         M_timer->stop();
 
         emit updated();

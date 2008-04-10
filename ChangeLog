@@ -5,6 +5,9 @@
 	* qt4/Makefile.am:
 	* qt4/field_canvas.cpp:
 	* qt4/main_window.cpp:
+	- added some monitor client related code, but not available yet.
+	- added an action to print available shortcut keys.
+
 	* qt4/main_window.h:
 	* qt4/options.cpp:
 	* qt4/qt4.pro:

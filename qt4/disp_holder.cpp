@@ -156,8 +156,35 @@ DispHolder::playerType( const int id ) const
 
 */
 bool
-DispHolder::addDispInfo1( const rcss::rcg::dispinfo_t & )
+DispHolder::addDispInfo1( const rcss::rcg::dispinfo_t & disp )
 {
+#if 0
+    if ( ntohs( disp.mode ) != rcss::rcg::SHOW_MODE )
+    {
+        return true;
+    }
+
+    if ( M_dispinfo_cont.size() >= 65535 )
+    {
+        std::cerr << "over the maximum number of showinfo."
+                  << std::endl;
+        return;
+    }
+
+    DispPtr disp( new rcss::rcg::DispInfoT );
+
+    M_playmode = static_cast< rcss::rcg::PlayMode >( disp.body.show.pmode );
+    rcss::rcg::convert( disp.body.show.team[0], M_teams[0] );
+    rcss::rcg::convert( disp.body.show.team[1], M_teams[1] );
+
+    disp->pmode_ = M_playmode;
+    disp->team_[0] = M_teams[0];
+    disp->team_[1] = M_teams[1];
+    rcss::rcg::convert( disp.body.show, disp->show_ );
+
+    M_last_disp = disp;
+    M_dispinfo_cont.push_back( disp );
+#endif
     return true;
 }
 
@@ -166,8 +193,35 @@ DispHolder::addDispInfo1( const rcss::rcg::dispinfo_t & )
 
 */
 bool
-DispHolder::addDispInfo2( const rcss::rcg::dispinfo_t2 & )
+DispHolder::addDispInfo2( const rcss::rcg::dispinfo_t2 & disp )
 {
+#if 0
+    if ( ntohs( disp.mode ) != rcss::rcg::SHOW_MODE )
+    {
+        return true;
+    }
+
+    if ( M_dispinfo_cont.size() >= 65535 )
+    {
+        std::cerr << "over the maximum number of showinfo."
+                  << std::endl;
+        return;
+    }
+
+    DispPtr disp( new rcss::rcg::DispInfoT );
+
+    M_playmode = static_cast< rcss::rcg::PlayMode >( disp.body.show.pmode );
+    rcss::rcg::convert( disp.body.show.team[0], M_teams[0] );
+    rcss::rcg::convert( disp.body.show.team[1], M_teams[1] );
+
+    disp->pmode_ = M_playmode;
+    disp->team_[0] = M_teams[0];
+    disp->team_[1] = M_teams[1];
+    rcss::rcg::convert( disp.body.show, disp->show_ );
+
+    M_last_disp = disp;
+    M_dispinfo_cont.push_back( disp );
+#endif
     return true;
 }
 
@@ -176,7 +230,7 @@ DispHolder::addDispInfo2( const rcss::rcg::dispinfo_t2 & )
 
 */
 bool
-DispHolder::addDispInfo3( const char * )
+DispHolder::addDispInfo3( const char * msg )
 {
     return true;
 }
