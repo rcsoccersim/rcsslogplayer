@@ -71,7 +71,9 @@ noinst_HEADERS = \
 	main_window.h \
 	monitor_client.h \
 	monitor_server.h \
+	mouse_state.h \
 	options.h \
+	painter_interface.h \
 	player_painter.h \
 	player_type_dialog.h \
 	remote_monitor.h \
@@ -98,6 +100,7 @@ AM_CFLAGS = -Wall
 AM_CXXFLAGS = -Wall
 AM_LDFLAGS =
 
-EXTRA_DIST =
+EXTRA_DIST = \
+	rcsslogplay
 
 CLEANFILES = $(nodist_rcsslogplayer_SOURCES) *~

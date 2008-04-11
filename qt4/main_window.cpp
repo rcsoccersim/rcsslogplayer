@@ -176,7 +176,11 @@ MainWindow::init()
         connectMonitorTo( host.c_str() );
     }
 
-    if ( Options::instance().fullScreen() )
+    if ( Options::instance().minimumMode() )
+    {
+        //
+    }
+    else if ( Options::instance().fullScreen() )
     {
         this->showFullScreen();
     }
@@ -258,16 +262,19 @@ MainWindow::writeSettings()
     settings.setValue( "window_style", M_window_style );
     settings.setValue( "game_log_path", M_game_log_path );
 
-    settings.setValue( "window_width", this->width() );
-    settings.setValue( "window_height", this->height() );
-    settings.setValue( "window_x", this->pos().x() );
-    settings.setValue( "window_y", this->pos().y() );
-    settings.setValue( "maximize", this->isMaximized() );
-    settings.setValue( "full_screen", this->isFullScreen() );
-    settings.setValue( "hide_menu_bar", this->menuBar()->isHidden() );
-    settings.setValue( "hide_tool_bar", ( M_log_player_tool_bar->isHidden()
-                                          && M_log_slider_tool_bar->isHidden() ) );
-    settings.setValue( "hide_status_bar", this->statusBar()->isHidden() );
+    if ( ! Options::instance().minimumMode() )
+    {
+        settings.setValue( "window_width", this->width() );
+        settings.setValue( "window_height", this->height() );
+        settings.setValue( "window_x", this->pos().x() );
+        settings.setValue( "window_y", this->pos().y() );
+        settings.setValue( "maximize", this->isMaximized() );
+        settings.setValue( "full_screen", this->isFullScreen() );
+        settings.setValue( "hide_menu_bar", this->menuBar()->isHidden() );
+        settings.setValue( "hide_tool_bar", ( M_log_player_tool_bar->isHidden()
+                                              && M_log_slider_tool_bar->isHidden() ) );
+        settings.setValue( "hide_status_bar", this->statusBar()->isHidden() );
+    }
 
     settings.endGroup();
 }

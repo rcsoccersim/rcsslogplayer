@@ -35,6 +35,7 @@ AM_LDFLAGS =
 
 
 EXTRA_DIST = \
+	rcsslogplay_classic \
 	ff.xbm \
 	play.xbm \
 	plus.xbm \

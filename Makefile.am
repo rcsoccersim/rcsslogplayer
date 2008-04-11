@@ -7,17 +7,22 @@ libtool:	$(LIBTOOL_DEPS)
 SUBDIRS = rcsslogplayer tool classic qt4 .
 
 EXTRA_DIST = \
-	icons/rcss.xpm\
+	icons/blank.xpm \
 	icons/ff.xpm\
+	icons/go.xpm \
+	icons/minus.xpm \
+	icons/next_score.xpm \
+	icons/open.xpm \
 	icons/play.xpm \
 	icons/plus.xpm \
-	icons/stop.xpm \
-	icons/minus.xpm \
+	icons/prev_score.xpm \
+	icons/quit.xpm \
+	icons/rcss.ico \
+	icons/rcss.xpm \
+	icons/rec.xpm \
 	icons/rev.xpm \
 	icons/rew.xpm \
-	icons/rec.xpm \
-	icons/blank.xpm \
-	icons/quit.xpm \
-	icons/go.xpm
+	icons/stop.xpm
+
 
 CLEANFILES = *~

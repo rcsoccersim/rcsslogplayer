@@ -4,6 +4,13 @@
 	* configure.ac:
 	- updated a version number string, Official release 12.1.0.
 
+	* classic/Makefile.am:
+	* qt4/Makefile.am:
+	* qt4/main_window.cpp:
+	* qt4/options.cpp:
+	- added missing disttarget files.
+	- fixed incorrect settings.
+
 2008-04-11  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 
 	* qt4/main_window.cpp:

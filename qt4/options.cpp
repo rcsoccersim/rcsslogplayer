@@ -198,8 +198,8 @@ Options::readSettings()
 //     val = settings.value( "client-version" );
 //     if ( val.isValid() ) M_client_version = val.toInt();
 
-    val = settings.value( "minimum_mode" );
-    if ( val.isValid() ) M_minimum_mode = val.toBool();
+//     val = settings.value( "minimum_mode" );
+//     if ( val.isValid() ) M_minimum_mode = val.toBool();
 
     val = settings.value( "monitor_port" );
     if ( val.isValid() ) M_monitor_port = val.toInt();
@@ -333,7 +333,7 @@ Options::writeSettings()
 //     settings.setValue( "server-port", M_server_port );
 //     settings.setValue( "client-version", M_client_version );
 
-    settings.setValue( "minimum_mode", M_minimum_mode );
+//     settings.setValue( "minimum_mode", M_minimum_mode );
     settings.setValue( "monitor_port", M_monitor_port );
     settings.setValue( "auto_loop_mode", M_auto_loop_mode );
     settings.setValue( "timer_interval", M_timer_interval );
