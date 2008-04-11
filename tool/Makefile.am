@@ -49,6 +49,8 @@ pkgdata_DATA = \
 	rcg-0.1.xsd
 
 
-EXTRA_DIST =
+EXTRA_DIST = \
+	rcg.xsd \
+	rcg-0.1.xsd
 
 CLEANFILES = *~
