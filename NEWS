@@ -1,3 +1,16 @@
+[12.1.0]
+  * Reimplemented rcsslogplayer using Qt4. You can disable the new
+    logplayer with './configure --disable-qt4'. New logplayer supports
+	qmake build	system. If you have trouble with configure script,
+	please try qmake.
+
+  * Renamed old logplayer to rcsslogplayer_classic.  You can disable
+    the classic logplayer with 'configure --disable-classic'.
+
+  * Reimplemented rcgparser library.
+
+  * Supported Windows environment.
+
 [12.0.0]
   * Supported the game log format version 4.
 
