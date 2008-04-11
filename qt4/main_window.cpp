@@ -1282,10 +1282,17 @@ MainWindow::openOutputFile()
 {
     QString filter( tr( "Game Log files (*.rcg);;"
                         "All files (*)" ) );
+    QString dir_path;
+
+    if ( ! M_game_log_path.isEmpty() )
+    {
+        QFileInfo file_info( M_game_log_path );
+        dir_path = file_info.absolutePath();
+    }
 
     QString file_path = QFileDialog::getSaveFileName( this,
-                                                      tr( "Output game log data to file" ),
-                                                      QString(),
+                                                      tr( "Output game log data to the file" ),
+                                                      dir_path,
                                                       filter );
 
     if ( file_path.isEmpty() )
