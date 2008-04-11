@@ -200,7 +200,8 @@ LogPlayer::playBack()
     M_live_mode = false;
     M_forward = false;
 
-    if ( ! M_timer->isActive() )
+    if ( ! M_timer->isActive()
+         || M_timer->interval() != Options::instance().timerInterval() )
     {
         M_timer->start( Options::instance().timerInterval() );
     }
@@ -216,7 +217,8 @@ LogPlayer::playForward()
     M_live_mode = false;
     M_forward = true;
 
-    if ( ! M_timer->isActive() )
+    if ( ! M_timer->isActive()
+         || M_timer->interval() != Options::instance().timerInterval() )
     {
         M_timer->start( Options::instance().timerInterval() );
     }

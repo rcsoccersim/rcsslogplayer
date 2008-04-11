@@ -455,7 +455,7 @@ MainWindow::createActionsView()
              this, SLOT( showPlayerTypeDialog() ) );
     this->addAction( M_show_player_type_dialog_act );
     //
-    M_show_detail_dialog_act = new QAction( tr( "&Object Detail" ), this );
+    M_show_detail_dialog_act = new QAction( tr( "Object &Detail" ), this );
 #ifdef Q_WS_MAC
     M_show_detail_dialog_act->setShortcut( Qt::META + Qt::Key_D );
 #else
@@ -1803,10 +1803,10 @@ void
 MainWindow::about()
 {
     QString msg( tr( PACKAGE_NAME"-"VERSION"\n\n" ) );
-    msg += tr( "The RoboCup Soccer Simulator LogPlayer (rcsslogplayer) is a game log"
-               " replay tool for the RoboCup Soccer Siulator Server (rcssserver).\n"
+    msg += tr( "The RoboCup Soccer Simulator LogPlayer (rcsslogplayer) is a game log replay tool\n"
+               "for the RoboCup Soccer Siulator Server (rcssserver).\n"
                "\n"
-               "the RoboCup Soccer Simulator Official Web Page:\n"
+               "The RoboCup Soccer Simulator Official Web Page:\n"
                "  http://sserver.sourceforge.net/\n"
                "Author:\n"
                "  The RoboCup Soccer Simulator Maintenance Committee.\n"

@@ -107,6 +107,7 @@ private:
     void drawMouseMeasure( QPainter & painter );
 
     void updateFocus();
+    void selectPlayer( const QPoint & point );
 
 protected:
 

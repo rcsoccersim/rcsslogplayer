@@ -7,7 +7,7 @@ DEPENDPATH += . ../rcsslogplayer
 
 INCLUDEPATH += . ..
 win32 {
-  INCLUDEPATH +=  ../../../boost_1_34_1
+  INCLUDEPATH +=  ../../boost_1_34_1
 }
 macx {
   INCLUDEPATH += /opt/local/include
@@ -15,7 +15,7 @@ macx {
 
 LIBS += -L../lib -lrcssrcgparser
 win32 {
-  LIBS += -lrcsc ../zlib/zlib1.dll -lwsock32
+  LIBS += ../../zlib123-dll/zlib1.dll -lwsock32
 }
 unix {
   LIBS += -lboost_program_options -lz
@@ -25,7 +25,7 @@ macx {
   LIBS += -lboost_program_options -lz
 }
 
-DEFINES += HAVE_LIBRCSC_GZ
+DEFINES += HAVE_LIBZ
 win32 {
   DEFINES += HAVE_WINDOWS_H
 }

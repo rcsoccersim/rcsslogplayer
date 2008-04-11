@@ -6,6 +6,7 @@ DEPENDPATH += .
 
 INCLUDEPATH += . ..
 win32 {
+  INCLUDEPATH += ../../zlib123-dll/include
   INCLUDEPATH += ../../boost_1_34_1
 }
 macx {

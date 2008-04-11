@@ -1,3 +1,20 @@
+2008-04-11  Hidehisa Akiyama  <akky@users.sourceforge.jp>
+
+	* qt4/config_dialog.cpp:
+	- changed a layout.
+
+	* qt4/field_canvas.cpp:
+	* qt4/field_canvas.h:
+	- implemented a player selection by mouse clicking.
+
+	* qt4/log_player.cpp:
+	* qt4/main_window.cpp:
+	* qt4/options.cpp:
+	* qt4/qt4.pro:
+	* qt4/rcsslogplayer.rc:
+	* rcsslogplayer/rcsslogplayer.pro:
+	- fixed build problem on Windows.
+
 2008-04-10  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 
 	* qt4/log_player_tool_bar.cpp:

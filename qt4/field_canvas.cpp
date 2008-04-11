@@ -364,6 +364,57 @@ FieldCanvas::updateFocus()
 
 */
 void
+FieldCanvas::selectPlayer( const QPoint & point )
+{
+    DispConstPtr disp = M_main_data.getDispInfo( M_main_data.index() );
+
+    if ( ! disp
+         || ( Options::instance().playerSelectType() != Options::SELECT_FIX
+              && Options::instance().playerSelectType() != Options::SELECT_UNSELECT )
+         )
+    {
+        return;
+    }
+
+    double pos_x = Options::instance().fieldX( point.x() );
+    double pos_y = Options::instance().fieldY( point.y() );
+
+    // if auto select mode, toggle mode
+    const rcss::rcg::ShowInfoT & show = disp->show_;
+
+    double min_dist2 = 1.0 * 1.0;
+    rcss::rcg::Side side = rcss::rcg::NEUTRAL;
+    int unum = 0;
+
+    for ( int i = 0; i < rcss::rcg::MAX_PLAYER*2; ++i )
+    {
+        if ( show.player_[i].state_ != 0 )
+        {
+            double d2
+                = std::pow( pos_x - show.player_[i].x_, 2 )
+                + std::pow( pos_y - show.player_[i].y_, 2 );
+
+            if ( d2 < min_dist2 )
+            {
+                min_dist2 = d2;
+                side = show.player_[i].side();
+                unum = show.player_[i].unum_;
+            }
+        }
+    }
+
+    if ( unum != 0 )
+    {
+        Options::instance().setSelectedNumber( side, unum );
+        this->update();
+    }
+}
+
+/*-------------------------------------------------------------------*/
+/*!
+
+*/
+void
 FieldCanvas::mouseDoubleClickEvent( QMouseEvent * event )
 {
     this->unsetCursor();
@@ -392,6 +443,10 @@ FieldCanvas::mousePressEvent( QMouseEvent * event )
         if ( event->modifiers() == Qt::ControlModifier )
         {
             emit focusChanged( event->pos() );
+        }
+        else
+        {
+            selectPlayer( event->pos() );
         }
     }
     else if ( event->button() == Qt::MidButton )

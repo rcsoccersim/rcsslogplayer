@@ -87,6 +87,8 @@ ConfigDialog::createWidgets()
 
         layout->addWidget( createZoomControls(),
                            0, Qt::AlignLeft );
+        layout->addWidget( createFocusControls(),
+                           0, Qt::AlignLeft );
         layout->addWidget( createObjectSizeControls(),
                            0, Qt::AlignLeft );
         layout->addWidget( createCanvasSizeControls(),
@@ -123,8 +125,6 @@ ConfigDialog::createWidgets()
         layout->setMargin( 4 );
         layout->setSpacing( 4 );
 
-        layout->addWidget( createFocusControls(),
-                           0, Qt::AlignLeft );
         layout->addWidget( createPlayerSelectionControls(),
                            0, Qt::AlignLeft );
         layout->addWidget( createTraceControls(),
