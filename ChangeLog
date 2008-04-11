@@ -13,8 +13,10 @@
 	* qt4/config_dialog.cpp:
 	- changed a layout.
 
+	* qt4/config_dialog.h:
 	* qt4/field_canvas.cpp:
 	* qt4/field_canvas.h:
+	* qt4/main_data.cpp:
 	- implemented a player selection by mouse clicking.
 
 	* qt4/log_player.cpp:

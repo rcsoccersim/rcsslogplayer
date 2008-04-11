@@ -356,7 +356,6 @@ FieldCanvas::updateFocus()
         }
     }
 
-
 }
 
 /*-------------------------------------------------------------------*/
@@ -405,8 +404,8 @@ FieldCanvas::selectPlayer( const QPoint & point )
 
     if ( unum != 0 )
     {
-        Options::instance().setSelectedNumber( side, unum );
-        this->update();
+        if ( side == rcss::rcg::RIGHT ) unum += rcss::rcg::MAX_PLAYER;
+        emit playerSelected( unum );
     }
 }
 

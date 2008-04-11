@@ -200,14 +200,10 @@ MainData::openOutputFile( const QString & file_path )
         return false;
     }
 
-    std::ios_base::openmode mode = ( std::ios_base::out
-                                     | std::ios_base::trunc );
-    if ( dispHolder().logVersion() < rcss::rcg::REC_VERSION_4 )
-    {
-        mode |= std::ios_base::binary;
-    }
-
-    M_out = new std::ofstream( file_path.toAscii(), mode );
+    M_out = new std::ofstream( file_path.toAscii(),
+                               std::ios_base::out
+                               | std::ios_base::trunc
+                               | std::ios_base::binary );
 
     if ( ! *M_out )
     {

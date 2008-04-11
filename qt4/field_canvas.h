@@ -131,6 +131,7 @@ signals:
     void freeKickRight( const QPoint & pos );
 
     void playerMoved( const QPoint & point );
+    void playerSelected( int number );
 
     void focusChanged( const QPoint & point );
     void mouseMoved( const QPoint & point );

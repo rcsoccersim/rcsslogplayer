@@ -197,7 +197,6 @@ private slots:
     void clickSelectAutoRight();
     void clickSelectFix();
 
-    void selectPlayer( int number );
     void choicePlayer( int number );
 
     void editBallTraceStart( const QString & text );
@@ -261,6 +260,7 @@ public slots:
     void setUnselect();
 
     void selectPlayerWithKey();
+    void selectPlayer( int number );
 
 signals:
 

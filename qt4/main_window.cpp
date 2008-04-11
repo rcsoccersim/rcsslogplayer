@@ -91,6 +91,11 @@ MainWindow::MainWindow()
     // control dialogs
     createConfigDialog();
 
+    connect( M_field_canvas, SIGNAL( playerSelected( int ) ),
+             M_config_dialog, SLOT( selectPlayer( int ) ) );
+    connect( M_field_canvas, SIGNAL( focusChanged( const QPoint & ) ),
+             M_config_dialog, SLOT( setFocusPoint( const QPoint & ) ) );
+
     connect( M_log_player, SIGNAL( updated() ),
              this, SIGNAL( viewUpdated() ) );
     connect( M_log_player, SIGNAL( updated() ),
@@ -748,9 +753,6 @@ MainWindow::createConfigDialog()
 
     connect( M_config_dialog, SIGNAL( canvasResized( const QSize & ) ),
              this, SLOT( resizeCanvas( const QSize & ) ) );
-
-    connect( M_field_canvas, SIGNAL( focusChanged( const QPoint & ) ),
-             M_config_dialog, SLOT( setFocusPoint( const QPoint & ) ) );
 
     // register short cut keys
     {
