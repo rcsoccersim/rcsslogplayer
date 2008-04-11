@@ -1294,6 +1294,11 @@ MainWindow::openOutputFile()
         return;
     }
 
+    if ( ! file_path.endsWith( ".rcg" ) )
+    {
+        file_path.append( ".rcg" );
+    }
+
     std::cerr << "output file = [" << file_path.toStdString() << ']' << std::endl;
 
     if ( M_main_data.openOutputFile( file_path ) )

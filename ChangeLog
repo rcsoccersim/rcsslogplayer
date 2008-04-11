@@ -1,5 +1,9 @@
 2008-04-11  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 
+	* qt4/main_data.cpp:
+	- implemented automatic file exteantion appending for an output
+	file name.
+
 	* qt4/config_dialog.cpp:
 	- changed a layout.
 
