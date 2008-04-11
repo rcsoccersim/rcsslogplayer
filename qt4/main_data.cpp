@@ -200,7 +200,14 @@ MainData::openOutputFile( const QString & file_path )
         return false;
     }
 
-    M_out = new std::ofstream( file_path.toAscii() );
+    std::ios_base::openmode mode = ( std::ios_base::out
+                                     | std::ios_base::trunc );
+    if ( dispHolder().logVersion() < rcss::rcg::REC_VERSION_4 )
+    {
+        mode |= std::ios_base::binary;
+    }
+
+    M_out = new std::ofstream( file_path.toAscii(), mode );
 
     if ( ! *M_out )
     {
@@ -244,16 +251,16 @@ MainData::openOutputFile( const QString & file_path )
         disp2.mode = htons( rcss::rcg::PARAM_MODE );
         rcss::rcg::convert( serverParam(), disp2.body.sparams );
         M_out->write( reinterpret_cast< const char * >( &disp2.mode ),
-                      sizeof( disp2.mode ) );
+                      sizeof( rcss::rcg::Int16 ) );
         M_out->write( reinterpret_cast< const char * >( &disp2.body.sparams ),
-                      sizeof( disp2.body.sparams ) );
+                      sizeof( rcss::rcg::server_params_t ) );
 
         disp2.mode = htons( rcss::rcg::PPARAM_MODE );
         rcss::rcg::convert( playerParam(), disp2.body.pparams );
         M_out->write( reinterpret_cast< const char * >( &disp2.mode ),
-                      sizeof( disp2.mode ) );
+                      sizeof( rcss::rcg::Int16 ) );
         M_out->write( reinterpret_cast< const char * >( &disp2.body.pparams ),
-                      sizeof( disp2.body.pparams ) );
+                      sizeof( rcss::rcg::player_params_t ) );
 
         disp2.mode = htons( rcss::rcg::PT_MODE );
         for ( std::map< int, rcss::rcg::PlayerTypeT >::const_iterator it = playerTypes().begin();
@@ -262,9 +269,9 @@ MainData::openOutputFile( const QString & file_path )
         {
             rcss::rcg::convert( it->second, disp2.body.ptinfo );
             M_out->write( reinterpret_cast< const char * >( &disp2.mode ),
-                          sizeof( disp2.mode ) );
+                          sizeof( rcss::rcg::Int16 ) );
             M_out->write( reinterpret_cast< const char * >( &disp2.body.ptinfo ),
-                          sizeof( disp2.body.ptinfo ) );
+                          sizeof( rcss::rcg::player_type_t ) );
         }
 
     }
