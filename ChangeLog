@@ -1,5 +1,9 @@
 2008-04-11  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 
+	* qt4/main_window.cpp:
+	* qt4/options.cpp:
+	- fixed defects about setting read/write.
+
 	* qt4/main_data.cpp:
 	- fixed a defect about a return characther code.
 

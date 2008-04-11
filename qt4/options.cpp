@@ -198,6 +198,9 @@ Options::readSettings()
 //     val = settings.value( "client-version" );
 //     if ( val.isValid() ) M_client_version = val.toInt();
 
+    val = settings.value( "minimum_mode" );
+    if ( val.isValid() ) M_minimum_mode = val.toBool();
+
     val = settings.value( "monitor_port" );
     if ( val.isValid() ) M_monitor_port = val.toInt();
 
@@ -330,20 +333,21 @@ Options::writeSettings()
 //     settings.setValue( "server-port", M_server_port );
 //     settings.setValue( "client-version", M_client_version );
 
+    settings.setValue( "minimum_mode", M_minimum_mode );
     settings.setValue( "monitor_port", M_monitor_port );
     settings.setValue( "auto_loop_mode", M_auto_loop_mode );
     settings.setValue( "timer_interval", M_timer_interval );
-    settings.setValue( "window_width", M_window_width );
-    settings.setValue( "window_height", M_window_height );
-    settings.setValue( "window_x", M_window_x );
-    settings.setValue( "window_y", M_window_y );
+//     settings.setValue( "window_width", M_window_width );
+//     settings.setValue( "window_height", M_window_height );
+//     settings.setValue( "window_x", M_window_x );
+//     settings.setValue( "window_y", M_window_y );
 //     settings.setValue( "canvas_width", M_canvas_width );
 //     settings.setValue( "canvas_height", M_canvas_height );
-    settings.setValue( "maximize", M_maximize );
-    settings.setValue( "full_screen", M_full_screen );
-    settings.setValue( "hide_menu_bar", M_hide_menu_bar );
-    settings.setValue( "hide_tool_bar", M_hide_tool_bar );
-    settings.setValue( "hide_status_bar", M_hide_status_bar );
+//     settings.setValue( "maximize", M_maximize );
+//     settings.setValue( "full_screen", M_full_screen );
+//     settings.setValue( "hide_menu_bar", M_hide_menu_bar );
+//     settings.setValue( "hide_tool_bar", M_hide_tool_bar );
+//     settings.setValue( "hide_status_bar", M_hide_status_bar );
     settings.setValue( "anti_aliasing", M_anti_aliasing );
     settings.setValue( "show_score_board", M_show_score_board );
     settings.setValue( "show_keepaway_area", M_show_keepaway_area );
@@ -409,7 +413,7 @@ Options::parseCmdLine( int argc,
 //           "enable time shift replay mode." )
         // logplayer options
         ( "minimum-mode",
-          po::bool_switch( &M_minimum_mode ),
+          po::bool_switch( &M_minimum_mode )->default_value( M_minimum_mode ),
           "start logplayer with minimum mode." )
         ( "monitor-path,m",
           po::value< std::string >( &M_monitor_path )->default_value( "self", "self" ),
@@ -434,19 +438,19 @@ Options::parseCmdLine( int argc,
           po::value< std::string >( &canvas_size )->default_value( "" ),
           "specifies the canvas size(WxH). e.g. --canvas-size=1024x768" )
         ( "maximize",
-          po::bool_switch( &M_maximize ),
+          po::bool_switch( &M_maximize )->default_value( M_maximize ),
           "start with a maximized window." )
         ( "full-screen",
-          po::bool_switch( &M_full_screen ),
+          po::bool_switch( &M_full_screen )->default_value( M_full_screen ),
           "start with a full screen window." )
         ( "hide-menu-bar",
-          po::bool_switch( &M_hide_menu_bar ),
+          po::bool_switch( &M_hide_menu_bar )->default_value( M_hide_menu_bar ),
           "start without a menu bar (available only by Qt3 version)." )
         ( "hide-tool-bar",
-          po::bool_switch( &M_hide_tool_bar ),
+          po::bool_switch( &M_hide_tool_bar )->default_value( M_hide_tool_bar ),
           "start without a tool bar." )
         ( "hide-status-bar",
-          po::bool_switch( &M_hide_status_bar ),
+          po::bool_switch( &M_hide_status_bar )->default_value( M_hide_status_bar ),
           "start without a status bar." )
         // view options
         ( "anti-aliasing",
