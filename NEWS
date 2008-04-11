@@ -11,6 +11,9 @@
 
   * Supported Windows environment.
 
+  * added new commands, 'rcg3to4' and 'rcg4to3', that are the simple
+    game log version converter.
+
 [12.0.0]
   * Supported the game log format version 4.
 
