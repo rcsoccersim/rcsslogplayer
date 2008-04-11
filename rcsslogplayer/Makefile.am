@@ -25,4 +25,7 @@ AM_CFLAGS = -Wall
 AM_CXXFLAGS = -Wall
 AM_LDFLAGS =
 
-CLEANFILES = 	*~
+EXTRA_DIST = \
+	rcsslogplayer.pro
+
+CLEANFILES = *~

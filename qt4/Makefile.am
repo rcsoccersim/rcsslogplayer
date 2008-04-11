@@ -101,6 +101,7 @@ AM_CXXFLAGS = -Wall
 AM_LDFLAGS =
 
 EXTRA_DIST = \
-	rcsslogplay
+	rcsslogplay \
+	qt4.pro
 
 CLEANFILES = $(nodist_rcsslogplayer_SOURCES) *~
