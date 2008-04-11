@@ -3,6 +3,7 @@
 	* qt4/main_window.cpp:
 	* qt4/options.cpp:
 	- fixed defects about setting read/write.
+	- fixed defects about canvas size on the initialization.
 
 	* qt4/main_data.cpp:
 	- fixed a defect about a return characther code.

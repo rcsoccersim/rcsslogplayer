@@ -386,7 +386,7 @@ Options::parseCmdLine( int argc,
     namespace po = boost::program_options;
 
     std::string geometry;
-    std::string canvas_size;
+//     std::string canvas_size;
 
     po::options_description visibles( "Allowed options:" );
 
@@ -434,9 +434,9 @@ Options::parseCmdLine( int argc,
         ( "geometry",
           po::value< std::string >( &geometry )->default_value( "" ),
           "specifies the window geometry ([WxH][+X+Y]). e.g. --geometry=1024x768+1+1" )
-        ( "canvas-size",
-          po::value< std::string >( &canvas_size )->default_value( "" ),
-          "specifies the canvas size(WxH). e.g. --canvas-size=1024x768" )
+//         ( "canvas-size",
+//           po::value< std::string >( &canvas_size )->default_value( "" ),
+//           "specifies the canvas size(WxH). e.g. --canvas-size=1024x768" )
         ( "maximize",
           po::bool_switch( &M_maximize )->default_value( M_maximize ),
           "start with a maximized window." )
@@ -636,24 +636,24 @@ Options::parseCmdLine( int argc,
         }
     }
 
-    if ( ! canvas_size.empty() )
-    {
-        int w = -1, h = -1;
-        if ( std::sscanf( canvas_size.c_str(),
-                          " %d x %d ",
-                          &w, &h ) == 2
-             && w > 1
-             && h > 1 )
-        {
-            M_canvas_width = w;
-            M_canvas_height = h;
-        }
-        else
-        {
-            std::cerr << "Illegal canvas size format [" << canvas_size
-                      << "]" << std::endl;
-        }
-    }
+//     if ( ! canvas_size.empty() )
+//     {
+//         int w = -1, h = -1;
+//         if ( std::sscanf( canvas_size.c_str(),
+//                           " %d x %d ",
+//                           &w, &h ) == 2
+//              && w > 1
+//              && h > 1 )
+//         {
+//             M_canvas_width = w;
+//             M_canvas_height = h;
+//         }
+//         else
+//         {
+//             std::cerr << "Illegal canvas size format [" << canvas_size
+//                       << "]" << std::endl;
+//         }
+//     }
 #endif
     return true;
 }

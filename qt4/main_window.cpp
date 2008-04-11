@@ -176,19 +176,19 @@ MainWindow::init()
         connectMonitorTo( host.c_str() );
     }
 
-    if ( Options::instance().canvasWidth() > 0
-         && Options::instance().canvasHeight() > 0 )
-    {
-        resizeCanvas( QSize( Options::instance().canvasWidth(),
-                             Options::instance().canvasHeight() ) );
-    }
-    else if ( Options::instance().fullScreen() )
+    if ( Options::instance().fullScreen() )
     {
         this->showFullScreen();
     }
     else if ( Options::instance().maximize() )
     {
         this->showMaximized();
+    }
+    else if ( Options::instance().canvasWidth() > 0
+              && Options::instance().canvasHeight() > 0 )
+    {
+        resizeCanvas( QSize( Options::instance().canvasWidth(),
+                             Options::instance().canvasHeight() ) );
     }
 
     if ( QApplication::setStyle( M_window_style ) ) // no style found
