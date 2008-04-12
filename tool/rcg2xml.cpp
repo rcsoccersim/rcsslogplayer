@@ -74,7 +74,7 @@ UnXMLEscape( std::string & orig )
 rcss::rcg::PlayMode
 play_mode_id( const char * mode )
 {
-    static char * playmode_strings[] = PLAYMODE_STRINGS;
+    static const char * playmode_strings[] = PLAYMODE_STRINGS;
 
     for ( int n = 0; n < rcss::rcg::PM_MAX; ++n )
     {
