@@ -455,6 +455,7 @@ PlayerPainter::drawBody( QPainter & painter,
 #if 1
         double stamina_rate = param.player_.stamina_ / M_main_data.serverParam().stamina_max_;
         int dark_rate = 180 - static_cast< int >( rint( 180 * rint( stamina_rate / 0.125 ) * 0.125 ) );
+        dark_rate = std::max( 0, dark_rate - 50 );
 
         painter.setPen( Qt::NoPen );
         painter.setBrush( painter.brush().color().darker( 100 + dark_rate ) );

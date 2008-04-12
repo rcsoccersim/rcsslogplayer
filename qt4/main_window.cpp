@@ -637,7 +637,9 @@ MainWindow::createMenuHelp()
 {
     QMenu * menu = menuBar()->addMenu( tr( "&Help" ) );
     menu->addAction( M_about_act );
+#ifndef Q_WS_WIN
     menu->addAction( M_shortcut_keys_act );
+#endif
 
     menu->addSeparator();
     menu->addAction( tr( "About Qt" ), qApp, SLOT( aboutQt() ) );
