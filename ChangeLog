@@ -1,3 +1,8 @@
+2008-04-14  Hidehisa Akiyama  <akky@users.sourceforge.jp>
+
+	* qt4/image_save_dialog.cpp:
+	- fixed a defect about saved directory selection.
+
 2008-04-13  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 
 	* qt4/main_window.cpp:

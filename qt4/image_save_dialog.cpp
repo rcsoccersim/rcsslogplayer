@@ -239,7 +239,7 @@ ImageSaveDialog::createFileNameControls()
 QWidget *
 ImageSaveDialog::createDirSelectControls()
 {
-    QGroupBox * group_box = new QGroupBox( tr( "Save Directry" ) );
+    QGroupBox * group_box = new QGroupBox( tr( "Saved Directry" ) );
 
     QHBoxLayout * layout = new QHBoxLayout();
 
@@ -364,8 +364,10 @@ ImageSaveDialog::selectSavedDir()
                                              M_saved_dir->text(),
                                              QFileDialog::ShowDirsOnly
                                              | QFileDialog::DontResolveSymlinks);
-
-    M_saved_dir->setText( dir );
+    if ( ! dir.isEmpty() )
+    {
+        M_saved_dir->setText( dir );
+    }
 }
 
 /*-------------------------------------------------------------------*/
