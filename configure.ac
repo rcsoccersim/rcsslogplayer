@@ -86,7 +86,7 @@ AC_ARG_ENABLE(qt4,
 if test "x$enable_qt4" != "xno"; then
   AC_MSG_NOTICE(enabled Qt4)
 
-  AX_QT4(4.2.0)
+  AX_QT4(4.1.0)
 
   if test x$have_qt4 != xyes ; then
     AC_MSG_NOTICE([The QtCore, QtGui or QtNetwork library could not be found.])

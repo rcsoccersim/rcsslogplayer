@@ -547,10 +547,17 @@ FieldCanvas::mouseMoveEvent( QMouseEvent * event )
 
     if ( M_mouse_state[0].isDragged() )
     {
+#if QT_VERSION >= 0x040200
         if ( this->cursor().shape() != Qt::ClosedHandCursor )
         {
             this->setCursor( QCursor( Qt::ClosedHandCursor ) );
         }
+#else
+        if ( this->cursor().shape() != Qt::SizeAllCursor )
+        {
+            this->setCursor( QCursor( Qt::SizeAllCursor ) );
+        }
+#endif
 
         int new_x = Options::instance().screenX( Options::instance().focusPoint().x() );
         int new_y = Options::instance().screenY( Options::instance().focusPoint().y() );

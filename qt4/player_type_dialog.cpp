@@ -78,7 +78,7 @@ protected:
 
 */
 PlayerTypeDialog::PlayerTypeDialog( QWidget * parent,
-                            const MainData & main_data )
+                                    const MainData & main_data )
     : QDialog( parent, Qt::MSWindowsFixedSizeDialogHint )
     , M_main_data( main_data )
 {
@@ -116,7 +116,9 @@ PlayerTypeDialog::createTable()
     M_item_view->verticalHeader()->hide();
     M_item_view->setShowGrid( false );
     M_item_view->setAlternatingRowColors( true );
+#if QT_VERSION >= 0x040200
     M_item_view->setSortingEnabled( true );
+#endif
 
     M_item_view->setHorizontalScrollBarPolicy( Qt::ScrollBarAlwaysOff );
     M_item_view->setVerticalScrollBarPolicy( Qt::ScrollBarAlwaysOff );
@@ -186,10 +188,18 @@ PlayerTypeDialog::updateData()
 
     if ( M_model->rowCount() != ROW_SIZE )
     {
-        std::cerr << "PlayerTypeDialog::updateData() invalid row count"
-                  << M_model->rowCount()
-                  << std::endl;
+#if QT_VERSION >= 0x040200
         M_model->setRowCount( ROW_SIZE );
+ #else
+        if ( M_model->rowCount() < ROW_SIZE )
+        {
+            M_model->insertRows( 0, ROW_SIZE - M_model->rowCount() );
+        }
+        else if ( M_model->rowCount() > ROW_SIZE )
+        {
+            M_model->removeRows( 0, M_model->rowCount() - ROW_SIZE );
+        }
+#endif
     }
 
     const rcss::rcg::ServerParamT & sparam = M_main_data.serverParam();

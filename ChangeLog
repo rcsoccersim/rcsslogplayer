@@ -1,5 +1,13 @@
 2008-04-14  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 
+	* NEWS:
+	* configure.ac:
+	* qt4/field_canvas.cpp:
+	* qt4/main_window.cpp:
+	* qt4/player_type_dialog.cpp:
+	- supported Qt-4.1.0.
+	- updated NEWS file.
+
 	* qt4/disp_holder.cpp:
 	* qt4/main_window.cpp:
 	* qt4/monitor_server.cpp:

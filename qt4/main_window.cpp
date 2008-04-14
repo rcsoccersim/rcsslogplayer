@@ -1276,9 +1276,11 @@ MainWindow::openRCG( const QString & file_path )
     M_game_log_path = file_info.absoluteFilePath();
     Options::instance().setGameLogFile( M_game_log_path.toStdString() );
 
-    if ( M_player_type_dialog )
+    if ( M_player_type_dialog
+         && M_player_type_dialog->isVisible() )
     {
-        M_player_type_dialog->updateData();
+        M_player_type_dialog->hide();
+        M_player_type_dialog->show();
     }
 
     if ( M_config_dialog )
@@ -1722,7 +1724,7 @@ MainWindow::toggleFieldCanvas()
         M_log_player_tool_bar->setMovable( false );
         M_log_slider_tool_bar->setMovable( false );
 
-#if  QT_VERSION >= 0x040300
+#if QT_VERSION >= 0x040300
         M_log_player_tool_bar->setFloatable( false );
         M_log_slider_tool_bar->setFloatable( false );
 #endif
