@@ -1710,11 +1710,15 @@ MainWindow::toggleFieldCanvas()
         this->addToolBar( Qt::TopToolBarArea, M_log_slider_tool_bar );
 
         M_log_player_tool_bar->show();
-        M_log_player_tool_bar->setMovable( false );
-        M_log_player_tool_bar->setFloatable( false );
         M_log_slider_tool_bar->show();
+
+        M_log_player_tool_bar->setMovable( false );
         M_log_slider_tool_bar->setMovable( false );
+
+#if  QT_VERSION >= 0x040300
+        M_log_player_tool_bar->setFloatable( false );
         M_log_slider_tool_bar->setFloatable( false );
+#endif
 
         M_toggle_field_canvas_act->setText( tr( "Show Field" ) );
 
@@ -1726,12 +1730,19 @@ MainWindow::toggleFieldCanvas()
         this->setMinimumHeight( 220 );
         this->setMaximumSize( QWIDGETSIZE_MAX, QWIDGETSIZE_MAX );
 
+#if QT_VERSION >= 0x040300
         this->removeToolBarBreak( M_log_slider_tool_bar );
+#else
+        this->addToolBar( Qt::TopToolBarArea, M_log_player_tool_bar );
+        this->addToolBar( Qt::TopToolBarArea, M_log_slider_tool_bar );
+#endif
 
         M_log_player_tool_bar->setMovable( true );
-        M_log_player_tool_bar->setFloatable( true );
         M_log_slider_tool_bar->setMovable( true );
+#if QT_VERSION >= 0x040300
+        M_log_player_tool_bar->setFloatable( true );
         M_log_slider_tool_bar->setFloatable( true );
+#endif
 
         M_toggle_field_canvas_act->setText( tr( "Minimum" ) );
 

@@ -68,6 +68,7 @@ LogPlayerToolBar::LogPlayerToolBar( LogPlayer * log_player,
 {
     assert( main_win );
 
+    this->setWindowTitle( tr( "LogPlayer" ) );
     this->setIconSize( QSize( 16, 16 ) );
 
     createControls( log_player, main_win );

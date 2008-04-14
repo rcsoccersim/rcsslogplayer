@@ -452,13 +452,20 @@ PlayerPainter::drawBody( QPainter & painter,
     // draw stamina status if effort or recovery is decayed.
     if ( param.player_.hasStamina() )
     {
-#if 1
+#if QT_VERSION >= 0x040300
         double stamina_rate = param.player_.stamina_ / M_main_data.serverParam().stamina_max_;
-        int dark_rate = 180 - static_cast< int >( rint( 180 * rint( stamina_rate / 0.125 ) * 0.125 ) );
+        int dark_rate = 200 - static_cast< int >( rint( 200 * rint( stamina_rate / 0.125 ) * 0.125 ) );
         dark_rate = std::max( 0, dark_rate - 50 );
 
         painter.setPen( Qt::NoPen );
-        painter.setBrush( painter.brush().color().darker( 100 + dark_rate ) );
+        if ( dark_rate == 0 )
+        {
+            painter.setBrush( painter.brush() );
+        }
+        else
+        {
+            painter.setBrush( painter.brush().color().darker( 100 + dark_rate ) );
+        }
         painter.drawEllipse( param.x_ - param.body_radius_,
                              param.y_ - param.body_radius_,
                              param.body_radius_ * 2 ,

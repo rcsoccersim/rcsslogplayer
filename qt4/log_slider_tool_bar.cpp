@@ -138,6 +138,7 @@ LogSliderToolBar::LogSliderToolBar( LogPlayer * log_player,
 {
     assert( main_win );
 
+    this->setWindowTitle( tr( "LogSlider" ) );
     this->setIconSize( QSize( 16, 16 ) );
 
     //this->setAllowedAreas( Qt::TopToolBarArea

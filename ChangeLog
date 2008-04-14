@@ -1,5 +1,12 @@
 2008-04-14  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 
+	* configure.ac:
+	* qt4/log_player_tool_bar.cpp:
+	* qt4/log_slider_tool_bar.cpp:
+	* qt4/main_window.cpp:
+	* qt4/player_painter.cpp:
+	- supported Qt-4.2.0.
+
 	* qt4/image_save_dialog.cpp:
 	- fixed a defect about saved directory selection.
 
