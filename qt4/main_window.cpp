@@ -1889,8 +1889,23 @@ MainWindow::about()
 void
 MainWindow::printShortcutKeys()
 {
+    QDialog dialog( this );
+    QVBoxLayout * layout = new QVBoxLayout();
+
+    QTableWidget * table_widget = new QTableWidget( &dialog );
+    table_widget->insertColumn( 0 );
+    table_widget->insertColumn( 1 );
+
+    QStringList header;
+    header.push_back( tr( "key" ) );
+    header.push_back( tr( "action" ) );
+    table_widget->setHorizontalHeaderLabels( header );
+
+    table_widget->verticalHeader()->hide();
+
     QList< QAction * > acts = this->actions();
 
+    int row = 0;
     const QList< QAction * >::const_iterator end = acts.end();
     for ( QList< QAction * >::const_iterator it = acts.begin();
           it != end;
@@ -1898,14 +1913,26 @@ MainWindow::printShortcutKeys()
     {
         if ( ! (*it)->shortcut().isEmpty() )
         {
-            std::cout << '[' << (*it)->shortcut().toString().toStdString() << "] "
-                      << QString( (*it)->text() ).remove( QChar( '&' ) ).toStdString()
-                //<< ", " << (*it)->statusTip().toStdString()
-                      << '\n';
-
+            //std::cout << '[' << (*it)->shortcut().toString().toStdString() << "] "
+            //          << QString( (*it)->text() ).remove( QChar( '&' ) ).toStdString()
+            //    //<< ", " << (*it)->statusTip().toStdString()
+            //          << '\n';
+            table_widget->insertRow( row );
+            table_widget->setItem ( row, 0, new QTableWidgetItem( (*it)->shortcut().toString() ) );
+            table_widget->setItem ( row, 1, new QTableWidgetItem( QString( (*it)->text() ).remove( QChar( '&' ) ) ) );
+            ++row;
         }
     }
-    std::cout << std::flush;
+    std::cout <<  "table row_count = " << table_widget->rowCount()
+              <<  "table col_count = " << table_widget->columnCount()
+              << std::endl;
+
+    layout->addWidget( table_widget );
+    dialog.setLayout( layout );
+    if ( row > 0 )
+    {
+        dialog.exec();
+    }
 }
 
 /*-------------------------------------------------------------------*/

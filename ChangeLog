@@ -1,5 +1,8 @@
 2008-04-14  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 
+	* qt4/main_window.cpp:
+	- added a simple shortcut key help dialog.
+
 	* icons/rcss.icns:
 	* qt4/qt4.pro:
 	- added an icon file for Mac OS X.
