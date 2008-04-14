@@ -1,5 +1,9 @@
 2008-04-14  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 
+	* icons/rcss.icns:
+	* qt4/qt4.pro:
+	- added an icon file for Mac OS X.
+
 	* NEWS:
 	* configure.ac:
 	* qt4/field_canvas.cpp:
