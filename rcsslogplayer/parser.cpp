@@ -693,45 +693,7 @@ Parser::parseLine( std::istream & is )
             return true;
         }
 
-        if ( line.compare( 0, 6, "(show " ) == 0 )
-        {
-            parseShowLine( M_line_count, line );
-        }
-        else if ( line.compare( 0, 6, "(draw " ) == 0 )
-        {
-            parseDrawLine( M_line_count, line );
-        }
-        else if ( line.compare( 0, 5, "(msg " ) == 0 )
-        {
-            parseMsgLine( M_line_count, line );
-        }
-        else if ( line.compare( 0, 10, "(playmode " ) == 0 )
-        {
-            parsePlayModeLine( M_line_count, line );
-        }
-        else if ( line.compare( 0, 6, "(team " ) == 0 )
-        {
-            parseTeamLine( M_line_count, line );
-        }
-        else if ( line.compare( 0, 13, "(player_type " ) == 0 )
-        {
-            parsePlayerTypeLine( M_line_count, line );
-        }
-        else if ( line.compare( 0, 14, "(server_param " ) == 0 )
-        {
-            parseServerParamLine( M_line_count, line );
-        }
-        else if ( line.compare( 0, 14, "(player_param " ) == 0 )
-        {
-            parsePlayerParamLine( M_line_count, line );
-        }
-        else
-        {
-            std::cerr << M_line_count << ": error: "
-                      << "Unknown info. " << "\"" << line << "\""
-                      << std::endl;
-        }
-
+        parseLine( M_line_count, line );
         return true;
     }
 
@@ -747,20 +709,64 @@ Parser::parseLine( std::istream & is )
 
 
 bool
+Parser::parseLine( const int n_line,
+                   const std::string & line )
+{
+    if ( line.compare( 0, 6, "(show " ) == 0 )
+    {
+        parseShowLine( n_line, line );
+    }
+    else if ( line.compare( 0, 6, "(draw " ) == 0 )
+    {
+        parseDrawLine( n_line, line );
+    }
+    else if ( line.compare( 0, 5, "(msg " ) == 0 )
+    {
+        parseMsgLine( n_line, line );
+    }
+    else if ( line.compare( 0, 10, "(playmode " ) == 0 )
+    {
+        parsePlayModeLine( n_line, line );
+    }
+    else if ( line.compare( 0, 6, "(team " ) == 0 )
+    {
+        parseTeamLine( n_line, line );
+    }
+    else if ( line.compare( 0, 13, "(player_type " ) == 0 )
+    {
+        parsePlayerTypeLine( n_line, line );
+    }
+    else if ( line.compare( 0, 14, "(server_param " ) == 0 )
+    {
+        parseServerParamLine( n_line, line );
+    }
+    else if ( line.compare( 0, 14, "(player_param " ) == 0 )
+    {
+        parsePlayerParamLine( n_line, line );
+    }
+    else
+    {
+        std::cerr << n_line << ": error: "
+                  << "Unknown info. " << "\"" << line << "\""
+                  << std::endl;
+    }
+
+    return true;
+}
+
+
+bool
 Parser::parseShowLine( const int n_line,
                        const std::string & line )
 {
     const char * buf = line.c_str();
+    int n_read = 0;
 
     ShowInfoT show;
 
-    if ( M_safe_mode )
+    // time
+    int time = 0;
     {
-        int n_read = 0;
-
-        // time
-        int time = 0;
-
         if ( std::sscanf( buf, "(show %d %n",
                           &time, &n_read ) != 1 )
         {
@@ -773,7 +779,62 @@ Parser::parseShowLine( const int n_line,
 
         M_time = time;
         show.time_ = static_cast< UInt32 >( time );
+    }
 
+    // playmode
+    if ( *(buf + 1) == 'p' )
+    {
+        int pm = 0;
+        if ( ! std::sscanf( buf,
+                            "(pm %d) %n ",
+                            &pm, &n_read ) == 1 )
+        {
+            std::cerr << n_line << ": error: "
+                      << "Illegal playmode info \"" << line << "\""
+                      << std::endl;
+            return false;
+        }
+        buf += n_read;
+
+        M_handler.handlePlayMode( time, static_cast< PlayMode >( pm ) );
+    }
+
+    // team
+    if ( *(buf + 1) == 't' )
+    {
+        char name_l[32], name_r[32];
+        int score_l = 0, score_r = 0;
+        int pen_score_l = 0, pen_miss_l = 0, pen_score_r = 0, pen_miss_r = 0;
+
+        int n = std::sscanf( buf,
+                             "(tm %31s %31s %d %d %d %d %d %d ",
+                             name_l, name_r,
+                             &score_l, &score_r,
+                             &pen_score_l, &pen_miss_l,
+                             &pen_score_r, &pen_miss_r );
+
+        if ( n != 4 && n != 8 )
+        {
+            std::cerr << n_line << ": error: "
+                      << "Illegal team info. n=" << n << ' '
+                      << "\"" << line << "\"" << std::endl;;
+            return false;
+        }
+        while ( *buf != ')' && *buf != '\0' ) ++buf;
+        while ( *buf == ')' ) ++buf;
+
+        if ( ! std::strcmp( name_l, "null" ) ) std::memset( name_l, 0, 4 );
+        if ( ! std::strcmp( name_r, "null" ) ) std::memset( name_r, 0, 4 );
+
+        TeamT team_l( name_l, score_l, pen_score_l, pen_miss_l );
+        TeamT team_r( name_r, score_r, pen_score_r, pen_miss_r );
+
+        M_handler.handleTeamInfo( time, team_l, team_r );
+    }
+
+
+    if ( M_safe_mode )
+    {
         // ball
         {
             BallT & ball = show.ball_;
@@ -884,33 +945,14 @@ Parser::parseShowLine( const int n_line,
             }
             buf += n_read;
         }
-
     }
     else
     {
         char * next;
 
-        // time
-        while ( *buf == ' ' ) ++buf;
-        while ( *buf != '\0' && *buf != ' ' ) ++buf;
-        long time = std::strtol( buf, &next, 10 ); buf = next;
-
-        if ( time == LONG_MIN || time == LONG_MAX )
-        {
-            std::cerr << n_line << ": error: "
-                      << " Illegal show info time. "
-                      << " \"" << line << "\""
-                      << std::endl;
-            return false;
-        }
-
-        M_time = static_cast< int >( time );
-        show.time_ = static_cast< UInt32 >( M_time );
-
         // ball
         {
             // ((b) x y vx vy)
-            while ( *buf == ' ' ) ++buf;
             while ( *buf != '\0' && *buf != ')' ) ++buf;
             while ( *buf == ')' ) ++buf;
             BallT & ball = show.ball_;

@@ -49,6 +49,7 @@ class Handler;
  */
 class Parser {
 private:
+
     //! reference to the data handler instance
     Handler & M_handler;
 
@@ -115,14 +116,18 @@ private:
     bool parseTeamInfo( std::istream & is );
     bool parsePlayerType( std::istream & is );
     bool parsePlayerParam( std::istream & is );
-		bool parseServerParam( std::istream & is );
+    bool parseServerParam( std::istream & is );
 
     //
     // version 4
     //
 
     bool parseLine( std::istream & is );
-
+public:
+    // can be used by monitor client
+    bool parseLine( const int n_line,
+                    const std::string & line );
+private:
     bool parseShowLine( const int n_line,
                         const std::string & line );
     bool parseDrawLine( const int n_line,

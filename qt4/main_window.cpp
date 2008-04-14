@@ -63,7 +63,7 @@
 #define PACKAGE_NAME "rcsslogplayer"
 #endif
 
-//#define USE_MONITOR_CLIENT
+#define USE_MONITOR_CLIENT
 
 /*-------------------------------------------------------------------*/
 /*!
@@ -1050,6 +1050,13 @@ MainWindow::createMonitorServer()
                                           M_main_data,
                                           Options::instance().monitorPort() );
 
+    if ( ! M_monitor_server->isConnected() )
+    {
+        delete M_monitor_server;
+        M_monitor_server = static_cast< MonitorServer * >( 0 );
+        return;
+    }
+
     connect( M_log_player, SIGNAL( updated() ),
              M_monitor_server, SLOT( sendToClients() ) );
 }
@@ -1568,8 +1575,6 @@ MainWindow::connectMonitorTo( const char * hostname )
         M_config_dialog->unzoom();
     }
 
-    createMonitorServer();
-
     Options::instance().setMonitorClientMode( true );
     Options::instance().setServerHost( hostname );
 
@@ -1598,6 +1603,8 @@ MainWindow::connectMonitorTo( const char * hostname )
     }
 
     this->setWindowTitle( tr( PACKAGE_NAME ) );
+
+    createMonitorServer();
 }
 
 /*-------------------------------------------------------------------*/

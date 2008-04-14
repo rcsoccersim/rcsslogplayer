@@ -37,7 +37,9 @@
 #include "disp_holder.h"
 
 #include <rcsslogplayer/util.h>
+#include <rcsslogplayer/parser.h>
 
+#include <sstream>
 #include <cmath>
 
 #ifdef HAVE_NETINET_IN_H
@@ -169,11 +171,6 @@ DispHolder::playerType( const int id ) const
 bool
 DispHolder::addDispInfo1( const rcss::rcg::dispinfo_t & disp )
 {
-    if ( ntohs( disp.mode ) != rcss::rcg::SHOW_MODE )
-    {
-        return true;
-    }
-
     if ( M_dispinfo_cont.size() >= 65535 )
     {
         std::cerr << "over the maximum number of showinfo."
@@ -181,27 +178,46 @@ DispHolder::addDispInfo1( const rcss::rcg::dispinfo_t & disp )
         return true;
     }
 
-    DispPtr new_disp( new rcss::rcg::DispInfoT );
+    switch ( ntohs( disp.mode ) ) {
+    case rcss::rcg::NO_INFO:
+        break;
+    case rcss::rcg::SHOW_MODE:
+        {
+            DispPtr new_disp( new rcss::rcg::DispInfoT );
 
-    M_playmode = static_cast< rcss::rcg::PlayMode >( disp.body.show.pmode );
-    rcss::rcg::convert( disp.body.show.team[0], M_teams[0] );
-    rcss::rcg::convert( disp.body.show.team[1], M_teams[1] );
+            M_playmode = static_cast< rcss::rcg::PlayMode >( disp.body.show.pmode );
+            rcss::rcg::convert( disp.body.show.team[0], M_teams[0] );
+            rcss::rcg::convert( disp.body.show.team[1], M_teams[1] );
 
-    new_disp->pmode_ = M_playmode;
-    new_disp->team_[0] = M_teams[0];
-    new_disp->team_[1] = M_teams[1];
-    rcss::rcg::convert( disp.body.show, new_disp->show_ );
+            new_disp->pmode_ = M_playmode;
+            new_disp->team_[0] = M_teams[0];
+            new_disp->team_[1] = M_teams[1];
+            rcss::rcg::convert( disp.body.show, new_disp->show_ );
 
-    M_last_disp = new_disp;
-    if ( new_disp->show_.time_ > 0
-         || M_dispinfo_cont.empty() )
-    {
-        M_dispinfo_cont.push_back( new_disp );
+            M_last_disp = new_disp;
+            if ( new_disp->show_.time_ > 0
+                 || M_dispinfo_cont.empty() )
+            {
+                M_dispinfo_cont.push_back( new_disp );
+            }
+            else
+            {
+                M_dispinfo_cont.back() =  new_disp;
+            }
+        }
+        break;
+    case rcss::rcg::MSG_MODE:
+        doHandleMsgInfo( 0,
+                         ntohs( disp.body.msg.board ),
+                         disp.body.msg.message );
+        break;
+    case rcss::rcg::DRAW_MODE:
+        // TODO
+        break;
+    default:
+        return false;
     }
-    else
-    {
-        M_dispinfo_cont.back() =  new_disp;
-    }
+
     return true;
 }
 
@@ -212,11 +228,6 @@ DispHolder::addDispInfo1( const rcss::rcg::dispinfo_t & disp )
 bool
 DispHolder::addDispInfo2( const rcss::rcg::dispinfo_t2 & disp )
 {
-    if ( ntohs( disp.mode ) != rcss::rcg::SHOW_MODE )
-    {
-        return true;
-    }
-
     if ( M_dispinfo_cont.size() >= 65535 )
     {
         std::cerr << "over the maximum number of showinfo."
@@ -224,27 +235,74 @@ DispHolder::addDispInfo2( const rcss::rcg::dispinfo_t2 & disp )
         return true;
     }
 
-    DispPtr new_disp( new rcss::rcg::DispInfoT );
 
-    M_playmode = static_cast< rcss::rcg::PlayMode >( disp.body.show.pmode );
-    rcss::rcg::convert( disp.body.show.team[0], M_teams[0] );
-    rcss::rcg::convert( disp.body.show.team[1], M_teams[1] );
+    switch ( ntohs( disp.mode ) ) {
+    case rcss::rcg::NO_INFO:
+        break;
+    case rcss::rcg::SHOW_MODE:
+        {
+            DispPtr new_disp( new rcss::rcg::DispInfoT );
 
-    new_disp->pmode_ = M_playmode;
-    new_disp->team_[0] = M_teams[0];
-    new_disp->team_[1] = M_teams[1];
-    rcss::rcg::convert( disp.body.show, new_disp->show_ );
+            M_playmode = static_cast< rcss::rcg::PlayMode >( disp.body.show.pmode );
+            rcss::rcg::convert( disp.body.show.team[0], M_teams[0] );
+            rcss::rcg::convert( disp.body.show.team[1], M_teams[1] );
 
-    M_last_disp = new_disp;
-    if ( new_disp->show_.time_ > 0
-         || M_dispinfo_cont.empty() )
-    {
-        M_dispinfo_cont.push_back( new_disp );
+            new_disp->pmode_ = M_playmode;
+            new_disp->team_[0] = M_teams[0];
+            new_disp->team_[1] = M_teams[1];
+            rcss::rcg::convert( disp.body.show, new_disp->show_ );
+
+            M_last_disp = new_disp;
+            if ( new_disp->show_.time_ > 0
+                 || M_dispinfo_cont.empty() )
+            {
+                M_dispinfo_cont.push_back( new_disp );
+            }
+            else
+            {
+                M_dispinfo_cont.back() =  new_disp;
+            }
+        }
+        break;
+
+    case rcss::rcg::MSG_MODE:
+        doHandleMsgInfo( 0,
+                         ntohs( disp.body.msg.board ),
+                         disp.body.msg.message );
+        break;
+    case rcss::rcg::PARAM_MODE:
+        {
+            rcss::rcg::ServerParamT new_params;
+            convert( disp.body.sparams, new_params );
+
+            doHandleServerParam( new_params );
+        }
+        break;
+    case rcss::rcg::PPARAM_MODE:
+        {
+            rcss::rcg::PlayerParamT new_params;
+            convert( disp.body.pparams, new_params );
+
+            doHandlePlayerParam( new_params );
+        }
+        break;
+    case rcss::rcg::PT_MODE:
+        {
+            rcss::rcg::PlayerTypeT new_type;
+            convert( disp.body.ptinfo, new_type );
+
+            doHandlePlayerType( new_type );
+        }
+        break;
+    case rcss::rcg::DRAW_MODE:
+    case rcss::rcg::BLANK_MODE:
+    case rcss::rcg::PM_MODE:
+    case rcss::rcg::TEAM_MODE:
+        break;
+    default:
+        return false;
     }
-    else
-    {
-        M_dispinfo_cont.back() =  new_disp;
-    }
+
     return true;
 }
 
@@ -255,13 +313,6 @@ DispHolder::addDispInfo2( const rcss::rcg::dispinfo_t2 & disp )
 bool
 DispHolder::addDispInfo3( const char * msg )
 {
-    const char * buf = msg;
-
-    if ( std::strncmp( buf, "(show ", 6 ) != 0 )
-    {
-        return true;
-    }
-
     if ( M_dispinfo_cont.size() >= 65535 )
     {
         std::cerr << "over the maximum number of showinfo."
@@ -269,223 +320,9 @@ DispHolder::addDispInfo3( const char * msg )
         return true;
     }
 
+    rcss::rcg::Parser parser( *this );
 
-    DispPtr disp( new rcss::rcg::DispInfoT );
-    rcss::rcg::ShowInfoT & show = disp->show_;
-
-    int n_read = 0;
-    char * next;
-
-    // time
-    int time = 0;
-    if ( std::sscanf( buf, " ( show %d %n ",
-                      &time, &n_read ) != 1 )
-    {
-        return false;
-    }
-    buf += n_read;
-
-    show.time_ = static_cast< rcss::rcg::UInt32 >( time );
-
-    while ( *buf == ' ' ) ++buf;
-    // playmode
-    if ( ! std::strncmp( buf, "(pm", 3 ) )
-    {
-        int pm = 0;
-        if ( std::sscanf( buf,
-                          " ( pm %d ) %n ",
-                          &pm, &n_read ) == 1 )
-        {
-            buf += n_read;
-            M_playmode = static_cast< rcss::rcg::PlayMode >( pm );
-            disp->pmode_ = M_playmode;
-        }
-    }
-
-    // team
-    if ( ! std::strncmp( buf, "(tm", 3 ) )
-    {
-        char name_l[32], name_r[32];
-        int score_l = 0, score_r = 0;
-        int pen_score_l = 0, pen_miss_l = 0, pen_score_r = 0, pen_miss_r = 0;
-
-        int n = std::sscanf( buf,
-                             " ( tm %31s %31s %d %d %d %d %d %d ",
-                             name_l, name_r,
-                             &score_l, &score_r,
-                             &pen_score_l, &pen_miss_l,
-                             &pen_score_r, &pen_miss_r );
-
-        if ( n != 4 && n != 8 )
-        {
-            std::cerr << "error: n=" << n
-                      << " Illegal team info. \"" << buf << "\"" << std::endl;;
-            return false;
-        }
-        while ( *buf != ')' && *buf != '\0' ) ++buf;
-        while ( *buf == ')' && *buf != '\0' ) ++buf;
-
-        if ( ! std::strcmp( name_l, "null" ) ) std::memset( name_l, 0, 4 );
-        if ( ! std::strcmp( name_r, "null" ) ) std::memset( name_r, 0, 4 );
-
-        M_teams[0] = rcss::rcg::TeamT( name_l, score_l, pen_score_l, pen_miss_l );
-        M_teams[1] = rcss::rcg::TeamT( name_r, score_r, pen_score_r, pen_miss_r );
-
-        disp->team_[0] = M_teams[0];
-        disp->team_[1] = M_teams[1];
-    }
-
-    // ball
-    {
-        // ((b) x y vx vy)
-        while ( *buf == ' ' ) ++buf;
-        while ( *buf != '\0' && *buf != ')' ) ++buf;
-        while ( *buf == ')' ) ++buf;
-
-        rcss::rcg::BallT & ball = show.ball_;
-        ball.x_ = std::strtof( buf, &next ); buf = next;
-        ball.y_ = std::strtof( buf, &next ); buf = next;
-        ball.vx_ = std::strtof( buf, &next ); buf = next;
-        ball.vy_ = std::strtof( buf, &next ); buf = next;
-        while ( *buf == ')' ) ++buf;
-        while ( *buf == ' ' ) ++buf;
-
-        if ( ball.vy_ == HUGE_VALF )
-        {
-            std::cerr << "error: "
-                      << " Illegal ball info. "
-                      << " \"" << buf << "\""
-                      << std::endl;;
-            return false;
-        }
-    }
-
-    // players
-    // ((side unum) type state x y vx vy body neck [pointx pointy] (v h 90) (s 4000 1 1)[(f side unum)])
-    //              (c 1 1 1 1 1 1 1 1 1 1 1))
-    for ( int i = 0; i < rcss::rcg::MAX_PLAYER * 2; ++i )
-    {
-        if ( *buf == '\0' || *buf == ')' ) break;
-
-        // ((side unum)
-        while ( *buf == ' ' ) ++buf;
-        while ( *buf == '(' ) ++buf;
-        char side = *buf;
-        if ( side != 'l' && side != 'r' )
-        {
-            std::cerr << "error: "
-                      << " Illegal player side. " << side << ' ' << i
-                      << " \"" << buf << "\""
-                      << std::endl;;
-            return false;
-        }
-
-        ++buf;
-        long unum = std::strtol( buf, &next, 10 ); buf = next;
-        if ( unum < 0 || rcss::rcg::MAX_PLAYER < unum )
-        {
-            std::cerr << "error: "
-                      << " Illegal player unum. " << side << ' ' << i
-                      << " \"" << buf << "\""
-                      << std::endl;;
-            return false;
-        }
-
-        while ( *buf == ')' ) ++buf;
-
-        const int idx = ( side == 'l' ? unum - 1 : unum - 1 + rcss::rcg::MAX_PLAYER );
-
-        rcss::rcg::PlayerT & p = show.player_[idx];
-        p.side_ = side;
-        p.unum_ = static_cast< rcss::rcg::Int16 >( unum );
-
-        // x y vx vy body neck
-        p.type_ = static_cast< rcss::rcg::Int16 >( std::strtol( buf, &next, 10 ) ); buf = next;
-        p.state_ = static_cast< rcss::rcg::Int32 >( std::strtol( buf, &next, 16 ) ); buf = next;
-        p.x_ = std::strtof( buf, &next ); buf = next;
-        p.y_ = std::strtof( buf, &next ); buf = next;
-        p.vx_ = std::strtof( buf, &next ); buf = next;
-        p.vy_ = std::strtof( buf, &next ); buf = next;
-        p.body_ = std::strtof( buf, &next ); buf = next;
-        p.neck_ = std::strtof( buf, &next ); buf = next;
-        while ( *buf == ' ' ) ++buf;
-
-        // x y vx vy body neck
-        if ( *buf != '\0' && *buf != '(' )
-        {
-            p.point_x_ = std::strtof( buf, &next ); buf = next;
-            p.point_y_ = std::strtof( buf, &next ); buf = next;
-        }
-
-        // (v quality width)
-        while ( *buf != '\0' && *buf != 'v' ) ++buf;
-        ++buf; // skip 'v'
-        while ( *buf == ' ' ) ++buf;
-        p.view_quality_ = *buf; ++buf;
-        p.view_width_ = std::strtof( buf, &next ); buf = next;
-
-        // (s stamina effort recovery)
-        while ( *buf != '\0' && *buf != 's' ) ++buf;
-        ++buf; // skip 's' //while ( *buf != '\0' && *buf != ' ' ) ++buf;
-        p.stamina_ = std::strtof( buf, &next ); buf = next;
-        p.effort_ = std::strtof( buf, &next ); buf = next;
-        p.recovery_ = std::strtof( buf, &next ); buf = next;
-        while ( *buf != '\0' && *buf != ')' ) ++buf;
-        while ( *buf == ')' ) ++buf;
-
-        while ( *buf != '\0' && *buf != '(' ) ++buf;
-
-        // (f side unum)
-        if ( *(buf + 1) == 'f' )
-        {
-            while ( *buf != '\0' && *buf != ' ' ) ++buf;
-            while ( *buf == ' ' ) ++buf;
-            p.focus_side_ = *buf; ++buf;
-            p.focus_unum_ = static_cast< rcss::rcg::Int16 >( std::strtol( buf, &next, 10 ) ); buf = next;
-            while ( *buf == ' ' ) ++buf;
-            while ( *buf == ')' ) ++buf;
-            while ( *buf == ' ' ) ++buf;
-        }
-
-        // (c kick dash turn catch move tneck cview say tackle pointto atttention)
-        while ( *buf == '(' ) ++buf;
-        ++buf; // skip 'c' //while ( *buf != '\0' && *buf != ' ' ) ++buf;
-        p.kick_count_ = static_cast< rcss::rcg::UInt16 >( std::strtol( buf, &next, 10 ) ); buf = next;
-        p.dash_count_ = static_cast< rcss::rcg::UInt16 >( std::strtol( buf, &next, 10 ) ); buf = next;
-        p.turn_count_ = static_cast< rcss::rcg::UInt16 >( std::strtol( buf, &next, 10 ) ); buf = next;
-        p.catch_count_ = static_cast< rcss::rcg::UInt16 >( std::strtol( buf, &next, 10 ) ); buf = next;
-        p.move_count_ = static_cast< rcss::rcg::UInt16 >( std::strtol( buf, &next, 10 ) ); buf = next;
-        p.turn_neck_count_ = static_cast< rcss::rcg::UInt16 >( std::strtol( buf, &next, 10 ) ); buf = next;
-        p.change_view_count_ = static_cast< rcss::rcg::UInt16 >( std::strtol( buf, &next, 10 ) ); buf = next;
-        p.say_count_ = static_cast< rcss::rcg::UInt16 >( std::strtol( buf, &next, 10 ) ); buf = next;
-        p.tackle_count_ = static_cast< rcss::rcg::UInt16 >( std::strtol( buf, &next, 10 ) ); buf = next;
-        p.pointto_count_ = static_cast< rcss::rcg::UInt16 >( std::strtol( buf, &next, 10 ) ); buf = next;
-        p.attentionto_count_ = static_cast< rcss::rcg::UInt16 >( std::strtol( buf, &next, 10 ) ); buf = next;
-        while ( *buf == ')' ) ++buf;
-        while ( *buf == ' ' ) ++buf;
-
-        if ( *buf == '\0'
-             && i != rcss::rcg::MAX_PLAYER*2 - 1 )
-        {
-            std::cerr << "error: "
-                      << " Illegal player info. " << side << ' ' << unum
-                      << " \"" << buf << "\""
-                      << std::endl;;
-            return false;
-        }
-    }
-
-    M_last_disp = disp;
-    if ( disp->show_.time_ > 0
-         || M_dispinfo_cont.empty() )
-    {
-        M_dispinfo_cont.push_back( disp );
-    }
-    else
-    {
-        M_dispinfo_cont.back() =  disp;
-    }
-    return true;
+    return parser.parseLine( -1, msg );
 }
 
 /*-------------------------------------------------------------------*/

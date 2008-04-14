@@ -74,6 +74,7 @@ MonitorServer::MonitorServer( QObject * parent,
     {
         std::cerr << "MonitorServer. failed to bind the socket."
                   << std::endl;
+        M_socket->close();
         return;
     }
 
@@ -81,6 +82,7 @@ MonitorServer::MonitorServer( QObject * parent,
     {
         std::cerr << "MonitorServer. failed to initialize the socket."
                   << std::endl;
+        M_socket->close();
         return;
     }
 

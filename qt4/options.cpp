@@ -54,6 +54,8 @@
 #define VERSION "unknown-version"
 #endif
 
+#define USE_MONITOR_CLIENT
+
 const double Options::PITCH_LENGTH = 105.0;
 const double Options::PITCH_WIDTH = 68.0;
 const double Options::PITCH_HALF_LENGTH = Options::PITCH_LENGTH * 0.5;
@@ -197,9 +199,6 @@ Options::readSettings()
 
 //     val = settings.value( "client-version" );
 //     if ( val.isValid() ) M_client_version = val.toInt();
-
-//     val = settings.value( "minimum_mode" );
-//     if ( val.isValid() ) M_minimum_mode = val.toBool();
 
     val = settings.value( "monitor_port" );
     if ( val.isValid() ) M_monitor_port = val.toInt();
@@ -396,21 +395,23 @@ Options::parseCmdLine( int argc,
         ( "version,v",
           "print version information." )
         // monitor options
-//         ( "connect,c",
-//           po::bool_switch( &M_connect ),
-//           "start as a soccer monitor." )
-//         ( "server-host",
-//           po::value< std::string >( &M_server_host )->default_value( "127.0.0.1", "127.0.0.1" ),
-//           "set host name to connect to rcssserver." )
-//         ( "server-port",
-//           po::value< int >( &M_server_port )->default_value( 6000, "6000" ),
-//           "set port number to connect as the monitor client." )
-//         ( "client-version",
-//           po::value< int >( &M_client_version )->default_value( 3, "3" ),
-//           "set a monitor client protocol version." )
+#ifdef USE_MONITOR_CLIENT
+        ( "connect,c",
+          po::bool_switch( &M_connect ),
+          "start as a soccer monitor." )
+        ( "server-host",
+          po::value< std::string >( &M_server_host )->default_value( "127.0.0.1", "127.0.0.1" ),
+          "set host name to connect to rcssserver." )
+        ( "server-port",
+          po::value< int >( &M_server_port )->default_value( 6000, "6000" ),
+          "set port number to connect as the monitor client." )
+        ( "client-version",
+          po::value< int >( &M_client_version )->default_value( 3, "3" ),
+          "set a monitor client protocol version." )
 //         ( "time-shift-replay",
 //           po::value< bool >( &M_time_shift_replay )->default_value( true, "on" ),
 //           "enable time shift replay mode." )
+#endif
         // logplayer options
         ( "minimum-mode",
           po::bool_switch( &M_minimum_mode )->default_value( M_minimum_mode ),

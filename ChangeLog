@@ -1,5 +1,14 @@
 2008-04-14  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 
+	* qt4/disp_holder.cpp:
+	* qt4/main_window.cpp:
+	* qt4/monitor_server.cpp:
+	* qt4/options.cpp:
+	* rcsslogplayer/parser.cpp:
+	* rcsslogplayer/parser.h:
+	- implemented simple monitor client. Now, rcsslogplayer can be
+	used as a simple proxy server.
+
 	* configure.ac:
 	* qt4/log_player_tool_bar.cpp:
 	* qt4/log_slider_tool_bar.cpp:
