@@ -73,6 +73,8 @@ private:
     void createTable();
     void createModel();
 
+    void adjustSize();
+
 protected:
 
     void showEvent( QShowEvent * event );

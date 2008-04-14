@@ -177,20 +177,78 @@ PlayerTypeDialog::createModel()
 
 */
 void
-PlayerTypeDialog::updateData()
+PlayerTypeDialog::adjustSize()
 {
-    if ( ! this->isVisible() )
+    QFontMetrics metrics = M_item_view->fontMetrics();
+
+    //M_item_view->resizeRowsToContents();
+    const int row_height = metrics.height() + 2;
+    const int ROW_SIZE = M_main_data.dispHolder().playerTypes().size();
+    for ( int i = 0; i < ROW_SIZE; ++i )
     {
-        return;
+        M_item_view->setRowHeight( i, row_height );
     }
 
+    int i = 0;
+    // id
+    M_item_view->setColumnWidth( i, metrics.width( "   1" ) + 4 ); ++i;
+    // speed max
+    M_item_view->setColumnWidth( i, metrics.width( "00.000 / 00.000" ) + 4 ); ++i;
+    // accel step
+    //    M_item_view->setColumnWidth( i, metrics.width( "   0" ) + 4 ); ++i;
+    // accel max
+    M_item_view->setColumnWidth( i, metrics.width( "  0.000000" ) + 4 ); ++i;
+    // stamina inc max
+    M_item_view->setColumnWidth( i, metrics.width( "  00.00" ) + 4 ); ++i;
+    // consume
+    //    M_item_view->setColumnWidth( i, metrics.width( "  00.00" ) + 4 ); ++i;
+    // kickable area
+    M_item_view->setColumnWidth( i, metrics.width( "  0.0000" ) + 4 ); ++i;
+    // decay
+    M_item_view->setColumnWidth( i, metrics.width( "  0.0000" ) + 4 ); ++i;
+    // inertia
+    M_item_view->setColumnWidth( i, metrics.width( "  0.0000" ) + 4 ); ++i;
+    // dash power rate
+    M_item_view->setColumnWidth( i, metrics.width( "  0.000000" ) + 4 ); ++i;
+    // size
+    M_item_view->setColumnWidth( i, metrics.width( "  0.00" ) + 4 ); ++i;
+    // kickable margin
+    M_item_view->setColumnWidth( i, metrics.width( "  0.0000" ) + 4 ); ++i;
+    // kick rand
+    M_item_view->setColumnWidth( i, metrics.width( "  0.0000" ) + 4 ); ++i;
+    // extra stamina
+    M_item_view->setColumnWidth( i, metrics.width( "  00.00" ) + 4 ); ++i;
+    // effort max - min
+    M_item_view->setColumnWidth( i, metrics.width( "  0.000 - 0.000" ) + 4 ); ++i;
+
+    QRect rect = this->geometry();
+    QRect child_rect = this->childrenRect();
+    int width_diff = rect.width() - child_rect.width();
+    int height_diff = rect.height() - child_rect.height();
+
+    rect.setWidth( M_item_view->horizontalHeader()->length()
+                   + width_diff );
+    rect.setHeight( M_item_view->horizontalHeader()->height()
+                    + M_item_view->rowHeight( 0 ) * ROW_SIZE
+                    + height_diff );
+
+    this->setGeometry( rect );
+}
+
+/*-------------------------------------------------------------------*/
+/*!
+
+*/
+void
+PlayerTypeDialog::updateData()
+{
     const int ROW_SIZE = M_main_data.dispHolder().playerTypes().size();
 
     if ( M_model->rowCount() != ROW_SIZE )
     {
 #if QT_VERSION >= 0x040200
         M_model->setRowCount( ROW_SIZE );
- #else
+#else
         if ( M_model->rowCount() < ROW_SIZE )
         {
             M_model->insertRows( 0, ROW_SIZE - M_model->rowCount() );
@@ -321,6 +379,8 @@ PlayerTypeDialog::updateData()
                           text );
         ++i;
     }
+
+    adjustSize();
 }
 
 /*-------------------------------------------------------------------*/
@@ -331,61 +391,6 @@ void
 PlayerTypeDialog::showEvent( QShowEvent * event )
 {
     updateData();
-
-    QFontMetrics metrics = M_item_view->fontMetrics();
-
-    //M_item_view->resizeRowsToContents();
-    const int row_height = metrics.height() + 2;
-    const int ROW_SIZE = M_main_data.dispHolder().playerTypes().size();
-    for ( int i = 0; i < ROW_SIZE; ++i )
-    {
-        M_item_view->setRowHeight( i, row_height );
-    }
-
-    int i = 0;
-    // id
-    M_item_view->setColumnWidth( i, metrics.width( "   1" ) + 4 ); ++i;
-    // speed max
-    M_item_view->setColumnWidth( i, metrics.width( "00.000 / 00.000" ) + 4 ); ++i;
-    // accel step
-    //    M_item_view->setColumnWidth( i, metrics.width( "   0" ) + 4 ); ++i;
-    // accel max
-    M_item_view->setColumnWidth( i, metrics.width( "  0.000000" ) + 4 ); ++i;
-    // stamina inc max
-    M_item_view->setColumnWidth( i, metrics.width( "  00.00" ) + 4 ); ++i;
-    // consume
-    //    M_item_view->setColumnWidth( i, metrics.width( "  00.00" ) + 4 ); ++i;
-    // kickable area
-    M_item_view->setColumnWidth( i, metrics.width( "  0.0000" ) + 4 ); ++i;
-    // decay
-    M_item_view->setColumnWidth( i, metrics.width( "  0.0000" ) + 4 ); ++i;
-    // inertia
-    M_item_view->setColumnWidth( i, metrics.width( "  0.0000" ) + 4 ); ++i;
-    // dash power rate
-    M_item_view->setColumnWidth( i, metrics.width( "  0.000000" ) + 4 ); ++i;
-    // size
-    M_item_view->setColumnWidth( i, metrics.width( "  0.00" ) + 4 ); ++i;
-    // kickable margin
-    M_item_view->setColumnWidth( i, metrics.width( "  0.0000" ) + 4 ); ++i;
-    // kick rand
-    M_item_view->setColumnWidth( i, metrics.width( "  0.0000" ) + 4 ); ++i;
-    // extra stamina
-    M_item_view->setColumnWidth( i, metrics.width( "  00.00" ) + 4 ); ++i;
-    // effort max - min
-    M_item_view->setColumnWidth( i, metrics.width( "  0.000 - 0.000" ) + 4 ); ++i;
-
-    QRect rect = this->geometry();
-    QRect child_rect = this->childrenRect();
-    int width_diff = rect.width() - child_rect.width();
-    int height_diff = rect.height() - child_rect.height();
-
-    rect.setWidth( M_item_view->horizontalHeader()->length()
-                   + width_diff );
-    rect.setHeight( M_item_view->horizontalHeader()->height()
-                    + M_item_view->rowHeight( 0 ) * ROW_SIZE
-                    + height_diff );
-
-    this->setGeometry( rect );
 
     event->accept();
 }

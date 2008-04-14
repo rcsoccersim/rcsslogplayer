@@ -1279,8 +1279,7 @@ MainWindow::openRCG( const QString & file_path )
     if ( M_player_type_dialog
          && M_player_type_dialog->isVisible() )
     {
-        M_player_type_dialog->hide();
-        M_player_type_dialog->show();
+        M_player_type_dialog->updateData();
     }
 
     if ( M_config_dialog )
