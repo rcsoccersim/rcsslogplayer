@@ -1,3 +1,8 @@
+2008-04-17  Hidehisa Akiyama  <akky@users.sourceforge.jp>
+
+	* qt4/remote_monitor.cpp:
+	- fixed a defect of monitor client connection.
+
 2008-04-14  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 
 	* qt4/main_window.cpp:

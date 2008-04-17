@@ -111,7 +111,8 @@ bool
 RemoteMonitor::connect( const QHostAddress & addr,
                         const quint16 port )
 {
-    M_socket->connectToHost( addr, port );
+    //M_socket->connectToHost( addr, port );
+    M_socket->bind( addr, port );
 
     if ( ! isConnected() )
     {
