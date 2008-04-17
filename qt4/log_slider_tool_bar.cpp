@@ -207,6 +207,7 @@ LogSliderToolBar::createControls( LogPlayer * log_player,
 #else
         act->setShortcut( tr( "Ctrl+F" ) );
 #endif
+        act->setStatusTip( tr( "Set the keyboard focus to the cycle edit box." ) );
         connect( act, SIGNAL( triggered() ),
                  M_cycle_edit, SLOT( setFocus() ) );
 

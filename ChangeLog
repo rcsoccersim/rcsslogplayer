@@ -4,6 +4,10 @@
 	* configure.ac:
 	- updated a version number string. Official release 12.1.0.
 
+	* qt4/log_slider_tool_bar.cpp:
+	* qt4/main_window.cpp:
+	- fixed statustip messages.
+
 	* qt4/detail_dialog.cpp:
 	* rcsslogplayer/types.
 	- fixed a defect of fucus information.

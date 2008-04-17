@@ -307,7 +307,7 @@ MainWindow::createActionsFile()
 #else
     M_open_act->setShortcut( Qt::CTRL + Qt::Key_O );
 #endif
-    M_open_act->setStatusTip( tr( "Open RoboCup Game Log file" ) );
+    M_open_act->setStatusTip( tr( "Open RoboCup Game Log file." ) );
     connect( M_open_act, SIGNAL( triggered() ),
              this, SLOT( openRCG() ) );
     this->addAction( M_open_act );
@@ -320,14 +320,14 @@ MainWindow::createActionsFile()
 #else
     M_open_output_act->setShortcut( Qt::CTRL + Qt::ALT + Qt::Key_O );
 #endif
-    M_open_output_act->setStatusTip( tr( "Output log data segments to the file." ) );
+    M_open_output_act->setStatusTip( tr( "Open the output file to record log data segments." ) );
     connect( M_open_output_act, SIGNAL( triggered() ),
              this, SLOT( openOutputFile() ) );
     this->addAction( M_open_output_act );
     //
     M_save_image_act = new QAction( tr( "Save images" ), this );
     M_save_image_act->setEnabled( false );
-    M_save_image_act->setStatusTip( tr( "Save field statua as image data." ) );
+    M_save_image_act->setStatusTip( tr( "Open the dialog to save field status as image data." ) );
     connect( M_save_image_act, SIGNAL( triggered() ),
              this, SLOT( saveImage() ) );
     this->addAction( M_save_image_act );
@@ -358,7 +358,7 @@ MainWindow::createActionsMonitor()
 #else
     M_kick_off_act->setShortcut( Qt::CTRL + Qt::Key_K );
 #endif
-    M_kick_off_act->setStatusTip( tr( "Start the game" ) );
+    M_kick_off_act->setStatusTip( tr( "Send kick-off command to the connected rcssserver." ) );
     M_kick_off_act->setEnabled( false );
 #ifdef USE_MONITOR_CLIENT
     connect( M_kick_off_act, SIGNAL( triggered() ),
@@ -374,7 +374,7 @@ MainWindow::createActionsMonitor()
 #else
     M_set_live_mode_act->setShortcut( Qt::CTRL + Qt::Key_L );
 #endif
-    M_set_live_mode_act->setStatusTip( tr( "set monitor to live mode" ) );
+    M_set_live_mode_act->setStatusTip( tr( "Set monitor to the live mode" ) );
     M_set_live_mode_act->setEnabled( false );
 #ifdef USE_MONITOR_CLIENT
     connect( M_set_live_mode_act, SIGNAL( triggered() ),
@@ -399,14 +399,14 @@ MainWindow::createActionsMonitor()
     //
     M_connect_monitor_to_act = new QAction( tr( "Connect &to ..." ), this );
     M_connect_monitor_to_act
-        ->setStatusTip( tr( "Connect to the rcssserver on the other host" ) );
+        ->setStatusTip( tr( "Connect to the rcssserver on the remote host." ) );
     M_connect_monitor_to_act->setEnabled( true );
     connect( M_connect_monitor_to_act, SIGNAL( triggered() ),
              this, SLOT( connectMonitorTo() ) );
     this->addAction( M_connect_monitor_to_act );
     //
     M_disconnect_monitor_act = new QAction( tr( "&Disconnect" ), this );
-    M_disconnect_monitor_act->setStatusTip( tr( "Disonnect from rcssserver" ) );
+    M_disconnect_monitor_act->setStatusTip( tr( "Disonnect from rcssserver." ) );
     M_disconnect_monitor_act->setEnabled( false );
 #ifdef USE_MONITOR_CLIENT
     connect( M_disconnect_monitor_act, SIGNAL( triggered() ),
@@ -428,25 +428,25 @@ MainWindow::createActionsView()
 #else
     M_toggle_menu_bar_act->setShortcut( Qt::CTRL + Qt::Key_M );
 #endif
-    M_toggle_menu_bar_act->setStatusTip( tr( "Show/Hide Menu Bar" ) );
+    M_toggle_menu_bar_act->setStatusTip( tr( "Show/Hide menu bar." ) );
     connect( M_toggle_menu_bar_act, SIGNAL( triggered() ),
              this, SLOT( toggleMenuBar() ) );
     this->addAction( M_toggle_menu_bar_act );
     //
     M_toggle_tool_bar_act = new QAction( tr( "&Tool Bar" ), this );
-    M_toggle_tool_bar_act->setStatusTip( tr( "Show/Hide Tool Bar" ) );
+    M_toggle_tool_bar_act->setStatusTip( tr( "Show/Hide tool bar." ) );
     connect( M_toggle_tool_bar_act, SIGNAL( triggered() ),
              this, SLOT( toggleToolBar() ) );
     this->addAction( M_toggle_tool_bar_act );
     //
     M_toggle_status_bar_act = new QAction( tr( "&Status Bar" ), this );
-    M_toggle_status_bar_act->setStatusTip( tr( "Show/Hide Status Bar" ) );
+    M_toggle_status_bar_act->setStatusTip( tr( "Show/Hide status bar." ) );
     connect( M_toggle_status_bar_act, SIGNAL( triggered() ),
              this, SLOT( toggleStatusBar() ) );
     this->addAction( M_toggle_status_bar_act );
     //
     M_toggle_field_canvas_act = new QAction( tr( "Minimum" ), this );
-    M_toggle_field_canvas_act->setStatusTip( tr( "Show/Hide Field" ) );
+    M_toggle_field_canvas_act->setStatusTip( tr( "Show/Hide field." ) );
     connect( M_toggle_field_canvas_act, SIGNAL( triggered() ),
              this, SLOT( toggleFieldCanvas() ) );
     this->addAction( M_toggle_field_canvas_act );
@@ -456,7 +456,7 @@ MainWindow::createActionsView()
     //M_full_screen_act->setShortcut( tr( "Alt+Enter" ) );
     //M_full_screen_act->setShortcut( Qt::ALT + Qt::Key_Return );
     //M_full_screen_act->setShortcut( Qt::ALT + Qt::Key_Enter );
-    M_full_screen_act->setStatusTip( tr( "Toggle Full Screen" ) );
+    M_full_screen_act->setStatusTip( tr( "Toggle full screen." ) );
     connect( M_full_screen_act, SIGNAL( triggered() ),
              this, SLOT( toggleFullScreen() ) );
     this->addAction( M_full_screen_act );
@@ -473,7 +473,7 @@ MainWindow::createActionsView()
     M_show_player_type_dialog_act->setShortcut( Qt::CTRL + Qt::Key_H );
 #endif
     M_show_player_type_dialog_act
-        ->setStatusTip( tr( "Show player type parameters dialog" ) );
+        ->setStatusTip( tr( "Show player type parameter dialog." ) );
     connect( M_show_player_type_dialog_act, SIGNAL( triggered() ),
              this, SLOT( showPlayerTypeDialog() ) );
     this->addAction( M_show_player_type_dialog_act );
@@ -513,7 +513,7 @@ MainWindow::createActionsView()
 #else
     M_show_config_dialog_act->setShortcut( tr( "Ctrl+V" ) );
 #endif
-    M_show_config_dialog_act->setStatusTip( tr( "Show config dialog" ) );
+    M_show_config_dialog_act->setStatusTip( tr( "Show config dialog." ) );
     connect( M_show_config_dialog_act, SIGNAL( triggered() ),
              this, SLOT( showConfigDialog() ) );
     this->addAction( M_show_config_dialog_act );
@@ -779,6 +779,7 @@ MainWindow::createConfigDialog()
         // z
         QAction * act = new QAction( tr( "ZoomIn" ), this );
         act->setShortcut( Qt::Key_Z );
+        act->setStatusTip( tr( "Zoom in." ) );
         this->addAction( act );
         connect( act, SIGNAL( triggered() ),
                  M_config_dialog, SLOT( zoomIn() ) );
@@ -787,6 +788,7 @@ MainWindow::createConfigDialog()
         // x
         QAction * act = new QAction( tr( "ZoomOut" ), this );
         act->setShortcut( Qt::Key_X );
+        act->setStatusTip( tr( "Zoom out." ) );
         this->addAction( act );
         connect( act, SIGNAL( triggered() ),
                  M_config_dialog, SLOT( zoomOut() ) );
@@ -799,6 +801,7 @@ MainWindow::createConfigDialog()
 #else
         act->setShortcut( Qt::CTRL + Qt::Key_Z );
 #endif
+        act->setStatusTip( tr( "Zoom out." ) );
         this->addAction( act );
         connect( act, SIGNAL( triggered() ),
                  M_config_dialog, SLOT( zoomOut() ) );
@@ -807,24 +810,27 @@ MainWindow::createConfigDialog()
         // i
         QAction * act = new QAction( tr( "Fit Field Size" ), this );
         act->setShortcut( Qt::Key_I );
+        act->setStatusTip( tr( "Fit field size to the screen." ) );
         this->addAction( act );
         connect( act, SIGNAL( triggered() ),
                  M_config_dialog, SLOT( unzoom() ) );
     }
 
     // field style
-    {
-        QAction * act = new QAction( tr( "Show Keepaway Area" ), this );
-        this->addAction( act );
-        connect( act, SIGNAL( triggered() ),
-                 M_config_dialog, SLOT( toggleShowKeepawayArea() ) );
-    }
+//     {
+//         QAction * act = new QAction( tr( "Show Keepaway Area" ), this );
+//         act->setStatusTip( tr( "Show keepaway area." ) );
+//         this->addAction( act );
+//         connect( act, SIGNAL( triggered() ),
+//                  M_config_dialog, SLOT( toggleShowKeepawayArea() ) );
+//     }
 
     // player detail
     {
         // n
         QAction * act = new QAction( tr( "Show Player Number" ), this );
         act->setShortcut( Qt::Key_N );
+        act->setStatusTip( tr( "Show/Hide player number." ) );
         this->addAction( act );
         connect( act, SIGNAL( triggered() ),
                  M_config_dialog, SLOT( toggleShowPlayerNumber() ) );
@@ -833,6 +839,7 @@ MainWindow::createConfigDialog()
         // h
         QAction * act = new QAction( tr( "Show Player Type Id" ), this );
         act->setShortcut( Qt::Key_H );
+        act->setStatusTip( tr( "Show/Hide player type id." ) );
         this->addAction( act );
         connect( act, SIGNAL( triggered() ),
                  M_config_dialog, SLOT( toggleShowPlayerType() ) );
@@ -841,6 +848,7 @@ MainWindow::createConfigDialog()
         // s
         QAction * act = new QAction( tr( "Show Staminar" ), this );
         act->setShortcut( Qt::Key_S );
+        act->setStatusTip( tr( "Show/Hide player's stamina." ) );
         this->addAction( act );
         connect( act, SIGNAL( triggered() ),
                  M_config_dialog, SLOT( toggleShowStamina() ) );
@@ -849,6 +857,7 @@ MainWindow::createConfigDialog()
         // v
         QAction * act = new QAction( tr( "Show View Area" ), this );
         act->setShortcut( Qt::Key_V );
+        act->setStatusTip( tr( "Show/Hide player's view area." ) );
         this->addAction( act );
         connect( act, SIGNAL( triggered() ),
                  M_config_dialog, SLOT( toggleShowViewArea() ) );
@@ -857,6 +866,7 @@ MainWindow::createConfigDialog()
         // c
         QAction * act = new QAction( tr( "Show Catch Area" ), this );
         act->setShortcut( Qt::Key_C );
+        act->setStatusTip( tr( "Show/Hide goalie's catchable area." ) );
         this->addAction( act );
         connect( act, SIGNAL( triggered() ),
                  M_config_dialog, SLOT( toggleShowCatchArea() ) );
@@ -865,6 +875,7 @@ MainWindow::createConfigDialog()
         // k
         QAction * act = new QAction( tr( "Show Tackle Area" ), this );
         act->setShortcut( Qt::Key_T );
+        act->setStatusTip( tr( "Show/Hide player's tackle area if player can tackle the ball." ) );
         this->addAction( act );
         connect( act, SIGNAL( triggered() ),
                  M_config_dialog, SLOT( toggleShowTackleArea() ) );
@@ -873,6 +884,7 @@ MainWindow::createConfigDialog()
         // k
         QAction * act = new QAction( tr( "Show Kick Accel Area" ), this );
         act->setShortcut( Qt::Key_K );
+        act->setStatusTip( tr( "Show/Hide player's tackle area if player can kick the ball." ) );
         this->addAction( act );
         connect( act, SIGNAL( triggered() ),
                  M_config_dialog, SLOT( toggleShowKickAccelArea() ) );
@@ -881,24 +893,25 @@ MainWindow::createConfigDialog()
         // p
         QAction * act = new QAction( tr( "Show Pointto Point" ), this );
         act->setShortcut( Qt::Key_P );
+        act->setStatusTip( tr( "Show/Hide player's pointing position." ) );
         this->addAction( act );
         connect( act, SIGNAL( triggered() ),
                  M_config_dialog, SLOT( toggleShowPointto() ) );
     }
 
     // show/hide
-    {
-        // Ctrl + s
-        QAction * act = new QAction( tr( "Show Score Board" ), this );
-// #ifdef Q_WS_MAC
+//     {
+//         // Ctrl + s
+//         QAction * act = new QAction( tr( "Show Score Board" ), this );
+//  #ifdef Q_WS_MAC
 //         act->setShortcut( Qt::META + Qt::Key_S );
 // #else
 //         act->setShortcut( Qt::CTRL + Qt::Key_S );
 // #endif
-        this->addAction( act );
-        connect( act, SIGNAL( triggered() ),
-                 M_config_dialog, SLOT( toggleShowScoreBoard() ) );
-    }
+//         this->addAction( act );
+//         connect( act, SIGNAL( triggered() ),
+//                  M_config_dialog, SLOT( toggleShowScoreBoard() ) );
+//     }
     {
         // Ctrl + b
         QAction * act = new QAction( tr( "Show Ball" ), this );
@@ -907,6 +920,7 @@ MainWindow::createConfigDialog()
 #else
         act->setShortcut( Qt::CTRL + Qt::Key_B );
 #endif
+        act->setStatusTip( tr( "Show/Hide ball." ) );
         this->addAction( act );
         connect( act, SIGNAL( triggered() ),
                  M_config_dialog, SLOT( toggleShowBall() ) );
@@ -919,6 +933,7 @@ MainWindow::createConfigDialog()
 #else
         act->setShortcut( Qt::CTRL + Qt::Key_P );
 #endif
+        act->setStatusTip( tr( "Show/Hide players." ) );
         this->addAction( act );
         connect( act, SIGNAL( triggered() ),
                  M_config_dialog, SLOT( toggleShowPlayer() ) );
@@ -931,6 +946,7 @@ MainWindow::createConfigDialog()
 #else
         act->setShortcut( Qt::CTRL + Qt::Key_F );
 #endif
+        act->setStatusTip( tr( "Show/Hide flags." ) );
         this->addAction( act );
         connect( act, SIGNAL( triggered() ),
                  M_config_dialog, SLOT( toggleShowFlag() ) );
@@ -939,6 +955,7 @@ MainWindow::createConfigDialog()
         // o
         QAction * act = new QAction( tr( "Show Offside Line" ), this );
         act->setShortcut( Qt::Key_O );
+        act->setStatusTip( tr( "Show/Hide offside lines." ) );
         this->addAction( act );
         connect( act, SIGNAL( triggered() ),
                  M_config_dialog, SLOT( toggleShowOffsideLine() ) );
@@ -948,8 +965,9 @@ MainWindow::createConfigDialog()
     for ( int i = 0; i < 10; ++i )
     {
         {
-            QAction * act = new QAction( QString( "Selct Left %1" ).arg( i ), this );
+            QAction * act = new QAction( QString( "Select Left %1" ).arg( i ), this );
             act->setShortcut( Qt::Key_0 + i );
+            act->setStatusTip( QString( "Select left player %1" ).arg( i ) );
             this->addAction( act );
             connect( act, SIGNAL( triggered() ),
                      M_config_dialog, SLOT( selectPlayerWithKey() ) );
@@ -961,6 +979,7 @@ MainWindow::createConfigDialog()
 #else
             act->setShortcut( Qt::CTRL + Qt::Key_0 + i );
 #endif
+            act->setStatusTip( QString( "Select right player %1" ).arg( i ) );
             this->addAction( act );
             connect( act, SIGNAL( triggered() ),
                      M_config_dialog, SLOT( selectPlayerWithKey() ) );
@@ -969,19 +988,21 @@ MainWindow::createConfigDialog()
     // number 11
     {
         {
-            QAction * act = new QAction( tr( "Selct Left 11" ), this );
+            QAction * act = new QAction( tr( "Select Left 11" ), this );
             act->setShortcut( Qt::Key_Minus );
+            act->setStatusTip( tr( "Select left player 11" ) );
             this->addAction( act );
             connect( act, SIGNAL( triggered() ),
                      M_config_dialog, SLOT( selectPlayerWithKey() ) );
         }
         {
-            QAction * act = new QAction( tr( "Selct Right 11" ), this );
+            QAction * act = new QAction( tr( "Select Right 11" ), this );
 #ifdef Q_WS_MAC
             act->setShortcut( Qt::META + Qt::Key_Minus );
 #else
             act->setShortcut( Qt::CTRL + Qt::Key_Minus );
 #endif
+            act->setStatusTip( tr( "Select right player 11" ) );
             this->addAction( act );
             connect( act, SIGNAL( triggered() ),
                      M_config_dialog, SLOT( selectPlayerWithKey() ) );
@@ -991,6 +1012,7 @@ MainWindow::createConfigDialog()
     {
         QAction * act = new QAction( tr( "Focus Ball" ), this );
         act->setShortcut( Qt::Key_B );
+        act->setStatusTip( tr( "Toggle automatic ball focus mode." ) );
         this->addAction( act );
         connect( act, SIGNAL( triggered() ),
                  M_config_dialog, SLOT( toggleFocusBall() ) );
@@ -999,6 +1021,7 @@ MainWindow::createConfigDialog()
     {
         QAction * act = new QAction( tr( "Focus Player" ), this );
         act->setShortcut( Qt::Key_F );
+        act->setStatusTip( tr( "Toggle automatic player focus mode." ) );
         this->addAction( act );
         connect( act, SIGNAL( triggered() ),
                  M_config_dialog, SLOT( toggleFocusPlayer() ) );
@@ -1007,6 +1030,7 @@ MainWindow::createConfigDialog()
     {
         QAction * act = new QAction( tr( "Select auto all" ), this );
         act->setShortcut( Qt::Key_A );
+        act->setStatusTip( tr( "Toggle automatic player selection from all players." ) );
         this->addAction( act );
         connect( act, SIGNAL( triggered() ),
                  M_config_dialog, SLOT( toggleSelectAutoAll() ) );
@@ -1015,6 +1039,7 @@ MainWindow::createConfigDialog()
     {
         QAction * act = new QAction( tr( "Select auto left" ), this );
         act->setShortcut( Qt::Key_L );
+        act->setStatusTip( tr( "Toggle automatic player selection from left team." ) );
         this->addAction( act );
         connect( act, SIGNAL( triggered() ),
                  M_config_dialog, SLOT( toggleSelectAutoLeft() ) );
@@ -1023,6 +1048,7 @@ MainWindow::createConfigDialog()
     {
         QAction * act = new QAction( tr( "Select auto right" ), this );
         act->setShortcut( Qt::Key_R );
+        act->setStatusTip( tr( "Toggle automatic player selection from right team." ) );
         this->addAction( act );
         connect( act, SIGNAL( triggered() ),
                  M_config_dialog, SLOT( toggleSelectAutoRight() ) );
@@ -1031,6 +1057,7 @@ MainWindow::createConfigDialog()
     {
         QAction * act = new QAction( tr( "Unselect" ), this );
         act->setShortcut( Qt::Key_U );
+        act->setStatusTip( tr( "Unselect the player." ) );
         this->addAction( act );
         connect( act, SIGNAL( triggered() ),
                  M_config_dialog, SLOT( setUnselect() ) );
@@ -1919,7 +1946,7 @@ MainWindow::printShortcutKeys()
             //          << '\n';
             table_widget->insertRow( row );
             table_widget->setItem ( row, 0, new QTableWidgetItem( (*it)->shortcut().toString() ) );
-            table_widget->setItem ( row, 1, new QTableWidgetItem( QString( (*it)->text() ).remove( QChar( '&' ) ) ) );
+            table_widget->setItem ( row, 1, new QTableWidgetItem( QString( (*it)->statusTip() ).remove( QChar( '&' ) ) ) );
             ++row;
         }
     }
