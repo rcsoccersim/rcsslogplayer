@@ -367,7 +367,35 @@ DispHolder::doHandleShowInfo( const rcss::rcg::ShowInfoT & show )
     disp->show_ = show;
 
     M_last_disp = disp;
-    M_dispinfo_cont.push_back( disp );
+
+    if ( M_playmode == rcss::rcg::PM_BeforeKickOff )
+    {
+        if ( M_dispinfo_cont.empty()
+             || M_dispinfo_cont.back()->pmode_ != rcss::rcg::PM_BeforeKickOff )
+        {
+            M_dispinfo_cont.push_back( disp );
+        }
+        else
+        {
+            M_dispinfo_cont.back() = disp;
+        }
+    }
+    else if ( M_playmode == rcss::rcg::PM_TimeOver )
+    {
+        if ( M_dispinfo_cont.empty()
+             || M_dispinfo_cont.back()->pmode_ != rcss::rcg::PM_TimeOver )
+        {
+            M_dispinfo_cont.push_back( disp );
+        }
+        else
+        {
+            M_dispinfo_cont.back() = disp;
+        }
+    }
+    else
+    {
+        M_dispinfo_cont.push_back( disp );
+    }
 }
 
 /*-------------------------------------------------------------------*/
