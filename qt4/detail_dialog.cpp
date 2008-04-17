@@ -264,7 +264,7 @@ DetailDialog::createPlayerLabels()
     layout->addWidget( M_move_count, row, 1, Qt::AlignRight );
     ++row;
 
-    layout->addWidget( new QLabel( tr( "ChbView " ) ), row, 0, Qt::AlignRight );
+    layout->addWidget( new QLabel( tr( "ChgView " ) ), row, 0, Qt::AlignRight );
     M_change_view_count = new QLabel( tr( "     0" ) );
     layout->addWidget( M_change_view_count, row, 1, Qt::AlignRight );
     ++row;
@@ -515,7 +515,9 @@ DetailDialog::updateLabels()
     if ( player.isFocusing() )
     {
         std::snprintf( buf, 64, " %5s %2d",
-                       player.focus_side_ == 'l' ? "Right" : "Left",
+                       player.focus_side_ == 'l' ? "Left"
+                       : player.focus_side_ == 'r' ? "Right"
+                       : "-",
                        player.focus_unum_ );
         M_player_focus_target->setText( QString::fromAscii( buf ) );
     }

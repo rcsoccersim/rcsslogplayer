@@ -844,7 +844,7 @@ struct PlayerT {
 
     bool isFocusing() const
       {
-          return side_ != 'n';
+          return focus_side_ != 'n';
       }
 
     bool isCollidedBall() const
