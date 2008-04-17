@@ -547,10 +547,10 @@ void
 MainWindow::createMenus()
 {
     createMenuFile();
+    createMenuView();
 #ifdef USE_MONITOR_CLIENT
     createMenuMonitor();
 #endif
-    createMenuView();
     createMenuHelp();
 }
 

@@ -1,7 +1,14 @@
 2008-04-17  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 
+	* NEWS:
+	* configure.ac:
+	- updated a version number string. Official release 12.1.0.
+
+	* qt4/main_window.cpp:
+	- changed menu order.
+
 	* qt4/disp_holder.cpp:
-	- fixed a defect of disp info handling while monitor client mode.
+	- fixed a defect of disp info handling in the monitor client mode.
 
 	* qt4/remote_monitor.cpp:
 	- fixed a defect of monitor client connection.
