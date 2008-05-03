@@ -1270,29 +1270,47 @@ MainWindow::openRCG( const QString & file_path )
 
     if ( ! M_main_data.openRCG( file_path, this ) )
     {
-        QString err_msg = tr( "Failed to read [" );
-        err_msg += file_path;
-        err_msg += tr( "]" );
-        QMessageBox::critical( this,
-                               tr( "Error" ),
-                               err_msg,
-                               QMessageBox::Ok, QMessageBox::NoButton );
-        this->setWindowTitle( tr( PACKAGE_NAME ) );
-        this->statusBar()->showMessage( tr( "Ready" ) );
+        if ( Options::instance().autoQuitMode() )
+        {
+            std::cerr << "***ERROR*** Failed to read [" << file_path.toStdString()
+                      << "]" << std::endl;
+            qApp->quit();
+        }
+        else
+        {
+            QString err_msg = tr( "Failed to read [" );
+            err_msg += file_path;
+            err_msg += tr( "]" );
+            QMessageBox::critical( this,
+                                   tr( "Error" ),
+                                   err_msg,
+                                   QMessageBox::Ok, QMessageBox::NoButton );
+            this->setWindowTitle( tr( PACKAGE_NAME ) );
+            this->statusBar()->showMessage( tr( "Ready" ) );
+        }
         return;
     }
 
     if ( M_main_data.dispHolder().dispInfoCont().empty() )
     {
-        QString err_msg = tr( "Empty log file [" );
-        err_msg += file_path;
-        err_msg += tr( "]" );
-        QMessageBox::critical( this,
-                               tr( "Error" ),
-                               err_msg,
-                               QMessageBox::Ok, QMessageBox::NoButton );
-        this->setWindowTitle( tr( PACKAGE_NAME ) );
-        this->statusBar()->showMessage( tr( "Ready" ) );
+        if ( Options::instance().autoQuitMode() )
+        {
+            std::cerr << "***ERROR*** Empty log file ["
+                      << file_path.toStdString() << "]" << std::endl;
+            qApp->quit();
+        }
+        else
+        {
+            QString err_msg = tr( "Empty log file [" );
+            err_msg += file_path;
+            err_msg += tr( "]" );
+            QMessageBox::critical( this,
+                                   tr( "Error" ),
+                                   err_msg,
+                                   QMessageBox::Ok, QMessageBox::NoButton );
+            this->setWindowTitle( tr( PACKAGE_NAME ) );
+            this->statusBar()->showMessage( tr( "Ready" ) );
+        }
         return;
     }
 
@@ -1324,6 +1342,11 @@ MainWindow::openRCG( const QString & file_path )
     createMonitorServer();
     M_open_output_act->setEnabled( true );
     M_save_image_act->setEnabled( true );
+
+    if ( Options::instance().autoQuitMode() )
+    {
+        M_log_player->playForward();
+    }
 
     emit viewUpdated();
 }

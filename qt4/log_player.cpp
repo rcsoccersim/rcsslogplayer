@@ -34,6 +34,7 @@
 #include <config.h>
 #endif
 
+#include <QApplication>
 #include <QTimer>
 
 #include "main_data.h"
@@ -125,6 +126,15 @@ LogPlayer::stepForwardImpl()
     else
     {
         M_timer->stop();
+
+        if ( Options::instance().autoQuitMode() )
+        {
+            int wait_msec = ( Options::instance().autoQuitWait() > 0
+                              ? Options::instance().autoQuitWait() * 1000
+                              : 100 );
+            QTimer::singleShot( wait_msec,
+                                qApp, SLOT( quit() ) );
+        }
     }
 }
 
