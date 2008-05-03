@@ -1274,7 +1274,8 @@ MainWindow::openRCG( const QString & file_path )
         {
             std::cerr << "***ERROR*** Failed to read [" << file_path.toStdString()
                       << "]" << std::endl;
-            qApp->quit();
+            QTimer::singleShot( 100,
+                                qApp, SLOT( quit() ) );
         }
         else
         {
@@ -1297,7 +1298,8 @@ MainWindow::openRCG( const QString & file_path )
         {
             std::cerr << "***ERROR*** Empty log file ["
                       << file_path.toStdString() << "]" << std::endl;
-            qApp->quit();
+            QTimer::singleShot( 100,
+                                qApp, SLOT( quit() ) );
         }
         else
         {
