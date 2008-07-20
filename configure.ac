@@ -3,7 +3,7 @@
 
 AC_PREREQ(2.61)
 
-AC_INIT([RCSSLogPlayer], 12.1.0, sserver-admin@users.sf.net, rcsslogplayer)
+AC_INIT([RCSSLogPlayer], 12.1.1, sserver-admin@users.sf.net, rcsslogplayer)
 AC_CONFIG_SRCDIR([config.h.in])
 AC_CONFIG_HEADERS([config.h])
 
