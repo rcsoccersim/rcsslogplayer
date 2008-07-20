@@ -4,6 +4,9 @@
 	* configure.ac:
 	- updated a version number string, Official release 12.1.1.
 
+	* qt4/options.cpp:
+	- fixed an illegal option name.
+
 	* qt4/team_graphic_painter.cpp:
 	- fixed a bug of the team_graphic painting for right side teams.
 

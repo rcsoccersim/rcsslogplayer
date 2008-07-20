@@ -437,8 +437,8 @@ Options::parseCmdLine( int argc,
         ( "auto-quit-mode",
           po::value< bool >( &M_auto_quit_mode )->default_value( false, "off" ),
           "enable automatic quit mode." )
-        ( "auto-quit-mode",
-          po::value< int >( &M_auto_quit_wait )->default_value( false, "off" ),
+        ( "auto-quit-wait",
+          po::value< int >( &M_auto_quit_wait )->default_value( 5, "5" ),
           "set a wait period for the automatic quit mode." )
         ( "auto-loop-mode",
           po::value< bool >( &M_auto_loop_mode )->default_value( false, "off" ),
