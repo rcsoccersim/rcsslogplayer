@@ -137,10 +137,8 @@ TeamGraphicPainter::copyTeamGraphic( QPixmap & dst_pixmap,
         dst_pixmap.fill( Qt::transparent );
     }
 
-    const TeamGraphic::Map::const_reverse_iterator end
-        = M_main_data.dispHolder().teamGraphicLeft().tiles().rend();
-    for ( TeamGraphic::Map::const_reverse_iterator tile
-              = M_main_data.dispHolder().teamGraphicLeft().tiles().rbegin();
+    const TeamGraphic::Map::const_reverse_iterator end = team_graphic.tiles().rend();
+    for ( TeamGraphic::Map::const_reverse_iterator tile = team_graphic.tiles().rbegin();
           tile != end;
           ++tile )
     {
