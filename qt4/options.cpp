@@ -106,6 +106,8 @@ Options::Options()
     , M_monitor_port( 6000 )
     , M_game_log_file( "" )
     , M_output_file( "" )
+    , M_auto_quit_mode( false )
+    , M_auto_quit_wait( 5 )
     , M_auto_loop_mode( false )
     , M_timer_interval( Options::DEFAULT_TIMER_INTERVAL )
       // window options
@@ -202,6 +204,12 @@ Options::readSettings()
 
     val = settings.value( "monitor_port" );
     if ( val.isValid() ) M_monitor_port = val.toInt();
+
+    val = settings.value( "auto_quit_mode" );
+    if ( val.isValid() ) M_auto_quit_mode = val.toBool();
+
+    val = settings.value( "auto_quit_wait" );
+    if ( val.isValid() ) M_auto_quit_wait = val.toInt();
 
     val = settings.value( "auto_loop_mode" );
     if ( val.isValid() ) M_auto_loop_mode = val.toBool();
@@ -334,6 +342,8 @@ Options::writeSettings()
 
 //     settings.setValue( "minimum_mode", M_minimum_mode );
     settings.setValue( "monitor_port", M_monitor_port );
+    settings.setValue( "auto_quit_mode", M_auto_quit_mode );
+    settings.setValue( "auto_quit_wait", M_auto_quit_wait );
     settings.setValue( "auto_loop_mode", M_auto_loop_mode );
     settings.setValue( "timer_interval", M_timer_interval );
 //     settings.setValue( "window_width", M_window_width );
@@ -371,7 +381,6 @@ Options::writeSettings()
 
     settings.endGroup();
 }
-
 
 /*-------------------------------------------------------------------*/
 /*!
@@ -425,6 +434,12 @@ Options::parseCmdLine( int argc,
 //         ( "output-file",
 //           po::value< std::string >( &M_output_file )->default_value( "", "" ),
 //           "set the output file path." )
+        ( "auto-quit-mode",
+          po::value< bool >( &M_auto_quit_mode )->default_value( false, "off" ),
+          "enable automatic quit mode." )
+        ( "auto-quit-wait",
+          po::value< int >( &M_auto_quit_wait )->default_value( 5, "5" ),
+          "set a wait period for the automatic quit mode." )
         ( "auto-loop-mode",
           po::value< bool >( &M_auto_loop_mode )->default_value( false, "off" ),
           "enable automatic replay loop mode." )

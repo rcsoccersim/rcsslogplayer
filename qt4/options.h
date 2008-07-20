@@ -110,6 +110,8 @@ private:
     int M_monitor_port;
     std::string M_game_log_file; //!< game log file path to be opened
     std::string M_output_file;
+    bool M_auto_quit_mode;
+    int M_auto_quit_wait;
     bool M_auto_loop_mode;
     int M_timer_interval; //!< logplayer's timer interval. default 100[ms]
 
@@ -294,6 +296,15 @@ public:
     bool timeShiftReplay() const
       {
           return M_time_shift_replay;
+      }
+
+    bool autoQuitMode() const
+      {
+          return M_auto_quit_mode;
+      }
+    int autoQuitWait() const
+      {
+          return M_auto_quit_wait;
       }
 
     bool autoLoopMode() const

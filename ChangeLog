@@ -4,8 +4,19 @@
 	* configure.ac:
 	- updated a version number string, Official release 12.1.1.
 
+	* qt4/options.cpp:
+	- fixed an illegal option name.
+
 	* qt4/team_graphic_painter.cpp:
 	- fixed a bug of the team_graphic painting for right side teams.
+
+2008-05-04  Hidehisa Akiyama  <akky@users.sourceforge.jp>
+
+	* qt4/log_player.cpp:
+	* qt4/main_window.cpp:
+	* qt4/options.cpp:
+	* qt4/options.h:
+	- implemented an auto quit mode.
 
 2008-04-17  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 
