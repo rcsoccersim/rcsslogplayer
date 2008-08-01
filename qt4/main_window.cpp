@@ -1550,7 +1550,13 @@ MainWindow::setLiveMode()
 void
 MainWindow::connectMonitor()
 {
-    connectMonitorTo( "127.0.0.1" );
+    QString host = QString::fromStdString( Options::instance().serverHost() );
+    if ( host.isEmpty() )
+    {
+        host = "127.0.0.1";
+    }
+
+    connectMonitorTo( host.toStdString().c_str() );
 }
 
 /*-------------------------------------------------------------------*/

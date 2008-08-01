@@ -1,3 +1,8 @@
+2008-08-01  Hidehisa Akiyama  <akky@users.sourceforge.jp>
+
+	* qt4/main_window.cpp:
+	- fixed a default server host string.
+
 2008-07-20  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 
 	* NEWS:
