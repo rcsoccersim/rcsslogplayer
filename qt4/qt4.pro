@@ -9,6 +9,9 @@ INCLUDEPATH += . ..
 win32 {
   INCLUDEPATH +=  ../../boost_1_34_1
 }
+unix {
+  INCLUDEPATH += /opt/local/include
+}
 macx {
   INCLUDEPATH += /opt/local/include
 }
@@ -18,11 +21,12 @@ win32 {
   LIBS += ../../zlib123-dll/zlib1.dll -lwsock32
 }
 unix {
-  LIBS += -lboost_program_options -lz
+  LIBS += -L/opt/local/lib
+  LIBS += -lboost_program_options-mt -lz
 }
 macx {
   LIBS += -L/opt/local/lib
-  LIBS += -lboost_program_options -lz
+  LIBS += -lboost_program_options-mt -lz
 }
 
 DEFINES += HAVE_LIBZ

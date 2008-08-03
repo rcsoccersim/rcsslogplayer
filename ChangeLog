@@ -1,3 +1,8 @@
+2008-08-03  Hidehisa Akiyama  <akky@users.sourceforge.jp>
+
+	* qt4/qt4.pro:
+	- fixed a build problem with MacPorts qt-mac-4.4.0.
+
 2008-08-01  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 
 	* qt4/main_window.cpp:
