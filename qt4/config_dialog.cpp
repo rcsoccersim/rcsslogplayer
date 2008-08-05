@@ -560,7 +560,7 @@ ConfigDialog::createPlayerSelectionControls()
         }
         {
             M_select_fix_rb = new QRadioButton( tr( "Fix" ) );
-            connect( M_select_all_rb, SIGNAL( clicked() ),
+            connect( M_select_fix_rb, SIGNAL( clicked() ),
                      this, SLOT( clickSelectFix() ) );
             layout->addWidget( M_select_fix_rb );
         }
