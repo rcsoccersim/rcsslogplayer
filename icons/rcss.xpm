@@ -1,5 +1,5 @@
 /* XPM */
-static char * rcss_xpm[] = {
+static const char * rcss_xpm[] = {
 "48 48 518 2",
 "  	c None",
 ". 	c #D7D7CF",

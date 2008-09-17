@@ -44,6 +44,7 @@
 #include <map>
 #include <cmath>
 #include <cstdlib>
+#include <cstring>
 
 #ifdef HAVE_NETINET_IN_H
 #include <netinet/in.h>

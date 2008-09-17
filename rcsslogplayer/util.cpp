@@ -46,6 +46,7 @@
 #include <rcsslogplayer/types.h>
 
 #include <cmath>
+#include <cstring>
 
 namespace {
 const float DEG2RADF = 3.14159265358979323846f / 180.0f;

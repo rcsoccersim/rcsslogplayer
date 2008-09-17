@@ -42,6 +42,7 @@
 #include "options.h"
 
 #include <iostream>
+#include <cstring>
 
 
 /*-------------------------------------------------------------------*/

@@ -35,7 +35,7 @@
 
 #include <QPoint>
 
-#include <cmath>
+#include <cstdlib>
 
 class MouseState {
 private:

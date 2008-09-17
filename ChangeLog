@@ -1,3 +1,31 @@
+2008-09-17  Hidehisa Akiyama  <akky@users.sourceforge.jp>
+
+	* classic/controler.cpp:
+	* classic/nowindow.cpp:
+	* icons/blank.xpm:
+	* icons/ff.xpm:
+	* icons/go.xpm:
+	* icons/minus.xpm:
+	* icons/next_score.xpm:
+	* icons/open.xpm:
+	* icons/play.xpm:
+	* icons/plus.xpm:
+	* icons/prev_score.xpm:
+	* icons/quit.xpm:
+	* icons/rcss.xpm:
+	* icons/rec.xpm:
+	* icons/rev.xpm:
+	* icons/rew.xpm:
+	* icons/stop.xpm:
+	* qt4/disp_holder.cpp:
+	* qt4/monitor_server.cpp:
+	* qt4/mouse_state.h:
+	* qt4/team_graphic_painter.cpp:
+	* rcsslogplayer/parser.cpp:
+	* rcsslogplayer/util.cpp:
+	* tool/rcg2xml.cpp:
+	- fixed gcc-4.3 compilation problems.
+
 2008-08-05  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 
 	* qt4/config_dialog.cpp:

@@ -1,5 +1,5 @@
 /* XPM */
-static char * prev_score_xpm[] = {
+static const char * prev_score_xpm[] = {
 "16 16 4 1",
 " 	c None",
 ".	c #FFFFFF",

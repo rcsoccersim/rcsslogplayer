@@ -1,5 +1,5 @@
 /* XPM */
-static char * quit_xpm[] = {
+static const char * quit_xpm[] = {
 "16 16 2 1",
 " 	c #000000",
 ".	c #FFFFFF",

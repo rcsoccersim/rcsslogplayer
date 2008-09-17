@@ -35,6 +35,7 @@
 
 #include <iostream>
 #include <limits>
+#include <cstring>
 
 static int MAX_TIME = std::numeric_limits< short >::max();
 

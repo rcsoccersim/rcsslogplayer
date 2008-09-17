@@ -41,6 +41,7 @@
 
 #include <sstream>
 #include <cmath>
+#include <cstring>
 
 #ifdef HAVE_NETINET_IN_H
 #include <netinet/in.h>

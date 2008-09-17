@@ -49,6 +49,7 @@
 #include <cmath>
 #include <csignal>
 #include <cerrno>
+#include <cstring>
 
 #include <sys/select.h> // select() : POSIX 1003.1-2001
 #include <sys/time.h> // select() : previous standards

@@ -46,6 +46,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include <iostream>
+#include <cstring>
 
 
 #include <X11/Intrinsic.h>
