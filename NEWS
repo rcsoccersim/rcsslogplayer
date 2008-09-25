@@ -1,3 +1,7 @@
+[12.1.2]
+  * Fixed compilation problems with gcc4.3. Thanks go to hedayat
+    Vatankhah for providing the patche.
+
 [12.1.1]
   * Fixed a bug of the team_graphic painting for right side teams.
 
