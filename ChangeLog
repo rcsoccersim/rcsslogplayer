@@ -1,3 +1,9 @@
+2008-10-01  Hidehisa Akiyama  <akky@users.sourceforge.jp>
+
+	* tool/rcg3to4.cpp:
+	* tool/rcg4to3.cpp:
+	- added error messages for missing boost::program_options.
+
 2008-09-25  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 
 	* NEWS:

@@ -244,7 +244,9 @@ RCG3to4::parseCmdLine( int argc,
     }
     return true;
 #else // HAVE_BOOST_PROGRAM_OPTIONS
-    return false
+    std::cerr << "rcg3to4: boost::program_options is not available."
+              << std::endl;
+    return false;
 #endif
 
 }
