@@ -9,6 +9,9 @@ bin_PROGRAMS = $(BUILD_PROGS)
 bin_SCRIPTS = $(BUILD_SCRPTS)
 
 rcsslogplayer_classic_SOURCES = \
+	addr.cpp \
+	socket.cpp \
+	udpsocket.cpp \
 	netif.cpp \
 	controler.cpp \
 	logplayer.cpp \
@@ -16,6 +19,9 @@ rcsslogplayer_classic_SOURCES = \
 	main.cpp
 
 noinst_HEADERS = \
+	addr.hpp \
+	socket.hpp \
+	udpsocket.hpp \
 	netif.h \
 	controler.h \
 	logplayer.h \

@@ -1,3 +1,43 @@
+2008-11-03  Hidehisa Akiyama  <akky@users.sourceforge.jp>
+
+	* NEWS:
+	* README:
+	* configure.ac:
+	- updated a version number string. Official release 13.0.0.
+
+	* classic/addr.cpp:
+	* classic/addr.hpp:
+	* classic/socket.cpp:
+	* classic/socket.hpp:
+	* classic/udpsocket.cpp:
+	* classic/udpsocket.hpp:
+	* classic/Makefile.am:
+	* classic/logplayer.cpp:
+	* classic/logplayer.h:
+	* classic/main.cpp:
+	* classic/netif.h:
+	* configure.ac:
+	* qt4/config_dialog.cpp:
+	* qt4/config_dialog.h:
+	* qt4/detail_dialog.cpp:
+	* qt4/detail_dialog.h:
+	* qt4/field_canvas.cpp:
+	* qt4/image_save_dialog.cpp:
+	* qt4/main_window.cpp:
+	* qt4/monitor_client.cpp:
+	* qt4/monitor_server.cpp:
+	* qt4/options.cpp:
+	* qt4/options.h:
+	* qt4/player_painter.cpp:
+	* qt4/remote_monitor.cpp:
+	* qt4/team_graphic_painter.cpp:
+	* rcsslogplayer/parser.cpp:
+	* rcsslogplayer/types.h:
+	* tool/rcg4to3.cpp:
+	- supported a monitor protocol version 4 and a game log format
+        version 5.
+	- disabled classc log player by default.
+
 2008-10-01  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 
 	* tool/rcg3to4.cpp:

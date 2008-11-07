@@ -490,7 +490,7 @@ ImageSaveDialog::saveImage( const int start_cycle,
     {
         // full file path
         char count[16];
-        std::snprintf( count, 16, "%05d", i );
+        snprintf( count, 16, "%05d", i );
 
         QString file_path_all = file_path;
         file_path_all += QString::fromAscii( count );

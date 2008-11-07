@@ -143,7 +143,7 @@ MonitorServer::handleReceive()
                 if ( (*it)->port() == from_port
                      && (*it)->addr() == addr )
                 {
-                    // already exist same clent.
+                    // already exist same client.
                     (*it)->undedicatedRecv( buf, n );
                     found = true;
                     break;
@@ -190,7 +190,7 @@ MonitorServer::parseMonitorInit( const char * msg,
 
     if ( std::sscanf( msg, "(dispinit version %lf)", &ver ) == 1 )
     {
-        if ( ver < 1.0 || 4.0 <= ver )
+        if ( ver < 1.0 || 5.0 <= ver )
         {
             std::cout << "Unsupported monitor protocol version. " << ver
                       << std::endl;
@@ -251,7 +251,7 @@ MonitorServer::sendInit( RemoteMonitor & monitor )
                           sizeof( rcss::rcg::dispinfo_t2 ) );
         }
     }
-    else if ( monitor.version() == 3 )
+    else if ( monitor.version() >= 3 )
     {
         std::string msg;
         {

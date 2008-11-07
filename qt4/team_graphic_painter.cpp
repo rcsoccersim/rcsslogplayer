@@ -167,9 +167,9 @@ TeamGraphicPainter::copyTeamGraphicXpmTile( QPixmap & dst_pixmap,
 
     // header
     xpm[0] = new char[64];
-    std::snprintf( xpm[0], 64, "%d %d %d %d",
-                   tile.width(), tile.height(),
-                   static_cast< int >( tile.colors().size() ), tile.cpp() );
+    snprintf( xpm[0], 64, "%d %d %d %d",
+              tile.width(), tile.height(),
+              static_cast< int >( tile.colors().size() ), tile.cpp() );
 
     // colors
     std::size_t idx = 1;

@@ -205,7 +205,8 @@ const int REC_OLD_VERSION = 1;
 const int REC_VERSION_2 = 2;
 const int REC_VERSION_3 = 3;
 const int REC_VERSION_4 = 4;
-const int DEFAULT_REC_VERSION = REC_VERSION_4;
+const int REC_VERSION_5 = 5;
+const int DEFAULT_REC_VERSION = REC_VERSION_5;
 
 /*!
   \enum DispInfoMode
@@ -699,6 +700,7 @@ struct PlayerT {
     float stamina_; //!< satamina value
     float effort_; //!< effort value
     float recovery_; //!< recovery value
+    float stamina_capacity_; //!< stamina acapacity
 
     UInt16 kick_count_; //!< kick command count
     UInt16 dash_count_; //!< dash command count
@@ -735,6 +737,7 @@ struct PlayerT {
         , stamina_( SHOWINFO_SCALE2F )
         , effort_( SHOWINFO_SCALE2F )
         , recovery_( SHOWINFO_SCALE2F )
+        , stamina_capacity_( -1.0f )
         , kick_count_( 0 )
         , dash_count_( 0 )
         , turn_count_( 0 )
@@ -794,6 +797,11 @@ struct PlayerT {
     bool hasStamina() const
       {
           return stamina_ != SHOWINFO_SCALE2F;
+      }
+
+    bool hasStaminaCapacity() const
+      {
+          return stamina_capacity_ >= 0.0f;
       }
 
     bool isAlive() const
@@ -1296,16 +1304,28 @@ struct ServerParamT {
     double pen_max_goalie_dist_x_;
     bool pen_allow_mult_kicks_;
     bool pen_coach_moves_players_;
+    // v11
     double ball_stuck_area_;
     std::string coach_msg_file_;
+    // v12
     double max_tackle_power_;
     double max_back_tackle_power_;
     double player_speed_max_min_;
     double extra_stamina_;
-
     int synch_see_offset_;
     int max_monitors_;
-
+    // v12.1.3
+    int extra_half_time_;
+    // v13
+    double stamina_capacity_;
+    double max_dash_angle_;
+    double min_dash_angle_;
+    double dash_angle_step_;
+    double side_dash_rate_;
+    double back_dash_rate_;
+    double max_dash_power_;
+    double min_dash_power_;
+    // test
     double reliable_catch_area_l_;
     double min_catch_probability_;
 
@@ -1486,6 +1506,15 @@ struct ServerParamT {
         , extra_stamina_( 0.0 )
         , synch_see_offset_( 30 )
         , max_monitors_( -1 )
+        , extra_half_time_( 300 )
+        , stamina_capacity_( -1.0 )
+        , max_dash_angle_( 0.0 )
+        , min_dash_angle_( 0.0 )
+        , dash_angle_step_( 90.0 )
+        , side_dash_rate_( 0.25 )
+        , back_dash_rate_( 0.5 )
+        , max_dash_power_( 100.0 )
+        , min_dash_power_( -100.0 )
         , reliable_catch_area_l_( 1.2 )
         , min_catch_probability_( 1.0 )
       { }

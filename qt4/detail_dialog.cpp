@@ -48,7 +48,7 @@
 /*-------------------------------------------------------------------*/
 /*!
 
-*/
+ */
 DetailDialog::DetailDialog( QWidget * parent,
                             const MainData & main_data )
     : QDialog( parent )
@@ -68,7 +68,7 @@ DetailDialog::DetailDialog( QWidget * parent,
 /*-------------------------------------------------------------------*/
 /*!
 
-*/
+ */
 DetailDialog::~DetailDialog()
 {
     //std::cerr << "delete DetailDialog" << std::endl;
@@ -77,7 +77,7 @@ DetailDialog::~DetailDialog()
 /*-------------------------------------------------------------------*/
 /*!
 
-*/
+ */
 void
 DetailDialog::createWidgets()
 {
@@ -99,7 +99,7 @@ DetailDialog::createWidgets()
 /*-------------------------------------------------------------------*/
 /*!
 
-*/
+ */
 QWidget *
 DetailDialog::createBallLabels()
 {
@@ -141,7 +141,7 @@ DetailDialog::createBallLabels()
 /*-------------------------------------------------------------------*/
 /*!
 
-*/
+ */
 QWidget *
 DetailDialog::createPlayerLabels()
 {
@@ -217,6 +217,8 @@ DetailDialog::createPlayerLabels()
     layout->addWidget( new QLabel( tr( "Stamina " ) ), row, 0, Qt::AlignRight );
     M_stamina = new QLabel( tr( "    0.0" ) );
     layout->addWidget( M_stamina, row, 1, Qt::AlignRight );
+    M_stamina_capacity = new QLabel(  tr( "    0.0" ) );
+    layout->addWidget( M_stamina_capacity, row, 2, Qt::AlignRight );
     ++row;
 
     layout->addWidget( new QLabel( tr( "Effort " ) ), row, 0, Qt::AlignRight );
@@ -294,7 +296,7 @@ DetailDialog::createPlayerLabels()
 /*-------------------------------------------------------------------*/
 /*!
 
-*/
+ */
 void
 DetailDialog::showEvent( QShowEvent * event )
 {
@@ -306,7 +308,7 @@ DetailDialog::showEvent( QShowEvent * event )
 /*-------------------------------------------------------------------*/
 /*!
 
-*/
+ */
 void
 DetailDialog::wheelEvent( QWheelEvent * event )
 {
@@ -325,7 +327,7 @@ DetailDialog::wheelEvent( QWheelEvent * event )
 /*-------------------------------------------------------------------*/
 /*!
 
-*/
+ */
 void
 DetailDialog::updateLabels()
 {
@@ -353,18 +355,18 @@ DetailDialog::updateLabels()
 
     const rcss::rcg::BallT & ball = disp->show_.ball_;
 
-    std::snprintf( buf, 64, " %6.2f, %6.2f",
-                   ball.x_, ball.y_ );
+    snprintf( buf, 64, " %6.2f, %6.2f",
+              ball.x_, ball.y_ );
     M_ball_pos->setText( QString::fromAscii( buf ) );
 
     {
         Vector2D vel( ball.vx_, ball.vy_ );
-        std::snprintf( buf, 64, " %6.2f, %6.2f",
-                       vel.x, vel.y );
+        snprintf( buf, 64, " %6.2f, %6.2f",
+                  vel.x, vel.y );
         M_ball_vel->setText( QString::fromAscii( buf ) );
 
-        std::snprintf( buf, 64, " (%7.3f, %6.1f)",
-                       vel.r(), vel.th().degree() );
+        snprintf( buf, 64, " (%7.3f, %6.1f)",
+                  vel.r(), vel.th().degree() );
         M_ball_polar_vel->setText( QString::fromAscii( buf ) );
     }
 
@@ -378,12 +380,12 @@ DetailDialog::updateLabels()
         Vector2D move( ball.x_ - prev_disp->show_.ball_.x_,
                        ball.y_ - prev_disp->show_.ball_.y_ );
 
-        std::snprintf( buf, 64, " %6.2f, %6.2f",
-                       move.x, move.y );
+        snprintf( buf, 64, " %6.2f, %6.2f",
+                  move.x, move.y );
         M_ball_last_move->setText( QString::fromAscii( buf ) );
 
-        std::snprintf( buf, 64, " (%7.3f, %6.1f)",
-                       move.r(), move.th().degree() );
+        snprintf( buf, 64, " (%7.3f, %6.1f)",
+                  move.r(), move.th().degree() );
         M_ball_last_polar_move->setText( QString::fromAscii( buf ) );
     }
 
@@ -400,19 +402,19 @@ DetailDialog::updateLabels()
     const rcss::rcg::PlayerTypeT & player_type = M_main_data.playerType( player.type_ );
 
     // side, number
-    std::snprintf( buf, 64, " %8s  %2d",
-                   number > 0 ? "   Left" : "   Right",
-                   number > 0 ? number : -number );
+    snprintf( buf, 64, " %8s  %2d",
+              number > 0 ? "   Left" : "   Right",
+              number > 0 ? number : -number );
     M_player_number->setText( QString::fromAscii( buf ) );
 
     // player type
-    std::snprintf( buf, 64, " %2d",
-                   player.type_ );
+    snprintf( buf, 64, " %2d",
+              player.type_ );
     M_player_type->setText( QString::fromAscii( buf ) );
 
     // pos
-    std::snprintf( buf, 64, " %6.2f, %6.2f",
-                   player.x_, player.y_ );
+    snprintf( buf, 64, " %6.2f, %6.2f",
+              player.x_, player.y_ );
     M_player_pos->setText( QString::fromAscii( buf ) );
 
     // velocity, speed, speed dir
@@ -420,12 +422,12 @@ DetailDialog::updateLabels()
     {
         Vector2D vel( player.vx_, player.vy_ );
 
-        std::snprintf( buf, 64, " %6.2f, %6.2f",
-                       vel.x, vel.y );
+        snprintf( buf, 64, " %6.2f, %6.2f",
+                  vel.x, vel.y );
         M_player_vel->setText( QString::fromAscii( buf ) );
 
-        std::snprintf( buf, 64, " (%7.3f, %6.1f)",
-                       vel.r(), vel.th().degree() );
+        snprintf( buf, 64, " (%7.3f, %6.1f)",
+                  vel.r(), vel.th().degree() );
         M_player_polar_vel->setText( QString::fromAscii( buf ) );
     }
     else
@@ -440,12 +442,12 @@ DetailDialog::updateLabels()
         Vector2D last_move( player.x_ - last_player.x_,
                             player.y_ - last_player.y_ );
 
-        std::snprintf( buf, 64, " %6.2f, %6.2f",
-                       last_move.x, last_move.y );
+        snprintf( buf, 64, " %6.2f, %6.2f",
+                  last_move.x, last_move.y );
         M_player_last_move->setText( QString::fromAscii( buf ) );
 
-        std::snprintf( buf, 64, " (%7.3f, %6.1f)",
-                       last_move.r(), last_move.th().degree() );
+        snprintf( buf, 64, " (%7.3f, %6.1f)",
+                  last_move.r(), last_move.th().degree() );
         M_player_last_polar_move->setText( QString::fromAscii( buf ) );
     }
     else
@@ -455,8 +457,8 @@ DetailDialog::updateLabels()
     }
 
     // body angle
-    std::snprintf( buf, 64," %6.1f",
-                   player.body_ );
+    snprintf( buf, 64," %6.1f",
+              player.body_ );
     M_player_body->setText( QString::fromAscii( buf ) );
 
     // neck, head angle
@@ -464,8 +466,8 @@ DetailDialog::updateLabels()
     {
         AngleDeg head = player.body_ + player.neck_;
 
-        std::snprintf( buf, 64, " %6.1f(%6.1f)",
-                       head.degree(), player.neck_ );
+        snprintf( buf, 64, " %6.1f(%6.1f)",
+                  head.degree(), player.neck_ );
         M_player_head->setText( QString::fromAscii( buf ) );
     }
     else
@@ -495,15 +497,15 @@ DetailDialog::updateLabels()
             tackle_fail_prob = std::max( 0.0, tackle_fail_prob );
         }
 
-        std::snprintf( buf, 64, " %.4f", 1.0 - tackle_fail_prob );
+        snprintf( buf, 64, " %.4f", 1.0 - tackle_fail_prob );
         M_player_tackle_prob->setText( QString::fromAscii( buf ) );
     }
 
     // pointto point
     if ( player.isPointing() )
     {
-        std::snprintf( buf, 64, " %6.2f, %6.2f",
-                       player.point_x_, player.point_y_ );
+        snprintf( buf, 64, " %6.2f, %6.2f",
+                  player.point_x_, player.point_y_ );
         M_player_pointto_pos->setText( QString::fromAscii( buf ) );
     }
     else
@@ -514,11 +516,11 @@ DetailDialog::updateLabels()
     // focus target
     if ( player.isFocusing() )
     {
-        std::snprintf( buf, 64, " %5s %2d",
-                       player.focus_side_ == 'l' ? "Left"
-                       : player.focus_side_ == 'r' ? "Right"
-                       : "-",
-                       player.focus_unum_ );
+        snprintf( buf, 64, " %5s %2d",
+                  player.focus_side_ == 'l' ? "Left"
+                  : player.focus_side_ == 'r' ? "Right"
+                  : "-",
+                  player.focus_unum_ );
         M_player_focus_target->setText( QString::fromAscii( buf ) );
     }
     else
@@ -529,63 +531,74 @@ DetailDialog::updateLabels()
     // stamina, effort, recovery
     if ( player.hasStamina() )
     {
-        std::snprintf( buf, 64, " %6.1f",
-                       player.stamina_ );
+        snprintf( buf, 64, " %6.1f",
+                  player.stamina_ );
         M_stamina->setText( QString::fromAscii( buf ) );
 
-        std::snprintf( buf, 64, " %5.3f / %5.3f",
-                       player.effort_, player_type.effort_max_ );
+        if ( player.hasStaminaCapacity() )
+        {
+            snprintf( buf, 64, " %.1f",
+                      player.stamina_capacity_ );
+        }
+        else
+        {
+            snprintf( buf, 64, " -1.0" );
+        }
+        M_stamina_capacity->setText( QString::fromAscii( buf ) );
+
+        snprintf( buf, 64, " %5.3f / %5.3f",
+                  player.effort_, player_type.effort_max_ );
         M_effort->setText( QString::fromAscii( buf ) );
 
-        std::snprintf( buf, 64, " %5.3f / 1.0",
-                       player.recovery_ );
+        snprintf( buf, 64, " %5.3f / 1.0",
+                  player.recovery_ );
         M_recovery->setText( QString::fromAscii( buf ) );
     }
 
     // command count
     {
-        std::snprintf( buf, 64, "  %5d",
-                       player.kick_count_ );
+        snprintf( buf, 64, "  %5d",
+                  player.kick_count_ );
         M_kick_count->setText( QString::fromAscii( buf ) );
 
-        std::snprintf( buf, 64, "  %5d",
-                       player.dash_count_ );
+        snprintf( buf, 64, "  %5d",
+                  player.dash_count_ );
         M_dash_count->setText( QString::fromAscii( buf ) );
 
-        std::snprintf( buf, 64, "  %5d",
-                       player.turn_count_ );
+        snprintf( buf, 64, "  %5d",
+                  player.turn_count_ );
         M_turn_count->setText( QString::fromAscii( buf ) );
 
-        std::snprintf( buf, 64, "  %5d",
-                       player.say_count_ );
+        snprintf( buf, 64, "  %5d",
+                  player.say_count_ );
         M_say_count->setText( QString::fromAscii( buf ) );
 
-        std::snprintf( buf, 64, "  %5d",
-                       player.turn_neck_count_ );
+        snprintf( buf, 64, "  %5d",
+                  player.turn_neck_count_ );
         M_turn_neck_count->setText( QString::fromAscii( buf ) );
 
-        std::snprintf( buf, 64, "  %5d",
-                       player.catch_count_ );
+        snprintf( buf, 64, "  %5d",
+                  player.catch_count_ );
         M_catch_count->setText( QString::fromAscii( buf ) );
 
-        std::snprintf( buf, 64, "  %5d",
-                       player.move_count_ );
+        snprintf( buf, 64, "  %5d",
+                  player.move_count_ );
         M_move_count->setText( QString::fromAscii( buf ) );
 
-        std::snprintf( buf, 64, "  %5d",
-                       player.change_view_count_ );
+        snprintf( buf, 64, "  %5d",
+                  player.change_view_count_ );
         M_change_view_count->setText( QString::fromAscii( buf ) );
 
-        std::snprintf( buf, 64, "  %5d",
-                       player.tackle_count_ );
+        snprintf( buf, 64, "  %5d",
+                  player.tackle_count_ );
         M_tackle_count->setText( QString::fromAscii( buf ) );
 
-        std::snprintf( buf, 64, "  %5d",
-                       player.pointto_count_ );
+        snprintf( buf, 64, "  %5d",
+                  player.pointto_count_ );
         M_pointto_count->setText( QString::fromAscii( buf ) );
 
-        std::snprintf( buf, 64, "  %5d",
-                       player.attentionto_count_ );
+        snprintf( buf, 64, "  %5d",
+                  player.attentionto_count_ );
         M_attentionto_count->setText( QString::fromAscii( buf ) );
     }
 }

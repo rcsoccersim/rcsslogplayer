@@ -99,7 +99,7 @@ Options::Options()
     , M_connect( false )
     , M_server_host( "127.0.0.1" )
     , M_server_port( 6000 )
-    , M_client_version( 3 )
+    , M_client_version( 4 )
     , M_time_shift_replay( true )
     , M_minimum_mode( false )
     , M_monitor_path( "self" )
@@ -415,7 +415,7 @@ Options::parseCmdLine( int argc,
           po::value< int >( &M_server_port )->default_value( 6000, "6000" ),
           "set port number to connect as the monitor client." )
         ( "client-version",
-          po::value< int >( &M_client_version )->default_value( 3, "3" ),
+          po::value< int >( &M_client_version )->default_value( 4, "4" ),
           "set a monitor client protocol version." )
 //         ( "time-shift-replay",
 //           po::value< bool >( &M_time_shift_replay )->default_value( true, "on" ),
@@ -511,6 +511,9 @@ Options::parseCmdLine( int argc,
         ( "show-stamina",
           po::value< bool >( &M_show_stamina )->default_value( false, "off" ),
           "show player\'s stamina." )
+        ( "show-stamina-capacity",
+          po::value< bool >( &M_show_stamina_capacity )->default_value( false, "off" ),
+          "show player\'s stamina capacity." )
         ( "show-pointto",
           po::value< bool >( &M_show_pointto )->default_value( false, "off" ),
           "show player\'s pointing to point." )

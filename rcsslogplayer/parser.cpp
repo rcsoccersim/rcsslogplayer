@@ -220,10 +220,9 @@ parse_param_line( const int n_line,
             }
 
 
-            std::cerr << n_line << ": warning: cannot find any parameter in "
-                      << message_name
-                      << ". param_name=" << name_str
-                      << " value=" << value_str
+            std::cerr << n_line << ": warning: " << message_name
+                      << " the parameter=(" << name_str
+                      << ' ' << value_str << ") is not supported."
                       << std::endl;
         }
         catch ( boost::bad_lexical_cast & e )
@@ -306,7 +305,8 @@ Parser::parseHeader( std::istream & is )
              && ver != REC_VERSION_3 )
         {
             ver -= static_cast< int >( '0' );
-            if ( ver != REC_VERSION_4 )
+            if ( ver != REC_VERSION_4
+                 && ver != REC_VERSION_5 )
             {
                 return false;
             }
@@ -909,10 +909,26 @@ Parser::parseShowLine( const int n_line,
             }
 
             if ( std::sscanf( buf,
-                              " (v %c %f) (s %f %f %f) %n",
+                              " (v %c %f) %n ",
                               &p.view_quality_, &p.view_width_,
-                              &p.stamina_, &p.effort_, &p.recovery_,
-                              &n_read ) != 5 )
+                              &n_read ) != 2 )
+            {
+                std::cerr << n_line << ": error: "
+                          << " Illegal player view . " << side << ' ' << unum
+                          << " \"" << line << "\""
+                          << std::endl;;
+                return false;
+            }
+            buf += n_read;
+
+            if ( std::sscanf( buf,
+                              "(s %f %f %f %f) %n",
+                              &p.stamina_, &p.effort_, &p.recovery_, &p.stamina_capacity_,
+                              &n_read ) != 4
+                 && std::sscanf( buf,
+                                 "(s %f %f %f) %n",
+                                 &p.stamina_, &p.effort_, &p.recovery_,
+                                 &n_read ) != 3 )
             {
                 std::cerr << n_line << ": error: "
                           << " Illegal player view or stamina. " << side << ' ' << unum
@@ -1038,12 +1054,17 @@ Parser::parseShowLine( const int n_line,
             p.view_quality_ = *buf; ++buf;
             p.view_width_ = std::strtof( buf, &next ); buf = next;
 
-            // (s stamina effort recovery)
+            // (s stamina effort recovery[ capacity])
             while ( *buf != '\0' && *buf != 's' ) ++buf;
             ++buf; // skip 's' //while ( *buf != '\0' && *buf != ' ' ) ++buf;
             p.stamina_ = std::strtof( buf, &next ); buf = next;
             p.effort_ = std::strtof( buf, &next ); buf = next;
             p.recovery_ = std::strtof( buf, &next ); buf = next;
+            while ( *buf == ' ' ) ++buf;
+            if ( *buf != ')' )
+            {
+                p.stamina_capacity_ = std::strtof( buf, &next ); buf = next;
+            }
             while ( *buf != '\0' && *buf != ')' ) ++buf;
             while ( *buf == ')' ) ++buf;
 
@@ -1602,14 +1623,28 @@ Parser::parseServerParamLine( const int n_line,
     double_map.insert( DoubleMap::value_type( "pen_max_goalie_dist_x", &param.pen_max_goalie_dist_x_ ) );
     bool_map.insert( BoolMap::value_type( "pen_allow_mult_kicks", &param.pen_allow_mult_kicks_ ) );
     bool_map.insert( BoolMap::value_type( "pen_coach_moves_players", &param.pen_coach_moves_players_ ) );
+    // v11
     double_map.insert( DoubleMap::value_type( "ball_stuck_area", &param.ball_stuck_area_ ) );
     string_map.insert( StringMap::value_type( "coach_msg_file", &param.coach_msg_file_ ) );
+    // v12
     double_map.insert( DoubleMap::value_type( "max_tackle_power", &param.max_tackle_power_ ) );
     double_map.insert( DoubleMap::value_type( "max_back_tackle_power", &param.max_back_tackle_power_ ) );
     double_map.insert( DoubleMap::value_type( "player_speed_max_min", &param.player_speed_max_min_ ) );
     double_map.insert( DoubleMap::value_type( "extra_stamina", &param.extra_stamina_ ) );
     int_map.insert( IntMap::value_type( "synch_see_offset", &param.synch_see_offset_ ) );
     int_map.insert( IntMap::value_type( "max_monitors", &param.max_monitors_ ) );
+    // v12.1.3
+    int_map.insert( IntMap::value_type( "extra_half_time", &param.extra_half_time_ ) );
+    // v13
+    double_map.insert( DoubleMap::value_type( "stamina_capacity", &param.stamina_capacity_ ) );
+    double_map.insert( DoubleMap::value_type( "max_dash_angle", &param.max_dash_angle_ ) );
+    double_map.insert( DoubleMap::value_type( "min_dash_angle", &param.min_dash_angle_ ) );
+    double_map.insert( DoubleMap::value_type( "dash_angle_step", &param.dash_angle_step_ ) );
+    double_map.insert( DoubleMap::value_type( "side_dash_rate", &param.side_dash_rate_ ) );
+    double_map.insert( DoubleMap::value_type( "back_dash_rate", &param.back_dash_rate_ ) );
+    double_map.insert( DoubleMap::value_type( "max_dash_power", &param.max_dash_power_ ) );
+    double_map.insert( DoubleMap::value_type( "min_dash_power", &param.min_dash_power_ ) );
+    // test
     double_map.insert( DoubleMap::value_type( "min_catch_probability", &param.min_catch_probability_ ) );
     double_map.insert( DoubleMap::value_type( "reliable_catch_area_l", &param.reliable_catch_area_l_ ) );
 

@@ -80,6 +80,7 @@ private:
     QLabel * M_player_focus_target;
 
     QLabel * M_stamina;
+    QLabel * M_stamina_capacity;
     QLabel * M_effort;
     QLabel * M_recovery;
 

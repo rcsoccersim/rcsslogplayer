@@ -37,10 +37,10 @@
 #ifndef RCSSLOGPLAYER_NETIF_H
 #define RCSSLOGPLAYER_NETIF_H
 
-#include <rcsslogplayer/types.h>
+#include "addr.hpp"
+#include "udpsocket.hpp"
 
-#include <rcssbase/net/addr.hpp>
-#include <rcssbase/net/udpsocket.hpp>
+#include <rcsslogplayer/types.h>
 
 #include <string>
 #include <vector>

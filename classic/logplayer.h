@@ -203,6 +203,7 @@ private:
 
     void serializeDisp( const rcss::rcg::DispInfoT & disp,
                         const bool disp_mode,
+                        const int monitor_version,
                         std::string & msg );
     void serializeServerParam( std::string & msg );
     void serializePlayerParam( std::string & msg );

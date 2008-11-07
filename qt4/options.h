@@ -153,6 +153,7 @@ private:
     bool M_show_tackle_area;
     bool M_show_kick_accel_area;
     bool M_show_stamina;
+    bool M_show_stamina_capacity;
     bool M_show_pointto;
 
     bool M_show_offside_line;
@@ -504,6 +505,15 @@ public:
     void toggleShowStamina()
       {
           M_show_stamina = ! M_show_stamina;
+      }
+
+    bool showStaminaCapacity() const
+      {
+          return M_show_stamina_capacity;
+      }
+    void toggleShowStaminaCapacity()
+      {
+          M_show_stamina_capacity = ! M_show_stamina_capacity;
       }
 
     bool showPointto() const

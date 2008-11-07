@@ -344,6 +344,13 @@ ConfigDialog::createPlayerInfoControls()
         layout->setSpacing( 0 );
 
         //
+        M_stamina_capacity_cb = new QCheckBox( tr( "Stamina Capacity" ) );
+        M_stamina_capacity_cb->setChecked( Options::instance().showStaminaCapacity() );
+        connect( M_stamina_capacity_cb, SIGNAL( clicked( bool ) ),
+                 this, SLOT( clickShowStaminaCapacity( bool ) ) );
+        layout->addWidget( M_stamina_capacity_cb );
+
+        //
         M_view_area_cb = new QCheckBox( tr( "View Area" ) );
         M_view_area_cb->setChecked( Options::instance().showViewArea() );
         connect( M_view_area_cb, SIGNAL( clicked( bool ) ),
@@ -914,7 +921,7 @@ ConfigDialog::updateFieldScale()
     }
 
     char buf[16];
-    std::snprintf( buf, 16, "%.2f", Options::instance().fieldScale() );
+    snprintf( buf, 16, "%.2f", Options::instance().fieldScale() );
     M_scale_text->setText( QString::fromAscii( buf ) );
 }
 
@@ -1307,10 +1314,37 @@ ConfigDialog::clickShowStamina( bool checked )
 
 */
 void
+ConfigDialog::clickShowStaminaCapacity( bool checked )
+{
+    if ( Options::instance().showStaminaCapacity() != checked )
+    {
+        Options::instance().toggleShowStaminaCapacity();
+        emit configured();
+    }
+}
+
+/*-------------------------------------------------------------------*/
+/*!
+
+*/
+void
 ConfigDialog::toggleShowStamina()
 {
     Options::instance().toggleShowStamina();
     M_stamina_cb->setChecked( Options::instance().showStamina() );
+
+    emit configured();
+}
+
+/*-------------------------------------------------------------------*/
+/*!
+
+*/
+void
+ConfigDialog::toggleShowStaminaCapacity()
+{
+    Options::instance().toggleShowStaminaCapacity();
+    M_stamina_capacity_cb->setChecked( Options::instance().showStaminaCapacity() );
 
     emit configured();
 }

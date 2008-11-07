@@ -709,7 +709,7 @@ PlayerPainter::drawTackleArea( QPainter & painter,
         painter.setPen( M_tackle_pen );
 
         char msg[32];
-        std::snprintf( msg, 32, "TackleProb=%.3f", 1.0 - tackle_fail_prob );
+        snprintf( msg, 32, "TackleProb=%.3f", 1.0 - tackle_fail_prob );
         painter.drawText( param.x_ + text_radius,
                           param.y_ + 4 + painter.fontMetrics().ascent(),
                           QString::fromAscii( msg ) );
@@ -886,7 +886,7 @@ PlayerPainter::drawKickAccelArea( QPainter & painter,
     painter.setPen( M_kick_accel_pen );
 
     char buf[32];
-    std::snprintf( buf, 32, "MaxAccel=%.3f", max_kick_accel );
+    snprintf( buf, 32, "MaxAccel=%.3f", max_kick_accel );
     painter.drawText( bnext_screen.x() + 10,
                       bnext_screen.y() + painter.fontMetrics().ascent(),
                       QString::fromAscii( buf ) );
@@ -1003,7 +1003,7 @@ PlayerPainter::drawText( QPainter & painter,
     if ( Options::instance().showPlayerNumber() )
     {
         char buf[8];
-        std::snprintf( buf, 8, "%d", param.player_.unum_ );
+        snprintf( buf, 8, "%d", param.player_.unum_ );
         std::strcat( main_buf, buf );
     }
 
@@ -1011,15 +1011,34 @@ PlayerPainter::drawText( QPainter & painter,
          && Options::instance().showStamina() )
     {
         char buf[16];
-        std::snprintf( buf, 16, "%4.0f", param.player_.stamina_ );
+        snprintf( buf, 16, "%4.0f", param.player_.stamina_ );
         if ( main_buf[0] != '\0' ) std::strcat( main_buf, "," );
+        std::strcat( main_buf, buf );
+    }
+
+    if ( param.player_.hasStaminaCapacity()
+         && Options::instance().showStaminaCapacity() )
+    {
+        char buf[16];
+        snprintf( buf, 16, "%.0f", param.player_.stamina_capacity_ );
+        if ( main_buf[0] != '\0' )
+        {
+            if ( Options::instance().showStamina() )
+            {
+                std::strcat( main_buf, "/" );
+            }
+            else
+            {
+                std::strcat( main_buf, "," );
+            }
+        }
         std::strcat( main_buf, buf );
     }
 
     if ( Options::instance().showPlayerType() )
     {
         char buf[8];
-        std::snprintf( buf, 8, "t%d", param.player_.type_ );
+        snprintf( buf, 8, "t%d", param.player_.type_ );
         if ( main_buf[0] != '\0' ) std::strcat( main_buf, "," );
         strcat( main_buf, buf );
     }

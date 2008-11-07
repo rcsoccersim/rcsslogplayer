@@ -35,7 +35,7 @@
 
 #include "logplayer.h"
 
-#include <rcssbase/version.hpp>
+//#include <rcssbase/version.hpp>
 
 #include <iostream>
 #include <csignal>
@@ -63,8 +63,8 @@ main( int argc, char ** argv )
 {
     std::cout << "rcsslogplayer_classic-" << VERSION << "\n\n"
               << Copyright << std::endl;
-    std::cout << "Using rcssbase-" << rcss::base::version()
-              << std::endl << std::endl;
+//     std::cout << "Using rcssbase-" << rcss::base::version()
+//               << std::endl << std::endl;
 
 
     struct sigaction sig_action;

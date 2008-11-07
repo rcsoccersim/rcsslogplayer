@@ -253,7 +253,8 @@ RCG4to3::doHandleLogVersion( int ver )
 {
     M_version = ver;
 
-    if ( ver != REC_VERSION_4 )
+    if ( ver != REC_VERSION_4
+         && ver != REC_VERSION_5 )
     {
         std::cerr << "rcg4to3: Illegal game log version ." << ver
                   << std::endl;

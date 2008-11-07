@@ -15,17 +15,20 @@ From the rcsslogplayer directory execute:
 
 This will built the neccesary binaries to get you up and running.
 
-`rcsslogplayer/src/rcsslogplayer' is the binary for the log player.
-To be able to run, the binary needs to find shared libraries which
-created when you build rcsslogplayer. This means you must either
-intall the server (make install) or run it from `rcsslogplayer/src'.
+`rcsslogplayer/qt4/rcsslogplayer' and
+`rcsslogplayer/classic/rcsslogplayer_classic' are the binary for the
+log player. To be able to run, the binaries need to find shared
+libraries which created when you build rcsslogplayer. This means you
+must either intall the log player (make install) or run it from
+`rcsslogplayer/qt4' or `rcsslogplayer/classic'.
 
 A sample game log converter command can be found at
-`rcsslogplayer/src/rcg2xml' and 'rcsslogplayer/src/rcgsplit'.
+`rcsslogplayer/src/rcg3to4', `rcsslogplayer/src/rcg4to3',
+`rcsslogplayer/src/rcg2xml' and `rcsslogplayer/src/rcgsplit'.
 
-To see a game log with the log player, you will need to start a
-simlator monitor, which needs to be installed seperately (rcssmointor
-or rcssmonitor_classic).
+To see a game log with the classic log player, you will need to start
+a simulator monitor, which needs to be installed seperately
+(rcssmointor or rcssmonitor_classic).
 
 ===========
 CONFIGURING
@@ -55,8 +58,8 @@ parameters to `configure'.  `--disable-FEATURE' is equivlant to
 BUILDING
 ========
 
-Once you have successully configured the server, simply run `make' to build
-the sources.
+Once you have successully configured the log player, simply run `make'
+to build the sources.
 
 ==========
 INSTALLING
@@ -80,13 +83,21 @@ installation process.
 USING THE LOG PLAYER
 ====================
 
-To start the server either type
+To start the log player either type
 
-`./rcsslogplay <GameLogFile>'
+`./rcsslogplayer <GameLogFile>'
 
 from the directory containing the executable or
 
-`rcsslogplay <GameLogFile>'
+`rcsslogplayer <GameLogFile>'
+
+To start the classic log player either type
+
+`./rcsslogplay_classic <GameLogFile>'
+
+from the directory containing the executable or
+
+`rcsslogplay_classic <GameLogFile>'
 
 ==============
 Making Contact

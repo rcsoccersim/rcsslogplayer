@@ -87,6 +87,7 @@ private:
     QCheckBox * M_player_number_cb;
     QCheckBox * M_player_type_cb;
     QCheckBox * M_stamina_cb;
+    QCheckBox * M_stamina_capacity_cb;
     QCheckBox * M_view_area_cb;
     QCheckBox * M_catch_area_cb;
     QCheckBox * M_tackle_area_cb;
@@ -167,6 +168,7 @@ private slots:
     void clickShowPlayerNumber( bool checked );
     void clickShowPlayerType( bool checked );
     void clickShowStamina( bool checked );
+    void clickShowStaminaCapacity( bool checked );
     void clickShowViewArea( bool checked );
     void clickShowCatchArea( bool checked );
     void clickShowTackleArea( bool checked );
@@ -236,6 +238,7 @@ public slots:
     void toggleShowPlayerNumber();
     void toggleShowPlayerType();
     void toggleShowStamina();
+    void toggleShowStaminaCapacity();
     void toggleShowViewArea();
     void toggleShowCatchArea();
     void toggleShowTackleArea();

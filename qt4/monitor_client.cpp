@@ -78,9 +78,9 @@ MonitorClient::MonitorClient( QObject * parent,
         M_version = 1;
     }
 
-    if ( 3 < version )
+    if ( 4 < version )
     {
-        M_version = 3;
+        M_version = 4;
     }
 
     QHostInfo host = QHostInfo::fromName( QString::fromAscii( hostname ) );
@@ -169,7 +169,7 @@ MonitorClient::handleReceive()
 {
     int receive_count = 0;
 
-    if ( M_version == 3 )
+    if ( M_version >= 3 )
     {
         char buf[8192];
         while ( M_socket->hasPendingDatagrams() )

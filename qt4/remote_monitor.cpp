@@ -86,12 +86,6 @@ RemoteMonitor::RemoteMonitor( QObject * parent,
     {
         M_version = 1;
     }
-
-    if ( 3 < version )
-    {
-        M_version = 3;
-    }
-
 }
 
 /*-------------------------------------------------------------------*/
@@ -185,7 +179,7 @@ RemoteMonitor::send( const char * msg,
 int
 RemoteMonitor::send( const rcss::rcg::DispInfoT & disp )
 {
-    if ( version() == 3 )
+    if ( version() >= 3 )
     {
         std::string msg;
         serializeDisp( disp, msg );
@@ -307,11 +301,23 @@ RemoteMonitor::serializeDisp( const rcss::rcg::DispInfoT & disp,
             ostr << " (s "
                  << quantize( p.stamina_, 0.001f )<< ' '
                  << quantize( p.effort_, 0.0001f ) << ' '
-                 << quantize( p.recovery_, 0.0001f ) << ')';
+                 << quantize( p.recovery_, 0.0001f );
+            if ( version() >= 4 )
+            {
+                ostr << ' ' << quantize( p.stamina_capacity_, 0.001f );
+            }
+            ostr << ')';
         }
         else
         {
-            ostr << " (s 4000 1 1)";
+            if ( version() >= 4 )
+            {
+                ostr << " (s 4000 1 1 -1)";
+            }
+            else
+            {
+                ostr << " (s 4000 1 1)";
+            }
         }
 
         ostr << " (c "

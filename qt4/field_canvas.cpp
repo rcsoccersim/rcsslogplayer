@@ -661,10 +661,10 @@ FieldCanvas::drawMouseMeasure( QPainter & painter )
     // draw start point value
     QPointF start_real( opt.fieldX( start_point.x() ),
                         opt.fieldY( start_point.y() ) );
-    std::snprintf( buf, 64,
-                   "(%.2f,%.2f)",
-                   start_real.x(),
-                   start_real.y() );
+    snprintf( buf, 64,
+              "(%.2f,%.2f)",
+              start_real.x(),
+              start_real.y() );
     painter.drawText( start_point,
                       QString::fromAscii( buf ) );
 
@@ -677,10 +677,10 @@ FieldCanvas::drawMouseMeasure( QPainter & painter )
     // draw end point value
     QPointF end_real( opt.fieldX( end_point.x() ),
                       opt.fieldY( end_point.y() ) );
-    std::snprintf( buf, 64,
-                   "(%.2f,%.2f)",
-                   end_real.x(),
-                   end_real.y() );
+    snprintf( buf, 64,
+              "(%.2f,%.2f)",
+              end_real.x(),
+              end_real.y() );
     painter.drawText( end_point.x(),
                       end_point.y(),
                       QString::fromAscii( buf ) );
@@ -694,9 +694,9 @@ FieldCanvas::drawMouseMeasure( QPainter & painter )
                    ? 0.0
                    : std::atan2( rel.y(), rel.x() ) * 180.0 / M_PI );
 
-    std::snprintf( buf, 64,
-                   "rel(%.2f,%.2f) r%.2f th%.1f",
-                   rel.x(), rel.y(), r, th );
+    snprintf( buf, 64,
+              "rel(%.2f,%.2f) r%.2f th%.1f",
+              rel.x(), rel.y(), r, th );
 
     int dist_add_y = ( end_point.y() > start_point.y()
                        ? + painter.fontMetrics().height()

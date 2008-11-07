@@ -3,7 +3,7 @@
 
 AC_PREREQ(2.61)
 
-AC_INIT([RCSSLogPlayer], 12.1.2, sserver-admin@users.sf.net, rcsslogplayer)
+AC_INIT([RCSSLogPlayer], 13.0.0, sserver-admin@users.sf.net, rcsslogplayer)
 AC_CONFIG_SRCDIR([config.h.in])
 AC_CONFIG_HEADERS([config.h])
 
@@ -28,6 +28,7 @@ AC_CHECK_LIB([m], [cos],
 AC_CHECK_LIB([z], [deflate])
 
 # Checks for header files.
+AC_CHECK_HEADERS([arpa/inet.h fcntl.h netdb.h])
 AC_CHECK_HEADERS([netinet/in.h sys/time.h unistd.h])
 
 
@@ -46,10 +47,16 @@ AC_TYPE_SIZE_T
 AC_TYPE_SIGNAL
 AC_HEADER_TIME
 
+AC_CHECK_TYPES([socklen_t], [], [], [
+#include <sys/types.h>
+#include <sys/socket.h>
+])
+
 # Checks for library functions.
 AC_HEADER_STDC
 AC_FUNC_FORK
 AC_FUNC_SELECT_ARGTYPES
+AC_CHECK_FUNCS([gethostbyname inet_ntoa strtol])
 AC_CHECK_FUNCS([memset pow rint select socket sqrt strerror])
 
 # ----------------------------------------------------------
@@ -63,20 +70,20 @@ LDFLAGS="$LDFLAGS $BOOST_LDFLAGS"
 # ----------------------------------------------------------
 # check rcssbase
 
-AC_ARG_VAR(RCSSBASE, [The prefix that was used when installing rcssbase])
-AC_SUBST(RCSSBASE_CPPFLAGS)
-AC_SUBST(RCSSBASE_LDFLAGS)
-AC_SUBST(RCSSBASE_LIBS)
-if test "$RCSSBASE"; then
-  if test -z "$PATH"; then
-    PATH="$RCSSBASE/bin"
-  else
-    PATH="$PATH:$RCSSBASE/bin"
-  fi
-
-  RCSSBASE_CPPFLAGS="-I$RCSSBASE/include"
-  RCSSBASE_LDFLAGS="-L$RCSSBASE/lib"
-fi
+#AC_ARG_VAR(RCSSBASE, [The prefix that was used when installing rcssbase])
+#AC_SUBST(RCSSBASE_CPPFLAGS)
+#AC_SUBST(RCSSBASE_LDFLAGS)
+#AC_SUBST(RCSSBASE_LIBS)
+#if test "$RCSSBASE"; then
+#  if test -z "$PATH"; then
+#    PATH="$RCSSBASE/bin"
+#  else
+#    PATH="$PATH:$RCSSBASE/bin"
+#  fi
+#
+#  RCSSBASE_CPPFLAGS="-I$RCSSBASE/include"
+#  RCSSBASE_LDFLAGS="-L$RCSSBASE/lib"
+#fi
 
 # ----------------------------------------------------------
 # check Qt4
@@ -102,8 +109,8 @@ fi
 # check classic
 AC_ARG_ENABLE(classic,
               AC_HELP_STRING([--enable-classic],
-                             [build classic logplayer (default yes)]))
-if test "x$enable_classic" != "xno"; then
+                             [build classic logplayer (default no)]))
+if test "x$enable_classic" == "xyes"; then
   AC_MSG_NOTICE(enabled classic logplayer)
 
   AC_SUBST(CLASSIC_CPPFLAGS)
@@ -154,10 +161,10 @@ if test "x$enable_classic" != "xno"; then
     LIBS="$save_LIBS"
   fi
 
-  save_CPPFLAGS="$CPPFLAGS"
-  save_LDFLAGS="$LDFLAGS"
-  CPPFLAGS="$RCSSBASE_CPPFLAGS"
-  LDFLAGS="$RCSSBASE_LDFLAGS"
+#  save_CPPFLAGS="$CPPFLAGS"
+#  save_LDFLAGS="$LDFLAGS"
+#  CPPFLAGS="$RCSSBASE_CPPFLAGS"
+#  LDFLAGS="$RCSSBASE_LDFLAGS"
 #  AC_CHECK_LIB([rcssgz], [main],
 #               [],
 #               [AC_MSG_ERROR([Could not find the rcssbase/gz library or it is out of
@@ -165,20 +172,20 @@ if test "x$enable_classic" != "xno"; then
 #                              specify where it was installed with the RCSSBASE
 #                              environment variable.
 #  ])])
-  AC_CHECK_LIB([rcssnet], [main],
-               [RCSSBASE_LIBS="$RCSSBASE_LIBS -lrcssnet"],
-               [AC_MSG_ERROR([Could not find the rcssbase/net library or it is out of
-                              date. Please (re)install rcssbase before proceeding, or
-                              specify where it was installed with the RCSSBASE
-                              environment variable.])])
-  AC_CHECK_LIB([rcssbase], [main],
-               [RCSSBASE_LIBS="$RCSSBASE_LIBS -lrcssbase"],
-               [AC_MSG_ERROR([Could not find the rcssbase library or it is out of
-                              date. Please (re)install rcssbase before proceeding, or
-                              specify where it was installed with the RCSSBASE
-                              environment variable.])])
-  CPPFLAGS="$save_CPPFLAGS"
-  LDFLAGS="$save_LDFLAGS"
+#  AC_CHECK_LIB([rcssnet], [main],
+#               [RCSSBASE_LIBS="$RCSSBASE_LIBS -lrcssnet"],
+#               [AC_MSG_ERROR([Could not find the rcssbase/net library or it is out of
+#                              date. Please (re)install rcssbase before proceeding, or
+#                              specify where it was installed with the RCSSBASE
+#                              environment variable.])])
+#  AC_CHECK_LIB([rcssbase], [main],
+#               [RCSSBASE_LIBS="$RCSSBASE_LIBS -lrcssbase"],
+#               [AC_MSG_ERROR([Could not find the rcssbase library or it is out of
+#                              date. Please (re)install rcssbase before proceeding, or
+#                              specify where it was installed with the RCSSBASE
+#                              environment variable.])])
+#  CPPFLAGS="$save_CPPFLAGS"
+#  LDFLAGS="$save_LDFLAGS"
 
   AM_CONDITIONAL(BUILD_CLASSIC, [test "1" = "1"])
 else

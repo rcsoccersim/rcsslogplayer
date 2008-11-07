@@ -844,12 +844,25 @@ MainWindow::createConfigDialog()
     }
     {
         // s
-        QAction * act = new QAction( tr( "Show Staminar" ), this );
+        QAction * act = new QAction( tr( "Show Stamina" ), this );
         act->setShortcut( Qt::Key_S );
         act->setStatusTip( tr( "Show/Hide player's stamina." ) );
         this->addAction( act );
         connect( act, SIGNAL( triggered() ),
                  M_config_dialog, SLOT( toggleShowStamina() ) );
+    }
+    {
+        // Ctrl + s
+        QAction * act = new QAction( tr( "Show Stamina Capacity" ), this );
+#ifdef Q_WS_MAC
+        act->setShortcut( Qt::META + Qt::Key_S );
+#else
+        act->setShortcut( Qt::CTRL + Qt::Key_S );
+#endif
+        act->setStatusTip( tr( "Show/Hide player's stamina capacity." ) );
+        this->addAction( act );
+        connect( act, SIGNAL( triggered() ),
+                 M_config_dialog, SLOT( toggleShowStaminaCapacity() ) );
     }
     {
         // v
@@ -2069,9 +2082,9 @@ MainWindow::updatePositionLabel( const QPoint & point )
         double y = Options::instance().fieldY( point.y() );
 
         char buf[32];
-        std::snprintf( buf, 32,
-                       "(%.2f, %.2f)",
-                       x, y );
+        snprintf( buf, 32,
+                  "(%.2f, %.2f)",
+                  x, y );
 
         M_position_label->setText( QString::fromAscii( buf ) );
     }

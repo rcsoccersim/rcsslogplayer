@@ -777,7 +777,7 @@ Player::writeLog( const std::size_t index )
         return;
     }
 
-    if ( doGetLogVersion() == rcss::rcg::REC_VERSION_4 )
+    if ( doGetLogVersion() >= rcss::rcg::REC_VERSION_4 )
     {
         static const char * s_playmode_strings[] = PLAYMODE_STRINGS;
         static rcss::rcg::PlayMode s_playmode = rcss::rcg::PM_Null;
@@ -817,7 +817,7 @@ Player::writeLog( const std::size_t index )
         }
 
         std::string msg;
-        serializeDisp( *disp, false, msg );
+        serializeDisp( *disp, false, 0, msg );
         M_out_strm << msg << '\n';
     }
     else if ( doGetLogVersion() == rcss::rcg::REC_VERSION_3 )
@@ -941,10 +941,10 @@ Player::sendLog( const std::size_t index )
                                     new_disp2.body.show );
                 M_port.send( new_disp2, p->addr_ );
             }
-            else if ( p->version_ == 3 )
+            else if ( p->version_ >= 3 )
             {
                 std::string msg;
-                serializeDisp( *disp, true, msg );
+                serializeDisp( *disp, true, p->version_, msg );
                 M_port.send( msg, p->addr_ );
             }
         }
@@ -1063,7 +1063,7 @@ Player::sendParams()
                     M_port.send( disp2, p->addr_ );
                 }
             }
-            else if ( p->version_ == 3 )
+            else if ( p->version_ >= 3 )
             {
                 std::string msg;
                 serializeServerParam( msg );
@@ -1090,6 +1090,7 @@ Player::sendParams()
 void
 Player::serializeDisp( const rcss::rcg::DispInfoT & disp,
                        const bool disp_mode,
+                       const int monitor_version,
                        std::string & msg )
 {
     const float PREC = 0.0001f;
@@ -1145,9 +1146,16 @@ Player::serializeDisp( const rcss::rcg::DispInfoT & disp,
         }
         ostr << " (v " << p.view_quality_ << ' ' << quantize( p.view_width_, DPREC ) << ')';
         ostr << " (s "
-             << quantize( p.stamina_, 0.001f )<< ' '
+             << quantize( p.stamina_, 0.001f ) << ' '
              << quantize( p.effort_, 0.0001f ) << ' '
-             << quantize( p.recovery_, 0.0001f ) << ')';
+             << quantize( p.recovery_, 0.0001f );
+        if ( monitor_version >= 4
+             || doGetLogVersion() == rcss::rcg::REC_VERSION_5 )
+        {
+            ostr << ' ' << quantize( p.stamina_capacity_, 0.001f );
+        }
+        ostr << ')';
+
         ostr << " (c "
              << p.kick_count_ << ' '
              << p.dash_count_ << ' '
@@ -1235,6 +1243,10 @@ Player::doHandleLogVersion( int ver )
         {
             M_out_strm << "ULG4\n";
         }
+        else if ( ver == rcss::rcg::REC_VERSION_5 )
+        {
+            M_out_strm << "ULG5\n";
+        }
     }
 }
 
@@ -1302,7 +1314,7 @@ Player::doHandlePlayerType( const rcss::rcg::PlayerTypeT & param )
             M_out_strm.write( reinterpret_cast< const char * >( &info ),
                               sizeof( rcss::rcg::player_type_t ) );
         }
-        else if ( doGetLogVersion() == rcss::rcg::REC_VERSION_4 )
+        else if ( doGetLogVersion() >= rcss::rcg::REC_VERSION_4 )
         {
             param.print( M_out_strm ) << '\n';
         }
@@ -1327,7 +1339,7 @@ Player::doHandlePlayerParam( const rcss::rcg::PlayerParamT & param )
             M_out_strm.write( reinterpret_cast< const char * >( &new_param ),
                               sizeof( rcss::rcg::player_params_t ) );
         }
-        else if ( doGetLogVersion() == rcss::rcg::REC_VERSION_4 )
+        else if ( doGetLogVersion() >= rcss::rcg::REC_VERSION_4 )
         {
             param.print( M_out_strm ) << '\n';
         }
@@ -1352,7 +1364,7 @@ Player::doHandleServerParam( const rcss::rcg::ServerParamT & param )
             M_out_strm.write( reinterpret_cast< const char * >( &new_param ),
                               sizeof( rcss::rcg::server_params_t ) );
         }
-        else if ( doGetLogVersion() == rcss::rcg::REC_VERSION_4 )
+        else if ( doGetLogVersion() >= rcss::rcg::REC_VERSION_4 )
         {
             param.print( M_out_strm ) << '\n';
         }
