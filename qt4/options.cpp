@@ -461,7 +461,7 @@ Options::parseCmdLine( int argc,
           "start with a full screen window." )
         ( "hide-menu-bar",
           po::bool_switch( &M_hide_menu_bar )->default_value( M_hide_menu_bar ),
-          "start without a menu bar (available only by Qt3 version)." )
+          "start without a menu bar." )
         ( "hide-tool-bar",
           po::bool_switch( &M_hide_tool_bar )->default_value( M_hide_tool_bar ),
           "start without a tool bar." )
