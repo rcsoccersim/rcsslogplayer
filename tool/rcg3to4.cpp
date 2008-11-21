@@ -175,7 +175,7 @@ RCG3to4::parseCmdLine( int argc,
 #ifdef HAVE_BOOST_PROGRAM_OPTIONS
     namespace po = boost::program_options;
 
-    po::options_description visibles( "Allowed options:" );
+    po::options_description visibles( "Allowed options" );
 
     visibles.add_options()
         ( "help,h",

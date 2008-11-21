@@ -1,3 +1,14 @@
+2008-11-21  Hidehisa Akiyama  <akky@users.sourceforge.jp>
+
+	* tool/rcgconvert.cpp:
+	* rcsslogplayer/types.cpp:
+	* tool/Makefile.am:
+	* tool/rcg3to4.cpp:
+	* tool/rcg4to3.cpp:
+	- implemented rcgconvert command, which can handle any rcg
+	version.
+	- fixed a parameter precision.
+
 2008-11-03  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 
 	* NEWS:

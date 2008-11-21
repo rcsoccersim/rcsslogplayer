@@ -3,7 +3,8 @@ bin_PROGRAMS = \
 	rcg2xml \
 	rcgsplit \
 	rcg3to4 \
-	rcg4to3
+	rcg4to3 \
+	rcgconvert
 
 rcg2xml_SOURCES = \
 	rcg2xml.cpp
@@ -36,6 +37,14 @@ rcg4to3_CPPFLAGS = -I$(top_srcdir)
 rcg4to3_CXXFLAGS = -Wall
 rcg4to3_LDFLAGS = -L$(top_builddir)/rcsslogplayer
 rcg4to3_LDADD = -lrcssrcgparser $(BOOST_PROGRAM_OPTIONS_LIB)
+
+
+rcgconvert_SOURCES = rcgconvert.cpp
+
+rcgconvert_CPPFLAGS = -I$(top_srcdir)
+rcgconvert_CXXFLAGS = -Wall
+rcgconvert_LDFLAGS = -L$(top_builddir)/rcsslogplayer
+rcgconvert_LDADD = -lrcssrcgparser $(BOOST_PROGRAM_OPTIONS_LIB)
 
 
 AM_CPPFLAGS =
