@@ -653,8 +653,8 @@ RCGSplitter::createOutputFile( const int cycle )
         M_start_cycle = cycle;
 
         char filename[256];
-        std::snprintf( filename, 255, "%08d-%08d.rcg",
-                       M_start_cycle, M_start_cycle + M_span_cycle - 1 );
+        snprintf( filename, 256, "%08d-%08d.rcg",
+                  M_start_cycle, M_start_cycle + M_span_cycle - 1 );
         M_fout.open( filename,
                      std::ios_base::out | std::ios_base::binary );
         if ( M_verbose )

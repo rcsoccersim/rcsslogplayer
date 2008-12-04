@@ -736,7 +736,7 @@ Player::statusString() const
     case STATE_JUMP:
         {
             char cycle[32];
-            std::snprintf( cycle, 15, "jump to %d : ", M_to_time );
+            snprintf( cycle, 15, "jump to %d : ", M_to_time );
             return std::string( cycle ) += M_input_file;
         }
         break;

@@ -1,3 +1,6 @@
+[13.0.1]
+  * Fixed build problems on some platforms.
+
 [13.0.0]
   * Supported a monitor protocol version 4 and a game log version
     5. Now, these versions are by default.

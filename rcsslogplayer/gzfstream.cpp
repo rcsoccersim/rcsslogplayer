@@ -298,7 +298,7 @@ gzfilebuf::makeModeString( std::ios_base::openmode mode,
               && level <= BEST_COMPRESSION )
     {
         char lvstr[4];
-        std::snprintf( lvstr, 4, "%d", level );
+        snprintf( lvstr, 4, "%d", level );
         mode_str += lvstr;
     }
     else

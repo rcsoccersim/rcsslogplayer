@@ -417,7 +417,7 @@ void
 Controler::display_time( int t )
 {
     char buf[256];
-    std::snprintf( buf, sizeof( buf ), "time: %5d", t );
+    snprintf( buf, sizeof( buf ), "time: %5d", t );
 #ifndef X11R5
     XtVaSetValues( time, XtNlabel, buf, NULL );
 #else
