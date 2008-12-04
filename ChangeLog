@@ -1,3 +1,16 @@
+2008-12-04  Hidehisa Akiyama  <akky@users.sourceforge.jp>
+
+	* NEWS:
+	* configure.ac:
+	- updated a version number string. Official release 13.0.1.
+
+	* classic/controler.cpp:
+	* classic/logplayer.cpp:
+	* rcsslogplayer/gzfstream.cpp:
+	* rcsslogplayer/parser.cpp:
+	* tool/rcgsplit.cpp:
+	- removed std:: from snprintf and strtof.
+
 2008-11-03  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 
 	* NEWS:

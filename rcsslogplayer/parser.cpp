@@ -973,10 +973,10 @@ Parser::parseShowLine( const int n_line,
             while ( *buf != '\0' && *buf != ')' ) ++buf;
             while ( *buf == ')' ) ++buf;
             BallT & ball = show.ball_;
-            ball.x_ = std::strtof( buf, &next ); buf = next;
-            ball.y_ = std::strtof( buf, &next ); buf = next;
-            ball.vx_ = std::strtof( buf, &next ); buf = next;
-            ball.vy_ = std::strtof( buf, &next ); buf = next;
+            ball.x_ = strtof( buf, &next ); buf = next;
+            ball.y_ = strtof( buf, &next ); buf = next;
+            ball.vx_ = strtof( buf, &next ); buf = next;
+            ball.vy_ = strtof( buf, &next ); buf = next;
             while ( *buf == ')' ) ++buf;
             while ( *buf == ' ' ) ++buf;
 
@@ -1032,19 +1032,19 @@ Parser::parseShowLine( const int n_line,
             // x y vx vy body neck
             p.type_ = static_cast< Int16 >( std::strtol( buf, &next, 10 ) ); buf = next;
             p.state_ = static_cast< Int32 >( std::strtol( buf, &next, 16 ) ); buf = next;
-            p.x_ = std::strtof( buf, &next ); buf = next;
-            p.y_ = std::strtof( buf, &next ); buf = next;
-            p.vx_ = std::strtof( buf, &next ); buf = next;
-            p.vy_ = std::strtof( buf, &next ); buf = next;
-            p.body_ = std::strtof( buf, &next ); buf = next;
-            p.neck_ = std::strtof( buf, &next ); buf = next;
+            p.x_ = strtof( buf, &next ); buf = next;
+            p.y_ = strtof( buf, &next ); buf = next;
+            p.vx_ = strtof( buf, &next ); buf = next;
+            p.vy_ = strtof( buf, &next ); buf = next;
+            p.body_ = strtof( buf, &next ); buf = next;
+            p.neck_ = strtof( buf, &next ); buf = next;
             while ( *buf == ' ' ) ++buf;
 
             // x y vx vy body neck
             if ( *buf != '\0' && *buf != '(' )
             {
-                p.point_x_ = std::strtof( buf, &next ); buf = next;
-                p.point_y_ = std::strtof( buf, &next ); buf = next;
+                p.point_x_ = strtof( buf, &next ); buf = next;
+                p.point_y_ = strtof( buf, &next ); buf = next;
             }
 
             // (v quality width)
@@ -1052,18 +1052,18 @@ Parser::parseShowLine( const int n_line,
             ++buf; // skip 'v'
             while ( *buf == ' ' ) ++buf;
             p.view_quality_ = *buf; ++buf;
-            p.view_width_ = std::strtof( buf, &next ); buf = next;
+            p.view_width_ = strtof( buf, &next ); buf = next;
 
             // (s stamina effort recovery[ capacity])
             while ( *buf != '\0' && *buf != 's' ) ++buf;
             ++buf; // skip 's' //while ( *buf != '\0' && *buf != ' ' ) ++buf;
-            p.stamina_ = std::strtof( buf, &next ); buf = next;
-            p.effort_ = std::strtof( buf, &next ); buf = next;
-            p.recovery_ = std::strtof( buf, &next ); buf = next;
+            p.stamina_ = strtof( buf, &next ); buf = next;
+            p.effort_ = strtof( buf, &next ); buf = next;
+            p.recovery_ = strtof( buf, &next ); buf = next;
             while ( *buf == ' ' ) ++buf;
             if ( *buf != ')' )
             {
-                p.stamina_capacity_ = std::strtof( buf, &next ); buf = next;
+                p.stamina_capacity_ = strtof( buf, &next ); buf = next;
             }
             while ( *buf != '\0' && *buf != ')' ) ++buf;
             while ( *buf == ')' ) ++buf;
