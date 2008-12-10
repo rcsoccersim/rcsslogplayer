@@ -21,8 +21,8 @@ librcssrcgparser_la_LDFLAGS = -version-info 2:0:0
 pkgdata_DATA =
 
 AM_CPPFLAGS = -I$(top_srcdir)
-AM_CFLAGS = -Wall
-AM_CXXFLAGS = -Wall
+AM_CFLAGS = -W -Wall
+AM_CXXFLAGS = -W -Wall
 AM_LDFLAGS =
 
 EXTRA_DIST = \

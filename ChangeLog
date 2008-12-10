@@ -1,3 +1,12 @@
+2008-12-10  Hidehisa Akiyama  <akky@users.sourceforge.jp>
+
+	* configure.ac:
+	* classic/Makefile.am:
+	* qt4/Makefile.am:
+	* rcsslogplayer/Makefile.am:
+	- fixed autoconf macros.
+	- fixed compiler options.
+
 2008-11-21  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 
 	* tool/rcgconvert.cpp:

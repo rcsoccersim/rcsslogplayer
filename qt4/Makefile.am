@@ -83,7 +83,7 @@ noinst_HEADERS = \
 	vector_2d.h
 
 rcsslogplayer_CPPFLAGS = -I$(top_srcdir) $(QT4_CPPFLAGS)
-rcsslogplayer_CXXFLAGS = -Wall $(QT4_CXXFLAGS)
+rcsslogplayer_CXXFLAGS = -W -Wall $(QT4_CXXFLAGS)
 rcsslogplayer_LDFLAGS = -L$(top_builddir)/rcsslogplayer $(QT4_LDFLAGS)
 rcsslogplayer_LDADD = -lrcssrcgparser $(BOOST_PROGRAM_OPTIONS_LIB) $(QT4_LDADD)
 
@@ -96,8 +96,8 @@ moc_%.cpp: %.h
 ##	$(QT4_LRELEASE) $< -qm $@
 
 AM_CPPFLAGS =
-AM_CFLAGS = -Wall
-AM_CXXFLAGS = -Wall
+AM_CFLAGS = -W -Wall
+AM_CXXFLAGS = -W -Wall
 AM_LDFLAGS =
 
 EXTRA_DIST = \
