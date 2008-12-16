@@ -1,3 +1,10 @@
+2008-12-16  Hidehisa Akiyama  <akky@users.sourceforge.jp>
+
+	* tool/Makefile.am:
+	* tool/rcgconvert.cpp:
+	- removed rcg3to4 and rcg4to3 from a build target.
+	- fixed the output destination of rcgconvert's help messages.
+
 2008-12-10  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 
 	* configure.ac:

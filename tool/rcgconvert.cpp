@@ -968,10 +968,10 @@ RCGConvert::parseCmdLine( int argc,
           "verbose mode." )
         ( "version,v",
           po::value< int >( &M_output_version )->default_value( DEFAULT_REC_VERSION ),
-          "set the version number of the output game log.")
+          "set a version number of the output game log.")
         ( "output,o",
           po::value< std::string >( &M_output_file )->default_value( "" ),
-          "set the output path of the result Game Log file(.rcg). '-' means standard output."  )
+          "set a file path of the output game log file(.rcg). '-' means standard output."  )
         ;
 
     po::options_description invisibles( "Invisibles" );
@@ -1012,12 +1012,12 @@ RCGConvert::parseCmdLine( int argc,
          || M_output_file.empty() )
     {
 #ifdef HAVE_LIBZ
-        std::cout << "Usage: rcgconvert [options ... ] <GameLogFile>[.gz]\n";
+        std::cerr << "Usage: rcgconvert [options ... ] <GameLogFile>[.gz]\n";
 #else
-        std::cout << "Usage: rcgconvert [options ... ] <GameLogFile>\n";
+        std::cerr << "Usage: rcgconvert [options ... ] <GameLogFile>\n";
 #endif
-        std::cout << "  If input file string is '-', the standard input is used as an input.\n\n";
-        std::cout << visibles << std::endl;
+        std::cerr << "  If input file string is '-', the standard input is used as an input.\n\n";
+        std::cerr << visibles << std::endl;
         return false;
     }
 

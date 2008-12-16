@@ -1,0 +1,58 @@
+#!/bin/sh
+
+prefix=@prefix@
+exec_prefix=@exec_prefix@
+libdir=@libdir@
+LIBPATH=${libdir}
+if [ x"$LIBPATH" != x ] ; then
+    if [ x"$LD_LIBRARY_PATH" = x ] ; then
+        LD_LIBRARY_PATH=$LIBPATH
+    else
+        LD_LIBRARY_PATH=$LIBPATH:$LD_LIBRARY_PATH
+    fi
+    export LD_LIBRARY_PATH
+fi
+
+convert=`which rcgconvert 2> /dev/null`
+if [ $? -eq 1 ] ; then
+  echo "Error: rcgconvert can not be found in your PATH" 1>&2
+  echo "" 1>&2
+  exit 1
+fi
+
+gz=""
+echo "@LIBS@" | grep "\-lz" > /dev/null 2>&1
+if [ $? -eq 0 ]; then
+  gz="[.gz]"
+fi
+
+usage()
+{
+  (echo "Usage: rcg4to3 [options ... ] <GameLogFile>$gz"
+   echo "Allowed options:"
+   echo "  -h [ --help ]         print this message."
+   echo "  --verbose             verbose mode."
+   echo "  -o [ --output ] arg   set a file path of the output game log"
+   echo "                        file(.rcg) '-' means standard output.") 1>&2
+}
+
+if [ $# -eq 0 ] ; then
+  usage
+  exit 1
+fi
+
+while [ $# -gt 0 ]
+do
+  case $1 in
+
+    -h|--help)
+      usage
+      exit 0
+      ;;
+
+  esac
+  shift 1
+done
+
+
+$convert -v 3 $@
