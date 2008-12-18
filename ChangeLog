@@ -1,3 +1,9 @@
+2008-12-18  Hidehisa Akiyama  <akky@users.sourceforge.jp>
+
+	* NEWS:
+	* configure.ac:
+	- updated a minor version string. Official release 13.1.0.
+
 2008-12-16  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 
 	* tool/Makefile.am:
