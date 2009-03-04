@@ -1,3 +1,11 @@
+2009-03-04  Hidehisa Akiyama  <akky@users.sourceforge.jp>
+
+	* qt4/disp_holder.cpp:
+	* qt4/monitor_server.cpp:
+	* qt4/team_graphic.cpp:
+	* rcsslogplayer/parser.cpp:
+	- applied a gcc-4.4 patch provided by Hedayat Vatankhah.
+
 2008-12-18  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 
 	* NEWS:

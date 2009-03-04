@@ -40,6 +40,7 @@
 #include <string>
 #include <iostream>
 #include <cstring>
+#include <cstdio>
 
 const int TeamGraphic::MAX_WIDTH = 256;
 const int TeamGraphic::MAX_HEIGHT = 64;
