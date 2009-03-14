@@ -1,3 +1,8 @@
+2009-03-14  Hidehisa Akiyama  <akky@users.sourceforge.jp>
+
+	* tool/rcgconvert.cpp:
+	- fixed compiler warnings.
+
 2009-03-04  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 
 	* qt4/disp_holder.cpp:
