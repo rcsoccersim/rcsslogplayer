@@ -42,7 +42,7 @@ macx {
   DEFINES += HAVE_BOOST_PROGRAM_OPTIONS
 }
 DEFINES += PACKAGE="\\\"rcsslogplayer\\\""
-DEFINES += PACKAGE_NAME="\\\"rcsslogplayer\\\"" VERSION="\\\"13.0.x\\\""
+DEFINES += PACKAGE_NAME="\\\"rcsslogplayer\\\"" VERSION="\\\"13.1.1\\\""
 
 CONFIG += qt warn_on release
 win32 {

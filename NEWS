@@ -1,3 +1,7 @@
+[13.1.1]
+  * Fixed gcc-4.4 compilation problems. Thanks go to Hedayat Vatankhah
+    providing the patch.
+
 [13.1.0]
   * Added a new command, 'rcgconvert', that can convert any version of
     rcg files. rcg3to4 and rcg4to3 has been removed from arelease

@@ -426,7 +426,7 @@ RCGSerializerV1::serializeShow( std::ostream & os,
 /*--------------------------------------------------------------------*/
 std::ostream &
 RCGSerializerV1::serializeMsg( std::ostream & os,
-                               const int time,
+                               const int,
                                const int board,
                                const std::string & msg )
 {
@@ -486,7 +486,7 @@ RCGSerializerV2::serializeShow( std::ostream & os,
 /*--------------------------------------------------------------------*/
 std::ostream &
 RCGSerializerV2::serializeMsg( std::ostream & os,
-                               const int time,
+                               const int,
                                const int board,
                                const std::string & msg )
 {
