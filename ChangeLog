@@ -1,3 +1,17 @@
+2009-04-09  Hidehisa Akiyama  <akky@users.sourceforge.jp>
+
+	* classic/Makefile.am:
+	* configure.ac:
+	- supported AX_XAW7 macro.
+	- removed variables related to rcssbase.
+
+	* m4/ax_boost_base.m4:
+	* m4/ax_boost_program_options.m4:
+	* m4/ax_xaw7.m4:
+	* m4/qt.m4:
+	- replaced symbolic link with hard copy.
+	- addec AX_XAW7 macro.
+
 2009-03-23  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 
 	* NEWS:

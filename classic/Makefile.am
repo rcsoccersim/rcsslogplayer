@@ -27,10 +27,10 @@ noinst_HEADERS = \
 	logplayer.h \
 	fallback.h
 
-rcsslogplayer_classic_CPPFLAGS = $(RCSSBASE_CPPFLAGS) $(CLASSIC_CPPFLAGS) -I$(top_srcdir)
+rcsslogplayer_classic_CPPFLAGS = $(CLASSIC_CPPFLAGS) -I$(top_srcdir)
 rcsslogplayer_classic_CXXFLAGS = -W -Wall $(CLASSIC_CXXFLAGS)
 rcsslogplayer_classic_LDFLAGS = -L$(top_builddir)/rcsslogplayer $(RCSSBASE_LDFLAGS) $(CLASSIC_LDFLAGS)
-rcsslogplayer_classic_LDADD = $(CLASSIC_LIBS) $(RCSSBASE_LIBS) -lrcssrcgparser $(BOOST_PROGRAM_OPTIONS_LIB)
+rcsslogplayer_classic_LDADD = $(CLASSIC_LIBS) -lrcssrcgparser $(BOOST_PROGRAM_OPTIONS_LIB)
 
 pkgdata_DATA =
 
