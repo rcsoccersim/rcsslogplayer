@@ -45,8 +45,11 @@ AC_CHECK_HEADERS([netinet/in.h sys/time.h unistd.h])
 ##################################################
 
 # To avoid WARNING, put LT_INIT after AC_CHECK_HEADERS.
-LT_INIT([shared disable-static])
+#LT_INIT([shared disable-static])
+#LT_LANG([C++])
+AC_ENABLE_SHARED
 AC_DISABLE_STATIC
+AC_PROG_LIBTOOL
 AC_SUBST(LIBTOOL_DEPS)
 
 ##################################################
@@ -118,7 +121,7 @@ if test "x$enable_classic" == "xyes"; then
   AC_SUBST(CLASSIC_LIBS)
 
   # check Xaw7
-#  AX_XAW7(1.0.0)
+  AX_XAW7(1.0.0)
 
   # manual check
   if test x$have_xaw7 != xyes ; then
