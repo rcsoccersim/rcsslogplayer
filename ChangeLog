@@ -1,3 +1,8 @@
+2009-04-17  Hidehisa Akiyama  <akky@users.sourceforge.jp>
+
+	* qt4/main_window.cpp:
+	- fixed typo.
+
 2009-04-09  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 
 	* classic/Makefile.am:

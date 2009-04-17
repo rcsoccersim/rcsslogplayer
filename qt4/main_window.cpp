@@ -895,7 +895,7 @@ MainWindow::createConfigDialog()
         // k
         QAction * act = new QAction( tr( "Show Kick Accel Area" ), this );
         act->setShortcut( Qt::Key_K );
-        act->setStatusTip( tr( "Show/Hide player's tackle area if player can kick the ball." ) );
+        act->setStatusTip( tr( "Show/Hide player's kick accel area if player can kick the ball." ) );
         this->addAction( act );
         connect( act, SIGNAL( triggered() ),
                  M_config_dialog, SLOT( toggleShowKickAccelArea() ) );
@@ -1972,29 +1972,27 @@ MainWindow::printShortcutKeys()
 
     table_widget->verticalHeader()->hide();
 
-    QList< QAction * > acts = this->actions();
-
     int row = 0;
-    const QList< QAction * >::const_iterator end = acts.end();
-    for ( QList< QAction * >::const_iterator it = acts.begin();
-          it != end;
-          ++it )
+
+    Q_FOREACH( QAction * act, this->actions() )
     {
-        if ( ! (*it)->shortcut().isEmpty() )
+        if ( ! act->shortcut().isEmpty() )
         {
             //std::cout << '[' << (*it)->shortcut().toString().toStdString() << "] "
             //          << QString( (*it)->text() ).remove( QChar( '&' ) ).toStdString()
             //    //<< ", " << (*it)->statusTip().toStdString()
             //          << '\n';
             table_widget->insertRow( row );
-            table_widget->setItem ( row, 0, new QTableWidgetItem( (*it)->shortcut().toString() ) );
-            table_widget->setItem ( row, 1, new QTableWidgetItem( QString( (*it)->statusTip() ).remove( QChar( '&' ) ) ) );
+            table_widget->setItem ( row, 0, new QTableWidgetItem( act->shortcut().toString() ) );
+            table_widget->setItem ( row, 1, new QTableWidgetItem( QString( act->statusTip() ).remove( QChar( '&' ) ) ) );
             ++row;
         }
     }
-    std::cout <<  "table row_count = " << table_widget->rowCount()
-              <<  "table col_count = " << table_widget->columnCount()
-              << std::endl;
+
+    table_widget->setSortingEnabled( true );
+//     std::cout <<  "table row_count = " << table_widget->rowCount()
+//               <<  "table col_count = " << table_widget->columnCount()
+//               << std::endl;
 
     layout->addWidget( table_widget );
     dialog.setLayout( layout );
