@@ -1970,6 +1970,8 @@ MainWindow::printShortcutKeys()
     header.push_back( tr( "action" ) );
     table_widget->setHorizontalHeaderLabels( header );
 
+    table_widget->horizontalHeader()->setStretchLastSection( true );
+    table_widget->horizontalHeader()->setResizeMode( QHeaderView::ResizeToContents );
     table_widget->verticalHeader()->hide();
 
     int row = 0;

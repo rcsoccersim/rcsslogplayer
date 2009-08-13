@@ -1,3 +1,9 @@
+2009-08-13  Hidehisa Akiyama  <akky@users.sourceforge.jp>
+
+	* qt4/main_window.cpp:
+	* qt4/player_type_dialog.cpp:
+	- fixed header size of table view.
+
 2009-04-17  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 
 	* qt4/main_window.cpp:

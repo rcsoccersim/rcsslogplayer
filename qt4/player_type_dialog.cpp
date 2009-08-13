@@ -123,6 +123,8 @@ PlayerTypeDialog::createTable()
     M_item_view->setHorizontalScrollBarPolicy( Qt::ScrollBarAlwaysOff );
     M_item_view->setVerticalScrollBarPolicy( Qt::ScrollBarAlwaysOff );
 
+    M_item_view->horizontalHeader()->setResizeMode( QHeaderView::ResizeToContents );
+
     QFont font = M_item_view->font();
     font.setPointSize( 8 );
     M_item_view->setFont( font );
