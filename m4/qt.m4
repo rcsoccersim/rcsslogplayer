@@ -110,28 +110,37 @@ AC_DEFUN([AX_QT4],
   AC_REQUIRE([AC_PROG_CXX])
 
   QT4_REQUIRED_VERSION=ifelse([$1], ,4.1.0,$1)
+  QT4_REQUIRED_MODULES=ifelse([$2], ,QtCore,"$2")
+
+  AC_MSG_NOTICE([set QT4_REQUIRED_VERSION... $QT4_REQUIRED_VERSION])
+  AC_MSG_NOTICE([set QT4_REQUIRED_MODULES... $QT4_REQUIRED_MODULES])
+
+#  if "x$QT4_REQUIRED_MODULES" = "x" ; then
+#     AC_MSG_ERROR([No Qt4 modules])
+#  fi
 
   AC_PATH_PROG(PKG_CONFIG, pkg-config, no)
   if test "x$PKG_CONFIG" = "xno"; then
     AC_MSG_ERROR(You have to install pkg-config to compile $PACKAGENAME-$VERSION.)
   fi
 
-  PKG_CHECK_MODULES(Qt4,
-                    QtCore >= $QT4_REQUIRED_VERSION
-                    QtGui >= $QT4_REQUIRED_VERSION
-                    QtNetwork >= $QT4_REQUIRED_VERSION,
-                    have_qt4="yes",
-                    have_qt4="no")
-  if test "$have_qt4" = "no"; then
-    AC_MSG_ERROR(
-      [The QtCore, QtGui or QtNetwork library >= [$QT4_REQUIRED_VERSION] could not be found.])
-  fi
+  for mod in $QT4_REQUIRED_MODULES ; do
+    AC_MSG_NOTICE(check $mod >= $QT4_REQUIRED_VERSION)
+    PKG_CHECK_MODULES(Qt4,
+                      $mod >= $QT4_REQUIRED_VERSION,
+                      have_qt4="yes",
+                      have_qt4="no")
+    if test "$have_qt4" = "no"; then
+      AC_MSG_ERROR(
+        [The $mod library >= [$QT4_REQUIRED_VERSION] could not be found.])
+    fi
+  done
 
-  QT4_CFLAGS=$($PKG_CONFIG --cflags QtCore QtGui QtNetwork)
+  QT4_CFLAGS=$($PKG_CONFIG --cflags $QT4_REQUIRED_MODULES)
   QT4_CXXFLAGS="$QT4_CFLAGS"
   QT4_CPPFLAGS=""
-  QT4_LDFLAGS=$($PKG_CONFIG --libs-only-L QtCore QtGui QtNetwork)
-  QT4_LDADD="$($PKG_CONFIG --libs-only-other QtCore QtGui QtNetwork)$($PKG_CONFIG --libs-only-l QtCore QtGui QtNetwork)"
+  QT4_LDFLAGS=$($PKG_CONFIG --static --libs-only-L $QT4_REQUIRED_MODULES)
+  QT4_LDADD="$($PKG_CONFIG --static --libs-only-other $QT4_REQUIRED_MODULES)$($PKG_CONFIG --static --libs-only-l $QT4_REQUIRED_MODULES)"
   AC_MSG_NOTICE([set QT4_CXXFLAGS... $QT4_CXXFLAGS])
   AC_MSG_NOTICE([set QT4_LDFLAGS... $QT4_LDFLAGS])
   AC_MSG_NOTICE([set QT4_LDADD... $QT4_LDADD])
@@ -156,7 +165,7 @@ AC_DEFUN([AX_QT4],
       fi
   fi
   if test x$QT4_MOC = x ; then
-    for qt4_path_tmp in /usr/qt/4 /usr/lib/qt4 /usr/share/qt4 /opt/local /usr/local /usr ; do
+    for qt4_path_tmp in /usr/qt/4 /usr/lib/qt4 /usr/share/qt4 /opt/local/libexec/qt4-mac /opt/local /usr/local /usr ; do
       if test -x "${qt4_path_tmp}/bin/moc" ; then
         QT4_MOC="${qt4_path_tmp}/bin/moc"
         break;

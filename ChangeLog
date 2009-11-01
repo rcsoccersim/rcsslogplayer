@@ -1,3 +1,8 @@
+2009-11-01  Hidehisa Akiyama  <akky@users.sourceforge.jp>
+
+	* m4/qt.m4:
+	- improved autoconf macro for Qt.
+
 2009-08-13  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 
 	* qt4/main_window.cpp:
