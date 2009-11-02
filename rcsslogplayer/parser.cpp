@@ -222,8 +222,8 @@ parse_param_line( const int n_line,
 
 
             std::cerr << n_line << ": warning: " << message_name
-                      << " the parameter=(" << name_str
-                      << ' ' << value_str << ") is not supported."
+                      << " unsupported parameter=(" << name_str
+                      << ' ' << value_str << ")"
                       << std::endl;
         }
         catch ( boost::bad_lexical_cast & e )
@@ -1357,6 +1357,10 @@ Parser::parsePlayerTypeLine( const int n_line,
     double_map.insert( DoubleMap::value_type( "extra_stamina", &param.extra_stamina_ ) );
     double_map.insert( DoubleMap::value_type( "effort_max", &param.effort_max_ ) );
     double_map.insert( DoubleMap::value_type( "effort_min", &param.effort_min_ ) );
+    // 14.0.0
+    double_map.insert( DoubleMap::value_type( "kick_power_rate", &param.kick_power_rate_ ) );
+    double_map.insert( DoubleMap::value_type( "foul_detect_probability", &param.foul_detect_probability_ ) );
+    double_map.insert( DoubleMap::value_type( "catchable_area_l_stretch", &param.catchable_area_l_stretch_ ) );
 
     //
     // parse
@@ -1414,6 +1418,12 @@ Parser::parsePlayerParamLine( const int n_line,
     double_map.insert( DoubleMap::value_type( "new_dash_power_rate_delta_min", &param.new_dash_power_rate_delta_min_ ) );
     double_map.insert( DoubleMap::value_type( "new_dash_power_rate_delta_max", &param.new_dash_power_rate_delta_max_ ) );
     double_map.insert( DoubleMap::value_type( "new_stamina_inc_max_delta_factor", &param.new_stamina_inc_max_delta_factor_ ) );
+    // 14.0.0
+    double_map.insert( DoubleMap::value_type( "kick_power_rate_delta_min", &param.kick_power_rate_delta_min_ ) );
+    double_map.insert( DoubleMap::value_type( "kick_power_rate_delta_max", &param.kick_power_rate_delta_max_ ) );
+    double_map.insert( DoubleMap::value_type( "foul_detect_probability_delta_factor", &param.foul_detect_probability_delta_factor_ ) );
+    double_map.insert( DoubleMap::value_type( "catchable_area_l_stretch_min", &param.catchable_area_l_stretch_min_ ) );
+    double_map.insert( DoubleMap::value_type( "catchable_area_l_stretch_max", &param.catchable_area_l_stretch_max_ ) );
 
     //
     // parse
@@ -1645,9 +1655,18 @@ Parser::parseServerParamLine( const int n_line,
     double_map.insert( DoubleMap::value_type( "back_dash_rate", &param.back_dash_rate_ ) );
     double_map.insert( DoubleMap::value_type( "max_dash_power", &param.max_dash_power_ ) );
     double_map.insert( DoubleMap::value_type( "min_dash_power", &param.min_dash_power_ ) );
+    // 14.0.0
+    double_map.insert( DoubleMap::value_type( "tackle_rand_factor", &param.tackle_rand_factor_ ) );
+    double_map.insert( DoubleMap::value_type( "foul_detect_probability", &param.foul_detect_probability_ ) );
+    double_map.insert( DoubleMap::value_type( "foul_exponent", &param.foul_exponent_ ) );
+    int_map.insert( IntMap::value_type( "foul_cycles", &param.foul_cycles_ ) );
+    bool_map.insert( BoolMap::value_type( "golden_goal", &param.golden_goal_ ) );
+
     // test
-    double_map.insert( DoubleMap::value_type( "min_catch_probability", &param.min_catch_probability_ ) );
-    double_map.insert( DoubleMap::value_type( "reliable_catch_area_l", &param.reliable_catch_area_l_ ) );
+    double min_catch_probability;
+    double reliable_catch_area_l;
+    double_map.insert( DoubleMap::value_type( "min_catch_probability", &min_catch_probability ) );
+    double_map.insert( DoubleMap::value_type( "reliable_catch_area_l", &reliable_catch_area_l ) );
 
     //
     // parse

@@ -58,15 +58,19 @@
 
 */
 FieldCanvas::FieldCanvas( MainData & main_data )
-    : M_main_data( main_data )
-    , M_normal_menu( static_cast< QMenu * >( 0 ) )
-    , M_system_menu( static_cast< QMenu * >( 0 ) )
-    , M_monitor_menu( static_cast< QMenu * >( 0 ) )
-    , M_measure_line_pen( QColor( 0, 255, 255 ), 0, Qt::SolidLine )
-    , M_measure_mark_pen( QColor( 255, 0, 0 ), 0, Qt::SolidLine )
-    , M_measure_font_pen( QColor( 255, 191, 191 ), 0, Qt::SolidLine )
-    , M_measure_font_pen2( QColor( 224, 224, 192 ), 0, Qt::SolidLine )
-    , M_measure_font( "6x13bold", 9 )
+    :
+#ifdef USE_GLWIDGET
+    QGLWidget( QGLFormat( QGL::SampleBuffers ) ),
+#endif
+    M_main_data( main_data ),
+    M_normal_menu( static_cast< QMenu * >( 0 ) ),
+    M_system_menu( static_cast< QMenu * >( 0 ) ),
+    M_monitor_menu( static_cast< QMenu * >( 0 ) ),
+    M_measure_line_pen( QColor( 0, 255, 255 ), 0, Qt::SolidLine ),
+    M_measure_mark_pen( QColor( 255, 0, 0 ), 0, Qt::SolidLine ),
+    M_measure_font_pen( QColor( 255, 191, 191 ), 0, Qt::SolidLine ),
+    M_measure_font_pen2( QColor( 224, 224, 192 ), 0, Qt::SolidLine ),
+    M_measure_font( "6x13bold", 9 )
 {
     this->setMouseTracking( true ); // need for the MouseMoveEvent
     this->setFocusPolicy( Qt::WheelFocus );

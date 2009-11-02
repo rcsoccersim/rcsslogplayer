@@ -96,7 +96,19 @@ AC_ARG_ENABLE(qt4,
 if test "x$enable_qt4" != "xno"; then
   AC_MSG_NOTICE(enabled Qt4)
 
-  AX_QT4(4.1.0)
+  QT4MODULES="QtCore QtGui QtNetwork"
+
+  AC_ARG_ENABLE(gl,
+                AC_HELP_STRING([--enable-gl],
+                               [enable GLWidget for Qt4 (default yes)]))
+  if test "x$enable_gl" != "xno"; then
+    AC_MSG_NOTICE(enabled QtOpenGL)
+    CFLAGS="-DUSE_GLWIDGET $CFLAGS"
+    CXXFLAGS="-DUSE_GLWIDGET $CXXFLAGS"
+    QT4MODULES="$QT4MODULES QtOpenGL"
+  fi
+
+  AX_QT4([4.1.0],[$QT4MODULES])
 
   if test x$have_qt4 != xyes ; then
     AC_MSG_NOTICE([The QtCore, QtGui or QtNetwork library could not be found.])

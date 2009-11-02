@@ -1,3 +1,19 @@
+2009-11-02  Hidehisa Akiyama  <akky@users.sourceforge.jp>
+
+	* configure.ac:
+	* qt4/ball_painter.h:
+	* qt4/field_canvas.cpp:
+	* qt4/field_canvas.h:
+	* qt4/main.cpp:
+	* qt4/player_painter.cpp:
+	* qt4/player_painter.h:
+	* rcsslogplayer/parser.cpp:
+	* rcsslogplayer/types.cpp:
+	* rcsslogplayer/types.h:
+	* tool/rcg2xml.cpp:
+	- supported v14 features.
+	- supported opengl widget.
+
 2009-11-01  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 
 	* m4/qt.m4:

@@ -9,7 +9,7 @@
  *Copyright:
 
  Copyright (C) The RoboCup Soccer Server Maintenance Group.
-               Hidehisa AKIYAMA
+ Hidehisa AKIYAMA
 
  This code is free software; you can redistribute it and/or
  modify it under the terms of the GNU Lesser General Public
@@ -72,6 +72,26 @@ print_param< std::string >( std::ostream & os,
 namespace rcss {
 namespace rcg {
 
+PlayerTypeT::PlayerTypeT()
+    : id_( 0 ),
+      player_speed_max_( 1.2 ),
+      stamina_inc_max_( 45.0 ),
+      player_decay_( 0.4 ),
+      inertia_moment_( 5.0 ),
+      dash_power_rate_( 0.06 ),
+      player_size_( 0.3 ),
+      kickable_margin_( 0.7 ),
+      kick_rand_( 0.1 ),
+      extra_stamina_( 0.0 ),
+      effort_max_( 1.0 ),
+      effort_min_( 0.6 ),
+      kick_power_rate_( 0.027 ),
+      foul_detect_probability_( 0.5 ),
+      catchable_area_l_stretch_( 1.0 )
+{
+
+}
+
 std::ostream &
 PlayerTypeT::print( std::ostream & os ) const
 {
@@ -88,9 +108,48 @@ PlayerTypeT::print( std::ostream & os ) const
     print_param( os, "extra_stamina", quantize( extra_stamina_, 0.00001 ) );
     print_param( os, "effort_max", quantize( effort_max_, 0.000001 ) );
     print_param( os, "effort_min", quantize( effort_min_, 0.000001 ) );
+    // 14.0
+    print_param( os, "kick_power_rate", quantize( kick_power_rate_, 0.000001 ) );
+    print_param( os, "foul_detect_probability", quantize( foul_detect_probability_, 0.000001 ) );
+    print_param( os, "catchable_area_l_stretch", quantize( catchable_area_l_stretch_, 0.000001 ) );
     os << ')';
 
     return os;
+}
+
+
+PlayerParamT::PlayerParamT()
+    : player_types_( 18 ),
+      subs_max_( 3 ),
+      pt_max_( 1 ),
+      allow_mult_default_type_( false ),
+      player_speed_max_delta_min_( 0.0 ),
+      player_speed_max_delta_max_( 0.0 ),
+      stamina_inc_max_delta_factor_( 0.0 ),
+      player_decay_delta_min_( -0.05 ),
+      player_decay_delta_max_( 0.1 ),
+      inertia_moment_delta_factor_( 25.0 ),
+      dash_power_rate_delta_min_( 0.0 ),
+      dash_power_rate_delta_max_( 0.0 ),
+      player_size_delta_factor_( -100.0 ),
+      kickable_margin_delta_min_( -0.1 ),
+      kickable_margin_delta_max_( 0.1 ),
+      kick_rand_delta_factor_( 1.0 ),
+      extra_stamina_delta_min_( 0.0 ),
+      extra_stamina_delta_max_( 100.0 ),
+      effort_max_delta_factor_( -0.002 ),
+      effort_min_delta_factor_( -0.002 ),
+      new_dash_power_rate_delta_min_( -0.0005 ),
+      new_dash_power_rate_delta_max_( 0.0015 ),
+      new_stamina_inc_max_delta_factor_( -6000.0 ),
+      random_seed_( -1 ),
+      kick_power_rate_delta_min_( 0.0 ),
+      kick_power_rate_delta_max_( 0.0 ),
+      foul_detect_probability_delta_factor_( 0.0 ),
+      catchable_area_l_stretch_min_( 0.0 ),
+      catchable_area_l_stretch_max_( 0.0 )
+{
+
 }
 
 std::ostream &
@@ -121,10 +180,213 @@ PlayerParamT::print( std::ostream & os ) const
     print_param( os, "new_dash_power_rate_delta_min", quantize( new_dash_power_rate_delta_min_, 0.00001 ) );
     print_param( os, "new_dash_power_rate_delta_max", quantize( new_dash_power_rate_delta_max_, 0.00001 ) );
     print_param( os, "new_stamina_inc_max_delta_factor", quantize( new_stamina_inc_max_delta_factor_, 0.00001 ) );
+    // 14.0
+    print_param( os, "kick_power_rate_delta_min", quantize( kick_power_rate_delta_min_, 0.000001 ) );
+    print_param( os, "kick_power_rate_delta_max", quantize( kick_power_rate_delta_max_, 0.000001 ) );
+    print_param( os, "foul_detect_probability_delta_factor", quantize( foul_detect_probability_delta_factor_, 0.00001 ) );
+    print_param( os, "catchable_area_l_stretch_min", quantize( catchable_area_l_stretch_min_, 0.00001 ) );
+    print_param( os, "catchable_area_l_stretch_max", quantize( catchable_area_l_stretch_max_, 0.00001 ) );
     os << ')';
 
     return os;
 }
+
+
+ServerParamT::ServerParamT()
+    : goal_width_( 14.02 ),
+      inertia_moment_( 5.0 ),
+      player_size_( 0.3 ),
+      player_decay_( 0.4 ),
+      player_rand_( 0.1 ),
+      player_weight_( 60.0 ),
+      player_speed_max_( 1.2 ),
+      player_accel_max_( 1.0 ),
+      stamina_max_( 4000.0 ),
+      stamina_inc_max_( 45.0 ),
+      recover_init_( 1.0 ),
+      recover_dec_thr_( 0.3 ),
+      recover_min_( 0.5 ),
+      recover_dec_( 0.002 ),
+      effort_init_( 1.0 ),
+      effort_dec_thr_( 0.3 ),
+      effort_min_( 0.6 ),
+      effort_dec_( 0.005 ),
+      effort_inc_thr_( 0.6 ),
+      effort_inc_( 0.01 ),
+      kick_rand_( 0.1 ),
+      team_actuator_noise_( false ),
+      player_rand_factor_l_( 1.0 ),
+      player_rand_factor_r_( 1.0 ),
+      kick_rand_factor_l_( 1.0 ),
+      kick_rand_factor_r_( 1.0 ),
+      ball_size_( 0.085 ),
+      ball_decay_( 0.94 ),
+      ball_rand_( 0.05 ),
+      ball_weight_( 0.2 ),
+      ball_speed_max_( 3.0 ),
+      ball_accel_max_( 2.7 ),
+      dash_power_rate_( 0.006 ),
+      kick_power_rate_( 0.027 ),
+      kickable_margin_( 0.7 ),
+      control_radius_( 2.0 ),
+      control_radius_width_( 1.7 ),
+      catch_probability_( 1.0 ),
+      catchable_area_l_( 1.2 ),
+      catchable_area_w_( 1.0 ),
+      goalie_max_moves_( 2 ),
+      max_power_( 100.0 ),
+      min_power_( -100.0 ),
+      max_moment_( 180.0 ),
+      min_moment_( -180.0 ),
+      max_neck_moment_( 180.0 ),
+      min_neck_moment_( -180.0 ),
+      max_neck_angle_( 90.0 ),
+      min_neck_angle_( -90.0 ),
+      visible_angle_( 90.0 ),
+      visible_distance_( 3.0 ),
+      audio_cut_dist_( 50.0 ),
+      quantize_step_( 0.1 ),
+      landmark_quantize_step_( 0.01 ),
+      corner_kick_margin_( 1.0 ),
+      wind_dir_( 0.0 ),
+      wind_force_( 0.0 ),
+      wind_angle_( 0.0 ),
+      wind_rand_( 0.0 ),
+      wind_none_( false ),
+      wind_random_( false ),
+      half_time_( 300 ),
+      drop_ball_time_( 200 ),
+      port_( 6000 ),
+      coach_port_( 6001 ),
+      online_coach_port_( 6002 ),
+      say_coach_count_max_( 128 ),
+      say_coach_msg_size_( 128 ),
+      simulator_step_( 100 ),
+      send_step_( 150 ),
+      recv_step_( 10 ),
+      sense_body_step_( 100 ),
+      say_msg_size_( 10 ),
+      clang_win_size_( 300 ),
+      clang_define_win_( 1 ),
+      clang_meta_win_( 1 ),
+      clang_advice_win_( 1 ),
+      clang_info_win_( 1 ),
+      clang_del_win_( 1 ),
+      clang_rule_win_( 1 ),
+      clang_mess_delay_( 50 ),
+      clang_mess_per_cycle_( 1 ),
+      hear_max_( 1 ),
+      hear_inc_( 1 ),
+      hear_decay_( 1 ),
+      catch_ban_cycle_( 5 ),
+      coach_mode_( false ),
+      coach_with_referee_mode_( false ),
+      old_coach_hear_( false ),
+      send_vi_step_( 100 ),
+      use_offside_( true ),
+      offside_active_area_size_( 2.5 ),
+      forbid_kick_off_offside_( true ),
+      verbose_( false ),
+      offside_kick_margin_( 9.15 ),
+      slow_down_factor_( 1 ),
+      synch_mode_( false ),
+      synch_offset_( 60 ),
+      synch_micro_sleep_( 1 ),
+      start_goal_l_( 0 ),
+      start_goal_r_( 0 ),
+      fullstate_l_( false ),
+      fullstate_r_( false ),
+      slowness_on_top_for_left_team_( 1.0 ),
+      slowness_on_top_for_right_team_( 1.0 ),
+      landmark_file_(),
+      send_comms_( false ),
+      text_logging_( true ),
+      game_logging_( true ),
+      game_log_version_( 4 ),
+      text_log_dir_( "." ),
+      game_log_dir_( "." ),
+      text_log_fixed_name_( "rcssserver" ),
+      game_log_fixed_name_( "rcssserver" ),
+      text_log_fixed_( false ),
+      game_log_fixed_( false ),
+      text_log_dated_( true ),
+      game_log_dated_( true ),
+      log_date_format_( "%Y%m%d%H%M-" ),
+      log_times_( false ),
+      record_messages_( false ),
+      text_log_compression_( 0 ),
+      game_log_compression_( 0 ),
+      profile_( false ),
+      point_to_ban_( 5 ),
+      point_to_duration_( 20 ),
+      tackle_dist_( 2.0 ),
+      tackle_back_dist_( 0.5 ),
+      tackle_width_( 1.0 ),
+      tackle_exponent_( 6.0 ),
+      tackle_cycles_( 10 ),
+      tackle_power_rate_( 0.027 ),
+      freeform_wait_period_( 600 ),
+      freeform_send_period_( 20 ),
+      free_kick_faults_( true ),
+      back_passes_( true ),
+      proper_goal_kicks_( false ),
+      stopped_ball_vel_( 0.01 ),
+      max_goal_kicks_( 3 ),
+      auto_mode_( false ),
+      kick_off_wait_( 100 ),
+      connect_wait_( 300 ),
+      game_over_wait_( 100 ),
+      team_l_start_(),
+      team_r_start_(),
+      keepaway_mode_( false ),
+      keepaway_length_( 20.0 ),
+      keepaway_width_( 20.0 ),
+      keepaway_logging_( true ),
+      keepaway_log_dir_( "." ),
+      keepaway_log_fixed_name_( "rcssserver" ),
+      keepaway_log_fixed_( false ),
+      keepaway_log_dated_( true ),
+      keepaway_start_( -1 ),
+      nr_normal_halfs_( 2 ),
+      nr_extra_halfs_( 2 ),
+      penalty_shoot_outs_( true ),
+      pen_before_setup_wait_( 30 ),
+      pen_setup_wait_( 100 ),
+      pen_ready_wait_( 50 ),
+      pen_taken_wait_( 200 ),
+      pen_nr_kicks_( 5 ),
+      pen_max_extra_kicks_( 10 ),
+      pen_dist_x_( 42.5 ),
+      pen_random_winner_( false ),
+      pen_max_goalie_dist_x_( 14.0 ),
+      pen_allow_mult_kicks_( true ),
+      pen_coach_moves_players_( true ),
+      ball_stuck_area_( 3.0 ),
+      coach_msg_file_(),
+      max_tackle_power_( 100.0 ),
+      max_back_tackle_power_( 50.0 ),
+      player_speed_max_min_( 0.8 ),
+      extra_stamina_( 0.0 ),
+      synch_see_offset_( 30 ),
+      max_monitors_( -1 ),
+      extra_half_time_( 300 ),
+      stamina_capacity_( -1.0 ),
+      max_dash_angle_( 0.0 ),
+      min_dash_angle_( 0.0 ),
+      dash_angle_step_( 90.0 ),
+      side_dash_rate_( 0.25 ),
+      back_dash_rate_( 0.5 ),
+      max_dash_power_( 100.0 ),
+      min_dash_power_( -100.0 ),
+      tackle_rand_factor_( 1.0 ),
+      foul_detect_probability_( 0.5 ),
+      foul_exponent_( 10.0 ),
+      foul_cycles_( 5 ),
+      golden_goal_( true )
+{
+
+}
+
 
 std::ostream &
 ServerParamT::print( std::ostream & os ) const
@@ -328,9 +590,13 @@ ServerParamT::print( std::ostream & os ) const
     print_param( os, "back_dash_rate", quantize( back_dash_rate_, 0.00001 ) );
     print_param( os, "max_dash_power", quantize( max_dash_power_, 0.00001 ) );
     print_param( os, "min_dash_power", quantize( min_dash_power_, 0.00001 ) );
-    // test
-    print_param( os, "min_catch_probability", quantize( min_catch_probability_, 0.00001 ) );
-    print_param( os, "reliable_catch_area_l", quantize( reliable_catch_area_l_, 0.00001 ) );
+    // 14.0
+    print_param( os, "tackle_rand_factor", quantize( tackle_rand_factor_, 0.00001 ) );
+    print_param( os, "foul_detect_probability", quantize( foul_detect_probability_, 0.00001 ) );
+    print_param( os, "foul_exponent", quantize( foul_exponent_, 0.00001 ) );
+    print_param( os, "foul_cycles", foul_cycles_ );
+    print_param( os, "golden_goal", golden_goal_ );
+
     os << ')';
 
     return os;

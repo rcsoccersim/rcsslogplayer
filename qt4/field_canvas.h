@@ -33,7 +33,11 @@
 #ifndef RCSSLOGPLAYER_FIELD_CANVAS_H
 #define RCSSLOGPLAYER_FIELD_CANVAS_H
 
+#ifdef USE_GLWIDGET
+#include <QGLWidget>
+#else
 #include <QWidget>
+#endif
 #include <QPen>
 #include <QFont>
 
@@ -55,7 +59,13 @@ class FieldPainter;
 
 //! main soccer field canvas class
 class FieldCanvas
-		: public QWidget {
+		:
+#ifdef USE_GLWIDGET
+    public QGLWidget
+#else
+    public QWidget
+#endif
+{
 
     Q_OBJECT
 

@@ -33,6 +33,9 @@
 #ifndef RCSSLOGPLAYER_BALL_PAINTER_H
 #define RCSSLOGPLAYER_BALL_PAINTER_H
 
+#include <QPen>
+#include <QBrush>
+
 #include "painter_interface.h"
 
 class MainData;

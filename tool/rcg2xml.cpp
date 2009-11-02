@@ -340,8 +340,14 @@ private:
           printParam( "extra_stamina", param.extra_stamina_ );
           printParam( "synch_see_offset", param.synch_see_offset_ );
           printParam( "max_monitors", param.max_monitors_ );
-          printParam( "min_catch_probability", param.min_catch_probability_ );
-          printParam( "reliable_catch_area_l", param.reliable_catch_area_l_ );
+          // 14.0.0
+          printParam( "tackle_rand_factor", param.tackle_rand_factor_ );
+          printParam( "foul_detect_probability", param.foul_detect_probability_ );
+          printParam( "foul_exponent", param.foul_exponent_ );
+          printParam( "foul_cycles", param.foul_cycles_ );
+          printParam( "golden_goal", param.golden_goal_ );
+          //printParam( "min_catch_probability", param.min_catch_probability_ );
+          //printParam( "reliable_catch_area_l", param.reliable_catch_area_l_ );
           std::cout << "</ServerParam>\n";
       }
 
@@ -379,6 +385,12 @@ private:
           printParam( "new_dash_power_rate_delta_min", param.new_dash_power_rate_delta_min_ );
           printParam( "new_dash_power_rate_delta_max", param.new_dash_power_rate_delta_max_ );
           printParam( "new_stamina_inc_max_delta_factor", param.new_stamina_inc_max_delta_factor_ );
+          // 14.0.0
+          printParam( "kick_power_rate_delta_min", param.kick_power_rate_delta_min_ );
+          printParam( "kick_power_rate_delta_max", param.kick_power_rate_delta_max_ );
+          printParam( "foul_detect_probability_delta_factor", param.foul_detect_probability_delta_factor_ );
+          printParam( "catchable_area_l_stretch_min", param.catchable_area_l_stretch_min_ );
+          printParam( "catchable_area_l_stretch_max", param.catchable_area_l_stretch_max_ );
           std::cout << "</PlayerParam>\n";
       }
 
@@ -396,6 +408,10 @@ private:
           printParam( "extra_stamina", type.extra_stamina_ );
           printParam( "effort_max", type.effort_max_ );
           printParam( "effort_min", type.effort_min_ );
+          // 14.0.0
+          printParam( "kick_power_rate", type.kick_power_rate_ );
+          printParam( "foul_detect_probability", type.foul_detect_probability_ );
+          printParam( "catchable_area_l_stretch", type.catchable_area_l_stretch_ );
           std::cout << "</PlayerType>\n";
       }
 

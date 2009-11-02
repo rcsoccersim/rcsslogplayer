@@ -96,7 +96,8 @@ PlayerPainter::PlayerPainter( const MainData & main_data )
     , M_right_goalie_pen( QColor( 255, 153, 255 ), 0, Qt::SolidLine )
     , M_right_goalie_brush( QColor( 255, 153, 255 ), Qt::SolidPattern )
     , M_player_number_pen( QColor( 255, 255, 255 ), 0, Qt::SolidLine )
-    , M_player_stamina_pen( QColor( 15, 255, 141 ), 0, Qt::SolidLine )
+    , M_player_number_inner_pen( QColor( 0, 0, 0 ), 0, Qt::SolidLine )
+      //, M_player_stamina_pen( QColor( 15, 255, 141 ), 0, Qt::SolidLine )
     , M_neck_pen( QColor( 255, 0, 0 ), 0, Qt::SolidLine )
     , M_view_area_pen( QColor( 191, 239, 191 ), 0, Qt::SolidLine )
     , M_large_view_area_pen( QColor( 255, 255, 255 ), 0, Qt::SolidLine )
@@ -110,7 +111,8 @@ PlayerPainter::PlayerPainter( const MainData & main_data )
     , M_tackle_pen( QColor( 255, 136, 127 ), 2, Qt::SolidLine )
     , M_tackle_brush( QColor( 255, 136, 127 ), Qt::SolidPattern )
     , M_tackle_fault_brush( QColor( 79, 159, 159 ), Qt::SolidPattern )
-    , M_pointto_pen( QColor( 255, 0, 191 ), 2, Qt::SolidLine )
+    , M_foul_charged_brush( QColor( 0, 127, 0 ), Qt::SolidPattern )
+    , M_pointto_pen( QColor( 255, 0, 191 ), 1, Qt::SolidLine )
 {
     M_player_font.setPointSize( 9 );
     M_player_font.setBold( true );
@@ -186,8 +188,11 @@ PlayerPainter::readSettings()
     val = settings.value( "player_number_pen" );
     if ( val.isValid() ) M_player_number_pen.setColor( val.toString() );
 
-    val = settings.value( "player_stamina_pen" );
-    if ( val.isValid() ) M_player_stamina_pen.setColor( val.toString() );
+    val = settings.value( "player_number_inner_pen" );
+    if ( val.isValid() ) M_player_number_inner_pen.setColor( val.toString() );
+
+//     val = settings.value( "player_stamina_pen" );
+//     if ( val.isValid() ) M_player_stamina_pen.setColor( val.toString() );
 
     val = settings.value( "neck_pen" );
     if ( val.isValid() ) M_neck_pen.setColor( val.toString() );
@@ -225,6 +230,9 @@ PlayerPainter::readSettings()
     val = settings.value( "tackle_fault_brush" );
     if ( val.isValid() ) M_tackle_fault_brush.setColor( val.toString() );
 
+    val = settings.value( "foul_charged_brush" );
+    if ( val.isValid() ) M_foul_charged_brush.setColor( val.toString() );
+
     settings.endGroup();
 }
 
@@ -254,7 +262,8 @@ PlayerPainter::writeSettings()
     settings.setValue( "right_goalie", M_right_goalie_brush.color().name() );
 
     settings.setValue( "player_number_pen", M_player_number_pen.color().name() );
-    settings.setValue( "player_stamina_pen", M_player_stamina_pen.color().name() );
+    settings.setValue( "player_number_inner_pen", M_player_number_inner_pen.color().name() );
+//     settings.setValue( "player_stamina_pen", M_player_stamina_pen.color().name() );
 
     settings.setValue( "neck_pen", M_neck_pen.color().name() );
     settings.setValue( "view_area_pen", M_view_area_pen.color().name() );
@@ -267,6 +276,7 @@ PlayerPainter::writeSettings()
     settings.setValue( "tackle_pen", M_tackle_pen.color().name() );
     settings.setValue( "tackle_brush", M_tackle_brush.color().name() );
     settings.setValue( "tackle_fault_brush", M_tackle_fault_brush.color().name() );
+    settings.setValue( "foul_charged_brush", M_foul_charged_brush.color().name() );
 
     settings.endGroup();
 }
@@ -434,6 +444,10 @@ PlayerPainter::drawBody( QPainter & painter,
     {
         painter.setPen( M_tackle_pen );
         painter.setBrush( M_tackle_fault_brush );
+    }
+    if ( param.player_.isFoulCharged() )
+    {
+        painter.setBrush( M_foul_charged_brush );
     }
     if ( param.player_.isCollidedBall() )
     {
@@ -675,16 +689,22 @@ PlayerPainter::drawTackleArea( QPainter & painter,
     double tackle_dist = ( player_to_ball.x > 0.0
                            ? sparam.tackle_dist_
                            : sparam.tackle_back_dist_ );
-    double tackle_fail_prob = 1.0;
-    if ( tackle_dist > 0.0 )
+    if ( tackle_dist < 1.0e-5 )
     {
-        tackle_fail_prob = ( std::pow( player_to_ball.absX() / tackle_dist,
-                                       sparam.tackle_exponent_ )
-                             + std::pow( player_to_ball.absY() / sparam.tackle_width_,
-                                         sparam.tackle_exponent_ ) );
+        return;
     }
 
-    if ( tackle_fail_prob < 1.0 )
+    double tackle_fail_prob = ( std::pow( player_to_ball.absX() / tackle_dist,
+                                          sparam.tackle_exponent_ )
+                                + std::pow( player_to_ball.absY() / sparam.tackle_width_,
+                                            sparam.tackle_exponent_ ) );
+    double foul_fail_prob = ( std::pow( player_to_ball.absX() / tackle_dist,
+                                        sparam.foul_exponent_ )
+                              + std::pow( player_to_ball.absY() / sparam.tackle_width_,
+                                          sparam.foul_exponent_ ) );
+
+    if ( tackle_fail_prob < 1.0
+         || foul_fail_prob < 1.0 )
     {
         painter.save();
         painter.translate( param.x_, param.y_ );
@@ -708,11 +728,29 @@ PlayerPainter::drawTackleArea( QPainter & painter,
         painter.setFont( M_player_font );
         painter.setPen( M_tackle_pen );
 
-        char msg[32];
-        snprintf( msg, 32, "TackleProb=%.3f", 1.0 - tackle_fail_prob );
-        painter.drawText( param.x_ + text_radius,
-                          param.y_ + 4 + painter.fontMetrics().ascent(),
-                          QString::fromAscii( msg ) );
+        if ( tackle_fail_prob < 1.0
+             && foul_fail_prob < 1.0 )
+        {
+            painter.drawText( param.x_ + text_radius,
+                              param.y_ + 4 + painter.fontMetrics().ascent(),
+                              QString( "T=%1,F=%2" )
+                              .arg( 1.0 - tackle_fail_prob, 0, 'g', 3 )
+                              .arg( 1.0 - foul_fail_prob, 0, 'g', 3 ) );
+        }
+        else if ( tackle_fail_prob < 1.0 )
+        {
+            painter.drawText( param.x_ + text_radius,
+                              param.y_ + 4 + painter.fontMetrics().ascent(),
+                              QString( "Tackle=%1" )
+                              .arg( 1.0 - tackle_fail_prob, 0, 'g', 3 ) );
+        }
+        else if ( foul_fail_prob < 1.0 )
+        {
+            painter.drawText( param.x_ + text_radius,
+                              param.y_ + 4 + painter.fontMetrics().ascent(),
+                              QString( "Foul=%1" )
+                              .arg( 1.0 - foul_fail_prob, 0, 'g', 3 ) );
+        }
     }
 }
 
@@ -907,6 +945,8 @@ PlayerPainter::drawPointto( QPainter & painter,
     painter.setBrush( Qt::NoBrush );
     painter.drawLine( param.x_, param.y_,
                       ix, iy );
+    painter.drawLine( ix - 2, iy - 2, ix + 2, iy + 2 );
+    painter.drawLine( ix - 2, iy + 2, ix + 2, iy - 2 );
 }
 
 /*-------------------------------------------------------------------*/
@@ -1052,11 +1092,44 @@ PlayerPainter::drawText( QPainter & painter,
         //painter.setPen( param.player_.side() == rcss::rcg::LEFT
         //                ? M_left_team_pen
         //                : M_right_team_pen );
-        painter.setPen( M_player_number_pen );
+
+        if ( param.player_.hasRedCard() )
+        {
+            painter.setPen( Qt::red );
+        }
+        else if ( param.player_.hasYellowCard() )
+        {
+            QFont font = painter.font();
+            font.setBold( true );
+            font.setUnderline( true );
+            painter.setFont( font );
+
+            if ( text_radius < param.draw_radius_ )
+            {
+                painter.setPen( M_player_number_inner_pen );
+            }
+            else
+            {
+                painter.setPen( Qt::yellow );
+            }
+        }
+        else
+        {
+            if ( text_radius < param.draw_radius_ )
+            {
+                painter.setPen( M_player_number_inner_pen );
+            }
+            else
+            {
+                painter.setPen( M_player_number_pen );
+            }
+        }
+
         painter.setBrush( Qt::NoBrush );
         painter.drawText( param.x_ + text_radius,
                           param.y_,
                           QString::fromAscii( main_buf ) );
+        painter.setBackgroundMode( Qt::TransparentMode );
     }
 }
 

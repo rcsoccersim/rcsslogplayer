@@ -86,7 +86,8 @@ private:
     QBrush M_right_goalie_brush;
 
     QPen M_player_number_pen;
-    QPen M_player_stamina_pen;
+    QPen M_player_number_inner_pen;
+    //QPen M_player_stamina_pen;
 
     QPen M_neck_pen;
     QPen M_view_area_pen;
@@ -101,6 +102,7 @@ private:
     QPen M_tackle_pen;
     QBrush M_tackle_brush;
     QBrush M_tackle_fault_brush;
+    QBrush M_foul_charged_brush;
     QPen M_pointto_pen;
 
     // not used
