@@ -136,6 +136,7 @@ Options::Options()
     , M_show_tackle_area( false )
     , M_show_stamina( false )
     , M_show_pointto( true )
+    , M_show_card( true )
     , M_show_offside_line( false )
     , M_show_draw_info( true )
     , M_ball_size( 0.35 )
@@ -295,6 +296,9 @@ Options::readSettings()
     val = settings.value( "show_pointto" );
     if ( val.isValid() ) M_show_pointto = val.toBool();
 
+    val = settings.value( "show_card" );
+    if ( val.isValid() ) M_show_card = val.toBool();
+
     val = settings.value( "ball_size", M_ball_size );
     if ( val.isValid() ) M_ball_size = val.toDouble();
 
@@ -372,6 +376,7 @@ Options::writeSettings()
     settings.setValue( "show_kick_accel_area", M_show_kick_accel_area );
     settings.setValue( "show_stamina", M_show_stamina );
     settings.setValue( "show_pointto", M_show_pointto );
+    settings.setValue( "show_card", M_show_card );
     settings.setValue( "ball_size", M_ball_size );
     settings.setValue( "player_size", M_player_size );
     settings.setValue( "show_grid_coord", M_show_grid_coord );
@@ -517,6 +522,9 @@ Options::parseCmdLine( int argc,
         ( "show-pointto",
           po::value< bool >( &M_show_pointto )->default_value( false, "off" ),
           "show player\'s pointing to point." )
+        ( "show-card",
+          po::value< bool >( &M_show_card )->default_value( true, "on" ),
+          "show player\'s card status." )
         ( "ball-size",
           po::value< double >( &M_ball_size )->default_value( 0.35, "0.35" ),
           "set a ball radius in enlarge mode." )

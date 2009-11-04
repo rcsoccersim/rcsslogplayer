@@ -167,7 +167,7 @@ LogSliderToolBar::~LogSliderToolBar()
 */
 void
 LogSliderToolBar::createControls( LogPlayer * log_player,
-                                  QMainWindow * main_win )
+                                  QMainWindow * /*main_win*/ )
 {
     // visible widgets
 
@@ -200,19 +200,18 @@ LogSliderToolBar::createControls( LogPlayer * log_player,
     this->addWidget( M_cycle_edit );
 
     // invisible action
-    {
-        QAction * act = new QAction( tr( "Focus Cycle Edit" ), this );
-#ifdef Q_WS_MAC
-        act->setShortcut( tr( "Meta+F" ) );
-#else
-        act->setShortcut( tr( "Ctrl+F" ) );
-#endif
-        act->setStatusTip( tr( "Set the keyboard focus to the cycle edit box." ) );
-        connect( act, SIGNAL( triggered() ),
-                 M_cycle_edit, SLOT( setFocus() ) );
-
-        main_win->addAction( act );
-    }
+//     {
+//         QAction * act = new QAction( tr( "Focus Cycle Edit" ), this );
+// #ifdef Q_WS_MAC
+//         act->setShortcut( tr( "Meta+F" ) );
+// #else
+//         act->setShortcut( tr( "Ctrl+F" ) );
+// #endif
+//         act->setStatusTip( tr( "Set the keyboard focus to the cycle edit box." ) );
+//         connect( act, SIGNAL( triggered() ),
+//                  M_cycle_edit, SLOT( setFocus() ) );
+//         main_win->addAction( act );
+//     }
 
     // dummy spaces
     {

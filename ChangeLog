@@ -1,3 +1,17 @@
+2009-11-04  Hidehisa Akiyama  <akky@users.sourceforge.jp>
+
+	* qt4/config_dialog.cpp:
+	* qt4/config_dialog.h:
+	* qt4/log_slider_tool_bar.cpp:
+	* qt4/options.cpp:
+	* qt4/options.h:
+	* qt4/player_painter.cpp:
+	* qt4/player_painter.h:
+	* qt4/player_type_dialog.cpp:
+	- improved the painting policy of players' card status.
+	- added '--show-card' option.
+	- fixed duplicated short cut keys.
+
 2009-11-02  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 
 	* configure.ac:

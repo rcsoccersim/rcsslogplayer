@@ -44,6 +44,7 @@
 
 #include <iostream>
 #include <cstdio>
+#include <cmath>
 
 namespace {
 const int COL_SIZE = 15; // the number of param string
@@ -152,24 +153,25 @@ PlayerTypeDialog::createModel()
     const int ROW_SIZE = M_main_data.dispHolder().playerTypes().size();
 
     //M_model = new QStandardItemModel( ROW_SIZE, 15, this );
-    M_model = new QStandardItemModel( ROW_SIZE, 13, this );
+    M_model = new QStandardItemModel( ROW_SIZE, 14, this );
 
     int i = 0;
     M_model->setHeaderData( i, Qt::Horizontal, tr( "id" ) ); ++i;
     M_model->setHeaderData( i, Qt::Horizontal, tr( "Speed Real/Max" ) ); ++i;
     //M_model->setHeaderData( i, Qt::Horizontal, tr( "AccelStep" ) ); ++i;
-    M_model->setHeaderData( i, Qt::Horizontal, tr( "AccelMax" ) ); ++i;
+    M_model->setHeaderData( i, Qt::Horizontal, tr( "AccMax" ) ); ++i;
     M_model->setHeaderData( i, Qt::Horizontal, tr( "StamInc" ) ); ++i;
     //    M_model->setHeaderData( i, Qt::Horizontal, tr( "Consume" ) ); ++i;
     M_model->setHeaderData( i, Qt::Horizontal, tr( "Kickable" ) ); ++i;
     M_model->setHeaderData( i, Qt::Horizontal, tr( "Decay" ) ); ++i;
-    M_model->setHeaderData( i, Qt::Horizontal, tr( "Inertia" ) ); ++i;
+    M_model->setHeaderData( i, Qt::Horizontal, tr( "IMoment" ) ); ++i;
     M_model->setHeaderData( i, Qt::Horizontal, tr( "DashRate" ) ); ++i;
     M_model->setHeaderData( i, Qt::Horizontal, tr( "Size" ) ); ++i;
     M_model->setHeaderData( i, Qt::Horizontal, tr( "KickMargin" ) ); ++i;
     M_model->setHeaderData( i, Qt::Horizontal, tr( "KickRand" ) ); ++i;
     M_model->setHeaderData( i, Qt::Horizontal, tr( "ExtStam" ) ); ++i;
-    M_model->setHeaderData( i, Qt::Horizontal, tr( "Effort Max-Min" ) ); ++i;
+    M_model->setHeaderData( i, Qt::Horizontal, tr( "Eft Max-Min" ) ); ++i;
+    M_model->setHeaderData( i, Qt::Horizontal, tr( "Catch" ) ); ++i;
 
     updateData();
 }
@@ -222,6 +224,8 @@ PlayerTypeDialog::adjustSize()
     M_item_view->setColumnWidth( i, metrics.width( "  00.00" ) + 4 ); ++i;
     // effort max - min
     M_item_view->setColumnWidth( i, metrics.width( "  0.000 - 0.000" ) + 4 ); ++i;
+    // catch area length stretch
+    M_item_view->setColumnWidth( i, metrics.width( "  0.0000" ) + 4 ); ++i;
 
     QRect rect = this->geometry();
     QRect child_rect = this->childrenRect();
@@ -293,9 +297,7 @@ PlayerTypeDialog::updateData()
         // speed real/max
         text.sprintf( "%5.3f / %5.3f",
                       real_speed_max, param.player_speed_max_ );
-        M_model->setData( M_model->index( row, i ),
-                          text );
-        ++i;
+        M_model->setData( M_model->index( row, i ), text ); ++i;
 
 //         // accel step
 //         M_model->setData( M_model->index( row, i ),
@@ -304,16 +306,11 @@ PlayerTypeDialog::updateData()
 
         // accel max
         text.sprintf( "%.4f", accel_max );
-        M_model->setData( M_model->index( row, i ),
-                          text ),
-
-        ++i;
+        M_model->setData( M_model->index( row, i ), text ); ++i;
 
         // stamina inc max
         text.sprintf( "%.2f", param.stamina_inc_max_ );
-        M_model->setData( M_model->index( row, i ),
-                          text );
-        ++i;
+        M_model->setData( M_model->index( row, i ), text ); ++i;
 
 //         // consume
 //         text.sprintf( "%.2f",
@@ -327,59 +324,47 @@ PlayerTypeDialog::updateData()
                       param.player_size_
                       + param.kickable_margin_
                       + sparam.ball_size_ );
-        M_model->setData( M_model->index( row, i ),
-                          text );
-
-        ++i;
+        M_model->setData( M_model->index( row, i ), text ); ++i;
 
         // decay
         text.sprintf( "%.3f", param.player_decay_ );
-        M_model->setData( M_model->index( row, i ),
-                          text );
-        ++i;
+        M_model->setData( M_model->index( row, i ), text ); ++i;
 
         // inertia
         text.sprintf( "%.2f", param.inertia_moment_ );
-        M_model->setData( M_model->index( row, i ),
-                          text );
-        ++i;
+        M_model->setData( M_model->index( row, i ), text ); ++i;
 
         // dash power rate
         text.sprintf( "%.5f", param.dash_power_rate_ );
-        M_model->setData( M_model->index( row, i ),
-                          text );
-        ++i;
+        M_model->setData( M_model->index( row, i ), text ); ++i;
 
         // size
         text.sprintf( "%.2f", param.player_size_ );
-        M_model->setData( M_model->index( row, i ),
-                          text );
-        ++i;
+        M_model->setData( M_model->index( row, i ), text ); ++i;
 
         // kickable margin
         text.sprintf( "%.3f", param.kickable_margin_ );
-        M_model->setData( M_model->index( row, i ),
-                          text );
-        ++i;
+        M_model->setData( M_model->index( row, i ), text ); ++i;
 
         // kick rand
         text.sprintf( "%.2f", param.kick_rand_ );
-        M_model->setData( M_model->index( row, i ),
-                          text );
-        ++i;
+        M_model->setData( M_model->index( row, i ), text ); ++i;
 
         // extra stamina
         text.sprintf( "%.2f", param.extra_stamina_ );
-        M_model->setData( M_model->index( row, i ),
-                          text );
-        ++i;
+        M_model->setData( M_model->index( row, i ), text ); ++i;
 
         // effort max - min
         text.sprintf( "%.3f - %.3f",
                       param.effort_max_, param.effort_min_ );
-        M_model->setData( M_model->index( row, i ),
-                          text );
-        ++i;
+        M_model->setData( M_model->index( row, i ), text ); ++i;
+
+        // catch area radius
+        double r = std::sqrt( std::pow( sparam.catchable_area_w_ * 0.5, 2.0 )
+                              + std::pow( sparam.catchable_area_l_ * param.catchable_area_l_stretch_, 2.0 ) );
+        //text.sprintf( "%.4f", param.catchable_area_l_stretch_ );
+        text.sprintf( "%.4f", r );
+        M_model->setData( M_model->index( row, i ), text ); ++i;
     }
 
     adjustSize();

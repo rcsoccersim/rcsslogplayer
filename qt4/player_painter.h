@@ -79,16 +79,15 @@ private:
     QPen M_left_team_pen;
     QBrush M_left_team_brush;
     QPen M_left_goalie_pen;
+    QPen M_left_goalie_stretch_pen;
     QBrush M_left_goalie_brush;
     QPen M_right_team_pen;
     QBrush M_right_team_brush;
     QPen M_right_goalie_pen;
+    QPen M_right_goalie_stretch_pen;
     QBrush M_right_goalie_brush;
-
     QPen M_player_number_pen;
     QPen M_player_number_inner_pen;
-    //QPen M_player_stamina_pen;
-
     QPen M_neck_pen;
     QPen M_view_area_pen;
     QPen M_large_view_area_pen;

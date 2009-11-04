@@ -155,6 +155,7 @@ private:
     bool M_show_stamina;
     bool M_show_stamina_capacity;
     bool M_show_pointto;
+    bool M_show_card;
 
     bool M_show_offside_line;
     bool M_show_draw_info;
@@ -523,6 +524,15 @@ public:
     void toggleShowPointto()
       {
           M_show_pointto = ! M_show_pointto;
+      }
+
+    bool showCard() const
+      {
+          return M_show_card;
+      }
+    void toggleShowCard()
+      {
+          M_show_card = ! M_show_card;
       }
 
     bool showOffsideLine() const

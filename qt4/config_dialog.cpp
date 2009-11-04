@@ -396,6 +396,12 @@ ConfigDialog::createPlayerInfoControls()
         connect( M_pointto_cb, SIGNAL( clicked( bool ) ),
                  this, SLOT( clickShowPointto( bool ) ) );
         layout->addWidget( M_pointto_cb );
+        //
+        M_card_cb = new QCheckBox( tr( "Card" ) );
+        M_card_cb->setChecked( Options::instance().showCard() );
+        connect( M_card_cb, SIGNAL( clicked( bool ) ),
+                 this, SLOT( clickShowCard( bool ) ) );
+        layout->addWidget( M_card_cb );
 
         top_layout->addLayout( layout );
     }
@@ -854,6 +860,7 @@ ConfigDialog::updateAll()
     M_tackle_area_cb->setChecked( opt.showTackleArea() );
     M_kick_accel_area_cb->setChecked( opt.showKickAccelArea() );
     M_pointto_cb->setChecked( opt.showPointto() );
+    M_card_cb->setChecked( opt.showCard() );
 
     M_show_score_board_cb->setChecked( opt.showScoreBoard() );
     M_show_keepaway_area_cb->setChecked( opt.showKeepawayArea() );
@@ -1480,6 +1487,33 @@ ConfigDialog::toggleShowPointto()
 {
     Options::instance().toggleShowPointto();
     M_pointto_cb->setChecked( Options::instance().showPointto() );
+
+    emit configured();
+}
+
+/*-------------------------------------------------------------------*/
+/*!
+
+*/
+void
+ConfigDialog::clickShowCard( bool checked )
+{
+    if ( Options::instance().showCard() != checked )
+    {
+        Options::instance().toggleShowCard();
+        emit configured();
+    }
+}
+
+/*-------------------------------------------------------------------*/
+/*!
+
+*/
+void
+ConfigDialog::toggleShowCard()
+{
+    Options::instance().toggleShowCard();
+    M_card_cb->setChecked( Options::instance().showCard() );
 
     emit configured();
 }

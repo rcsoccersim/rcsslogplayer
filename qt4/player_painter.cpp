@@ -87,13 +87,15 @@ PlayerPainter::PlayerPainter( const MainData & main_data )
     : M_main_data( main_data )
     , M_player_font( "6x13bold", 9, QFont::Bold )
     , M_player_pen( QColor( 0, 0, 0 ), 0, Qt::SolidLine )
-    , M_left_team_pen( QColor( 255, 255, 0 ), 0, Qt::SolidLine )
-    , M_left_team_brush( QColor( 255, 255, 0 ), Qt::SolidPattern )
-    , M_left_goalie_pen( QColor( 0, 255, 0 ), 0, Qt::SolidLine )
-    , M_left_goalie_brush( QColor( 0, 255, 0 ), Qt::SolidPattern )
-    , M_right_team_pen( QColor( 0, 255, 255 ), 0, Qt::SolidLine )
-    , M_right_team_brush( QColor( 0, 255, 255 ), Qt::SolidPattern )
+    , M_left_team_pen( QColor( 255, 215, 0 ), 0, Qt::SolidLine )
+    , M_left_team_brush( QColor( 255, 215, 0 ), Qt::SolidPattern )
+    , M_left_goalie_pen( QColor( 39, 231, 31 ), 0, Qt::SolidLine )
+    , M_left_goalie_stretch_pen( QColor( 39, 231, 31 ), 0, Qt::DotLine )
+    , M_left_goalie_brush( QColor( 39, 231, 31 ), Qt::SolidPattern )
+    , M_right_team_pen( QColor( 0, 224, 224 ), 0, Qt::SolidLine )
+    , M_right_team_brush( QColor( 0, 224, 224 ), Qt::SolidPattern )
     , M_right_goalie_pen( QColor( 255, 153, 255 ), 0, Qt::SolidLine )
+    , M_right_goalie_stretch_pen( QColor( 255, 153, 255 ), 0, Qt::DotLine )
     , M_right_goalie_brush( QColor( 255, 153, 255 ), Qt::SolidPattern )
     , M_player_number_pen( QColor( 255, 255, 255 ), 0, Qt::SolidLine )
     , M_player_number_inner_pen( QColor( 0, 0, 0 ), 0, Qt::SolidLine )
@@ -102,7 +104,7 @@ PlayerPainter::PlayerPainter( const MainData & main_data )
     , M_view_area_pen( QColor( 191, 239, 191 ), 0, Qt::SolidLine )
     , M_large_view_area_pen( QColor( 255, 255, 255 ), 0, Qt::SolidLine )
     , M_ball_collide_brush( QColor( 255, 0, 0 ), Qt::SolidPattern )
-    , M_player_collide_brush( QColor( 105, 185, 255 ), Qt::SolidPattern )
+    , M_player_collide_brush( QColor( 105, 155, 235 ), Qt::SolidPattern )
     , M_kick_pen( QColor( 255, 255, 255 ), 2, Qt::SolidLine )
     , M_kick_fault_brush( QColor( 255, 0, 0 ), Qt::SolidPattern )
     , M_kick_accel_pen( QColor( 0, 255, 0 ), 0, Qt::SolidLine )
@@ -168,6 +170,7 @@ PlayerPainter::readSettings()
     if ( val.isValid() )
     {
         M_left_goalie_pen.setColor( val.toString() );
+        M_left_goalie_stretch_pen.setColor( val.toString() );
         M_left_goalie_brush.setColor( val.toString() );
     }
 
@@ -182,6 +185,7 @@ PlayerPainter::readSettings()
     if ( val.isValid() )
     {
         M_right_goalie_pen.setColor( val.toString() );
+        M_right_goalie_stretch_pen.setColor( val.toString() );
         M_right_goalie_brush.setColor( val.toString() );
     }
 
@@ -190,9 +194,6 @@ PlayerPainter::readSettings()
 
     val = settings.value( "player_number_inner_pen" );
     if ( val.isValid() ) M_player_number_inner_pen.setColor( val.toString() );
-
-//     val = settings.value( "player_stamina_pen" );
-//     if ( val.isValid() ) M_player_stamina_pen.setColor( val.toString() );
 
     val = settings.value( "neck_pen" );
     if ( val.isValid() ) M_neck_pen.setColor( val.toString() );
@@ -650,17 +651,33 @@ PlayerPainter::drawCatchArea( QPainter & painter,
     double catchable_area
         = std::sqrt( std::pow( sparam.catchable_area_w_ * 0.5, 2.0 )
                      + std::pow( sparam.catchable_area_l_, 2.0 ) );
-
     int catchable = opt.scale( catchable_area );
     painter.setPen( ( param.player_.side_ == 'l' )
                     ? M_left_goalie_pen
                     : M_right_goalie_pen );
     painter.setBrush( Qt::NoBrush );
-
     painter.drawEllipse( param.x_ - catchable,
                          param.y_ - catchable,
                          catchable * 2,
                          catchable * 2 );
+
+    double stretch_catchable_area_l
+        = sparam.catchable_area_l_
+        * param.player_type_.catchable_area_l_stretch_;
+    double stretch_area
+        = std::sqrt( std::pow( sparam.catchable_area_w_ * 0.5, 2.0 )
+                     + std::pow( stretch_catchable_area_l, 2.0 ) );
+    int stretch = opt.scale( stretch_area );
+    if ( stretch > catchable )
+    {
+        painter.setPen( ( param.player_.side_ == 'l' )
+                        ? M_left_goalie_stretch_pen
+                        : M_right_goalie_stretch_pen );
+        painter.drawEllipse( param.x_ - stretch,
+                             param.y_ - stretch,
+                             stretch * 2,
+                             stretch * 2 );
+    }
 }
 
 /*-------------------------------------------------------------------*/
@@ -1037,10 +1054,12 @@ void
 PlayerPainter::drawText( QPainter & painter,
                          const PlayerPainter::Param & param ) const
 {
+    const Options & opt = Options::instance();
+
     char main_buf[64];
     std::memset( main_buf, 0, 64 );
 
-    if ( Options::instance().showPlayerNumber() )
+    if ( opt.showPlayerNumber() )
     {
         char buf[8];
         snprintf( buf, 8, "%d", param.player_.unum_ );
@@ -1048,7 +1067,7 @@ PlayerPainter::drawText( QPainter & painter,
     }
 
     if ( param.player_.hasStamina()
-         && Options::instance().showStamina() )
+         && opt.showStamina() )
     {
         char buf[16];
         snprintf( buf, 16, "%4.0f", param.player_.stamina_ );
@@ -1057,13 +1076,13 @@ PlayerPainter::drawText( QPainter & painter,
     }
 
     if ( param.player_.hasStaminaCapacity()
-         && Options::instance().showStaminaCapacity() )
+         && opt.showStaminaCapacity() )
     {
         char buf[16];
         snprintf( buf, 16, "%.0f", param.player_.stamina_capacity_ );
         if ( main_buf[0] != '\0' )
         {
-            if ( Options::instance().showStamina() )
+            if ( opt.showStamina() )
             {
                 std::strcat( main_buf, "/" );
             }
@@ -1075,7 +1094,7 @@ PlayerPainter::drawText( QPainter & painter,
         std::strcat( main_buf, buf );
     }
 
-    if ( Options::instance().showPlayerType() )
+    if ( opt.showPlayerType() )
     {
         char buf[8];
         snprintf( buf, 8, "t%d", param.player_.type_ );
@@ -1083,50 +1102,55 @@ PlayerPainter::drawText( QPainter & painter,
         strcat( main_buf, buf );
     }
 
+    painter.setFont( M_player_font );
+
+    const int text_radius = std::min( 40, param.draw_radius_ );
+    int card_offset = 0;
+
+    if ( opt.showCard()
+         && ( param.player_.hasRedCard()
+              || param.player_.hasYellowCard() ) )
+    {
+        QFontMetrics fm = painter.fontMetrics();
+        int x_size = std::max( 4, fm.ascent() - 2 );
+        int y_size = std::max( 4, fm.ascent() );
+
+        card_offset = x_size + 2;
+
+        if ( opt.antiAliasing() )
+        {
+            painter.setRenderHint( QPainter::Antialiasing, false );
+        }
+        painter.setPen( Qt::black );
+        painter.setBrush( param.player_.hasRedCard()
+                          ? Qt::red
+                          : Qt::yellow );
+        painter.drawRect( param.x_ + text_radius,
+                          param.y_ - y_size,
+                          x_size, y_size );
+        if ( opt.antiAliasing() )
+        {
+            painter.setRenderHint( QPainter::Antialiasing, true );
+        }
+    }
+
     if ( main_buf[0] != '\0' )
     {
-        const int text_radius = std::min( 40, param.draw_radius_ );
-
-        painter.setFont( M_player_font );
-
         //painter.setPen( param.player_.side() == rcss::rcg::LEFT
         //                ? M_left_team_pen
         //                : M_right_team_pen );
 
-        if ( param.player_.hasRedCard() )
+        if ( text_radius < param.draw_radius_ )
         {
-            painter.setPen( Qt::red );
-        }
-        else if ( param.player_.hasYellowCard() )
-        {
-            QFont font = painter.font();
-            font.setBold( true );
-            font.setUnderline( true );
-            painter.setFont( font );
-
-            if ( text_radius < param.draw_radius_ )
-            {
-                painter.setPen( M_player_number_inner_pen );
-            }
-            else
-            {
-                painter.setPen( Qt::yellow );
-            }
+            painter.setPen( M_player_number_inner_pen );
         }
         else
         {
-            if ( text_radius < param.draw_radius_ )
-            {
-                painter.setPen( M_player_number_inner_pen );
-            }
-            else
-            {
-                painter.setPen( M_player_number_pen );
-            }
+            painter.setPen( M_player_number_pen );
         }
 
         painter.setBrush( Qt::NoBrush );
-        painter.drawText( param.x_ + text_radius,
+        painter.drawText( param.x_ + text_radius + card_offset,
                           param.y_,
                           QString::fromAscii( main_buf ) );
         painter.setBackgroundMode( Qt::TransparentMode );

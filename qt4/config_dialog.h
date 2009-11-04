@@ -93,6 +93,7 @@ private:
     QCheckBox * M_tackle_area_cb;
     QCheckBox * M_kick_accel_area_cb;
     QCheckBox * M_pointto_cb;
+    QCheckBox * M_card_cb;
 
     QCheckBox * M_show_offside_line_cb;
     QCheckBox * M_show_draw_info_cb;
@@ -174,6 +175,7 @@ private slots:
     void clickShowTackleArea( bool checked );
     void clickShowKickAccelArea( bool checked );
     void clickShowPointto( bool checked );
+    void clickShowCard( bool checked );
 
     void clickShowScoreBoard( bool checked );
     void clickShowKeepawayArea( bool checked );
@@ -244,6 +246,7 @@ public slots:
     void toggleShowTackleArea();
     void toggleShowKickAccelArea();
     void toggleShowPointto();
+    void toggleShowCard();
 
     void toggleShowOffsideLine();
     void toggleShowDrawInfo();
