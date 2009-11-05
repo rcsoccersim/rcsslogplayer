@@ -648,10 +648,14 @@ PlayerPainter::drawCatchArea( QPainter & painter,
     const Options & opt = Options::instance();
     const rcss::rcg::ServerParamT & sparam = M_main_data.serverParam();
 
-    double catchable_area
+    //
+    // catchable area
+    //
+
+    const double catchable_area
         = std::sqrt( std::pow( sparam.catchable_area_w_ * 0.5, 2.0 )
                      + std::pow( sparam.catchable_area_l_, 2.0 ) );
-    int catchable = opt.scale( catchable_area );
+    const int catchable = opt.scale( catchable_area );
     painter.setPen( ( param.player_.side_ == 'l' )
                     ? M_left_goalie_pen
                     : M_right_goalie_pen );
@@ -661,13 +665,13 @@ PlayerPainter::drawCatchArea( QPainter & painter,
                          catchable * 2,
                          catchable * 2 );
 
-    double stretch_catchable_area_l
+    const double stretch_catchable_area_l
         = sparam.catchable_area_l_
         * param.player_type_.catchable_area_l_stretch_;
-    double stretch_area
+    const double stretch_area
         = std::sqrt( std::pow( sparam.catchable_area_w_ * 0.5, 2.0 )
                      + std::pow( stretch_catchable_area_l, 2.0 ) );
-    int stretch = opt.scale( stretch_area );
+    const int stretch = opt.scale( stretch_area );
     if ( stretch > catchable )
     {
         painter.setPen( ( param.player_.side_ == 'l' )
@@ -678,6 +682,37 @@ PlayerPainter::drawCatchArea( QPainter & painter,
                              stretch * 2,
                              stretch * 2 );
     }
+
+    //
+    // catch probability
+    //
+
+    const double ball_dist = std::sqrt( std::pow( param.player_.x_ - param.ball_.x_, 2 )
+                                        + std::pow( param.player_.y_ - param.ball_.y_, 2 ) );
+    double catch_prob = sparam.catch_probability_;
+    if ( ball_dist > stretch_area )
+    {
+        // catch_prob = 0.0;
+        return;
+    }
+
+    if ( ball_dist > catchable_area )
+    {
+        catch_prob
+            = sparam.catch_probability_
+            - sparam.catch_probability_ * ( ( ball_dist - catchable_area )
+                                            / ( stretch_area - catchable_area ) );
+    }
+
+    int text_radius = std::min( 40, param.draw_radius_ );
+
+    painter.setPen( ( param.player_.side_ == 'l' )
+                    ? M_right_goalie_pen
+                    : M_left_goalie_pen );
+    painter.setFont( M_player_font );
+    painter.drawText( param.x_ + text_radius,
+                      param.y_ + ( 2 + painter.fontMetrics().ascent() ) * 2,
+                      QString( "Catch=%1" ).arg( catch_prob, 0, 'g', 3 ) );
 }
 
 /*-------------------------------------------------------------------*/
@@ -736,11 +771,7 @@ PlayerPainter::drawTackleArea( QPainter & painter,
                           opt.scale( sparam.tackle_width_ * 2.0 ) );
         painter.restore();
 
-        int text_radius = param.draw_radius_;
-        if ( text_radius > 40 )
-        {
-            text_radius = 40;
-        }
+        int text_radius = std::min( 40, param.draw_radius_ );
 
         painter.setFont( M_player_font );
         painter.setPen( M_tackle_pen );
@@ -749,7 +780,7 @@ PlayerPainter::drawTackleArea( QPainter & painter,
              && foul_fail_prob < 1.0 )
         {
             painter.drawText( param.x_ + text_radius,
-                              param.y_ + 4 + painter.fontMetrics().ascent(),
+                              param.y_ + 2 + painter.fontMetrics().ascent(),
                               QString( "T=%1,F=%2" )
                               .arg( 1.0 - tackle_fail_prob, 0, 'g', 3 )
                               .arg( 1.0 - foul_fail_prob, 0, 'g', 3 ) );
@@ -757,14 +788,14 @@ PlayerPainter::drawTackleArea( QPainter & painter,
         else if ( tackle_fail_prob < 1.0 )
         {
             painter.drawText( param.x_ + text_radius,
-                              param.y_ + 4 + painter.fontMetrics().ascent(),
+                              param.y_ + 2 + painter.fontMetrics().ascent(),
                               QString( "Tackle=%1" )
                               .arg( 1.0 - tackle_fail_prob, 0, 'g', 3 ) );
         }
         else if ( foul_fail_prob < 1.0 )
         {
             painter.drawText( param.x_ + text_radius,
-                              param.y_ + 4 + painter.fontMetrics().ascent(),
+                              param.y_ + 2 + painter.fontMetrics().ascent(),
                               QString( "Foul=%1" )
                               .arg( 1.0 - foul_fail_prob, 0, 'g', 3 ) );
         }

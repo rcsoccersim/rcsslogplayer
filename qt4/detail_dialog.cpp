@@ -196,10 +196,22 @@ DetailDialog::createPlayerLabels()
     layout->addWidget( M_player_head, row, 1, Qt::AlignRight );
     ++row;
 
+    layout->addWidget( new QLabel( tr( "CatchProb " ), group_box ),
+                       row, 0, Qt::AlignRight );
+    M_player_catch_prob = new QLabel( tr( "   0.0" ), group_box );
+    layout->addWidget( M_player_catch_prob, row, 1, Qt::AlignRight );
+    ++row;
+
     layout->addWidget( new QLabel( tr( "TackleProb " ), group_box ),
                        row, 0, Qt::AlignRight );
     M_player_tackle_prob = new QLabel( tr( "   0.0" ), group_box );
     layout->addWidget( M_player_tackle_prob, row, 1, Qt::AlignRight );
+    ++row;
+
+    layout->addWidget( new QLabel( tr( "FoulProb " ), group_box ),
+                       row, 0, Qt::AlignRight );
+    M_player_foul_prob = new QLabel( tr( "   0.0" ), group_box );
+    layout->addWidget( M_player_foul_prob, row, 1, Qt::AlignRight );
     ++row;
 
     layout->addWidget( new QLabel( tr( "PointtoPos " ), group_box ),
@@ -398,6 +410,7 @@ DetailDialog::updateLabels()
     }
 
     const int player_index = std::abs( number ) - 1 + ( number > 0 ? 0 : 11 );
+    const rcss::rcg::ServerParamT & SP = M_main_data.serverParam();
     const rcss::rcg::PlayerT & player = disp->show_.player_[player_index];
     const rcss::rcg::PlayerTypeT & player_type = M_main_data.playerType( player.type_ );
 
@@ -475,30 +488,82 @@ DetailDialog::updateLabels()
         M_player_head->setText( tr( "     -" ) );
     }
 
-    // tackle prob
     {
 
         Vector2D player_to_ball( ball.x_ - player.x_,
                                  ball.y_ - player.y_ );
         player_to_ball.rotate( - player.body_ );
 
-        // draw tackle area & probability
+        //
+        // catch prob
+        //
+        if ( player.isGoalie() )
+        {
+            const double catchable_area
+                = std::sqrt( std::pow( SP.catchable_area_w_ * 0.5, 2.0 )
+                             + std::pow( SP.catchable_area_l_, 2.0 ) );
+            const double stretch_area
+                = std::sqrt( std::pow( SP.catchable_area_w_ * 0.5, 2.0 )
+                             + std::pow( SP.catchable_area_l_ * player_type.catchable_area_l_stretch_, 2.0 ) );
+            const double ball_dist = player_to_ball.r();
+
+            double catch_prob = SP.catch_probability_;
+            if ( ball_dist > stretch_area )
+            {
+                catch_prob = 0.0;
+            }
+            else if ( ball_dist > catchable_area )
+            {
+                catch_prob
+                    = SP.catch_probability_
+                    - SP.catch_probability_ * ( ( ball_dist - catchable_area )
+                                                / ( stretch_area - catchable_area ) );
+            }
+
+            snprintf( buf, 64, " %.4f", catch_prob );
+            M_player_catch_prob->setText( QString::fromAscii( buf ) );
+        }
+        else
+        {
+            M_player_catch_prob->setText( QString::number( 0.0 ) );
+        }
+
+        //
+        // tackle prob
+        //
         double tackle_dist = ( player_to_ball.x > 0.0
-                               ? M_main_data.serverParam().tackle_dist_
-                               : M_main_data.serverParam().tackle_back_dist_ );
+                               ? SP.tackle_dist_
+                               : SP.tackle_back_dist_ );
         double tackle_fail_prob = 1.0;
         if ( tackle_dist > 0.0 )
         {
             tackle_fail_prob = ( std::pow( std::fabs( player_to_ball.x ) / tackle_dist,
-                                           M_main_data.serverParam().tackle_exponent_ )
-                                 + std::pow( player_to_ball.absY() / M_main_data.serverParam().tackle_width_,
-                                             M_main_data.serverParam().tackle_exponent_ ) );
+                                           SP.tackle_exponent_ )
+                                 + std::pow( player_to_ball.absY() / SP.tackle_width_,
+                                             SP.tackle_exponent_ ) );
             tackle_fail_prob = std::min( 1.0, tackle_fail_prob );
             tackle_fail_prob = std::max( 0.0, tackle_fail_prob );
         }
 
         snprintf( buf, 64, " %.4f", 1.0 - tackle_fail_prob );
         M_player_tackle_prob->setText( QString::fromAscii( buf ) );
+
+        //
+        // foul prob
+        //
+        double foul_fail_prob = 1.0;
+        if ( tackle_dist > 0.0 )
+        {
+            foul_fail_prob = ( std::pow( std::fabs( player_to_ball.x ) / tackle_dist,
+                                         SP.foul_exponent_ )
+                                 + std::pow( player_to_ball.absY() / SP.tackle_width_,
+                                             SP.foul_exponent_ ) );
+            foul_fail_prob = std::min( std::max( 0.0, foul_fail_prob ), 1.0 );
+        }
+
+        snprintf( buf, 64, " %.4f", 1.0 - foul_fail_prob );
+        M_player_foul_prob->setText( QString::fromAscii( buf ) );
+
     }
 
     // pointto point

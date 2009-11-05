@@ -73,7 +73,9 @@ private:
     QLabel * M_player_body;
     QLabel * M_player_head;
 
+    QLabel * M_player_catch_prob;
     QLabel * M_player_tackle_prob;
+    QLabel * M_player_foul_prob;
 
     QLabel * M_player_pointto_pos;
 
