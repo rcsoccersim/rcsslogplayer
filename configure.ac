@@ -2,7 +2,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ(2.61)
-AC_INIT([RCSSLogPlayer],[13.1.1],[sserver-admin@users.sf.net],[rcsslogplayer])
+AC_INIT([RCSSLogPlayer],[14.0.0],[sserver-admin@users.sf.net],[rcsslogplayer])
 
 #LT_PREREQ(2.2.4)
 

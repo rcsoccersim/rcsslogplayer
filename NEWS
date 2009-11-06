@@ -1,3 +1,14 @@
+[14.0.0]
+  * Supported new features in rcssserver version 14.
+    - yellow/red cards
+    - stretched catchable area
+    - foul success probability
+    - heterogeneous kick power rate
+
+  * Supported QtOpenGL which render the data onto QGLWidget. If the
+    performance of rcsslogplayer is drastically decreased, please try
+    `./configure --disable-gl' to disable QtOpenGL.
+
 [13.1.1]
   * Fixed gcc-4.4 compilation problems. Thanks go to Hedayat Vatankhah
     providing the patch.
