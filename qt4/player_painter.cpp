@@ -93,13 +93,13 @@ PlayerPainter::PlayerPainter( const MainData & main_data )
     , M_left_goalie_stretch_pen( QColor( 39, 231, 31 ), 0, Qt::DotLine )
     , M_left_goalie_brush( QColor( 39, 231, 31 ), Qt::SolidPattern )
     , M_right_team_pen( QColor( 0, 224, 224 ), 0, Qt::SolidLine )
-    , M_right_team_brush( QColor( 0, 224, 224 ), Qt::SolidPattern )
+      //, M_right_team_brush( QColor( 0, 224, 224 ), Qt::SolidPattern )
+    , M_right_team_brush( QColor( 0, 191, 255 ), Qt::SolidPattern )
     , M_right_goalie_pen( QColor( 255, 153, 255 ), 0, Qt::SolidLine )
     , M_right_goalie_stretch_pen( QColor( 255, 153, 255 ), 0, Qt::DotLine )
     , M_right_goalie_brush( QColor( 255, 153, 255 ), Qt::SolidPattern )
     , M_player_number_pen( QColor( 255, 255, 255 ), 0, Qt::SolidLine )
     , M_player_number_inner_pen( QColor( 0, 0, 0 ), 0, Qt::SolidLine )
-      //, M_player_stamina_pen( QColor( 15, 255, 141 ), 0, Qt::SolidLine )
     , M_neck_pen( QColor( 255, 0, 0 ), 0, Qt::SolidLine )
     , M_view_area_pen( QColor( 191, 239, 191 ), 0, Qt::SolidLine )
     , M_large_view_area_pen( QColor( 255, 255, 255 ), 0, Qt::SolidLine )
@@ -698,10 +698,11 @@ PlayerPainter::drawCatchArea( QPainter & painter,
 
     if ( ball_dist > catchable_area )
     {
+        double x = ball_dist * ( stretch_catchable_area_l / stretch_area );
         catch_prob
             = sparam.catch_probability_
-            - sparam.catch_probability_ * ( ( ball_dist - catchable_area )
-                                            / ( stretch_area - catchable_area ) );
+            - sparam.catch_probability_ * ( ( x - sparam.catchable_area_l_ )
+                                            / ( stretch_catchable_area_l - sparam.catchable_area_l_ ) );
     }
 
     int text_radius = std::min( 40, param.draw_radius_ );
@@ -841,7 +842,8 @@ PlayerPainter::drawKickAccelArea( QPainter & painter,
 
     double max_kick_accel
         = sparam.max_power_
-        * sparam.kick_power_rate_
+        //* sparam.kick_power_rate_
+        * param.player_type_.kick_power_rate_
         * ( 1.0 - 0.25 * player_to_ball.th().abs() / 180.0
             - 0.25
             * ( ball_dist - param.player_type_.player_size_ - sparam.ball_size_ )

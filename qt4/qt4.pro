@@ -7,7 +7,7 @@ DEPENDPATH += . ../rcsslogplayer
 
 INCLUDEPATH += . ..
 win32 {
-  INCLUDEPATH +=  ../../boost_1_34_1
+  INCLUDEPATH +=  ../../boost
 }
 unix {
   INCLUDEPATH += /opt/local/include

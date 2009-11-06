@@ -25,15 +25,18 @@ if test $# -eq 1; then
     else
         MON=`which rcssmonitor 2> /dev/null`
         if test $? -eq 1; then
-            MON=`which rcssmonitor_classic 2> /dev/null`
+            MON=`which rcssmonitor_frameview 2> /dev/null`
             if test $? -eq 1; then
-                echo "Error: No monitors can be found in your PATH and the"
-                echo "       RCSSMONITOR environment variable is not set. Please"
-                echo "       add rcssmonitor or rcssmonitor_classic to you PATH,"
-                echo "       or set the RCSSMONITOR environment variable to the"
-                echo "       executable you wish to use."
-                echo ""
-                MON=self
+                MON=`which rcssmonitor_classic 2> /dev/null`
+                if test $? -eq 1; then
+                    echo "Error: No monitors can be found in your PATH and the"
+                    echo "       RCSSMONITOR environment variable is not set. Please"
+                    echo "       add rcssmonitor or rcssmonitor_classic to you PATH,"
+                    echo "       or set the RCSSMONITOR environment variable to the"
+                    echo "       executable you wish to use."
+                    echo ""
+                    MON=self
+                fi
             fi
         fi
     fi
@@ -42,10 +45,18 @@ elif test $# -eq 2; then
         -standalone)
         MON=self
         ;;
-        -frameview)
+        -rcssmonitor)
         MON=`which rcssmonitor 2> /dev/null`
         if test $? -eq 1; then
-            echo "Error: rcssmonitor found in your PATH"
+            echo "Error: rcssmonitor not found in your PATH"
+            echo ""
+            MON=self
+        fi
+        ;;
+        -frameview)
+        MON=`which rcssmonitor_frameview 2> /dev/null`
+        if test $? -eq 1; then
+            echo "Error: rcssmonitor_frameview not found in your PATH"
             echo ""
             MON=self
         fi
@@ -53,7 +64,7 @@ elif test $# -eq 2; then
         -classic)
         MON=`which rcssmonitor_classic 2> /dev/null`
         if test $? -eq 1; then
-            echo "Error: rcssmonitor_classic found in your PATH"
+            echo "Error: rcssmonitor_classic not found in your PATH"
             echo ""
             MON=self
         fi
@@ -63,13 +74,13 @@ elif test $# -eq 2; then
 elif test $# -eq 0; then
     PROG=`basename $0`
     echo "Error: no log file"
-    echo "Usage: $PROG [(-standalone)(-frameview)|(-classic)] <logfile>"
+    echo "Usage: $PROG [(-standalone)(-rcssmonitor)(-frameview)|(-classic)] <logfile>"
     echo ""
     exit 1
 else
     PROG=`basename $0`
     echo "Error: too many options"
-    echo "Usage: $ $PROG [(-standalone)(-frameview)|(-classic)] <logfile>"
+    echo "Usage: $ $PROG [(-standalone)(-rcssmonitor)(-frameview)|(-classic)] <logfile>"
     echo ""
     exit 1
 fi

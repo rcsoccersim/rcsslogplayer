@@ -1056,36 +1056,6 @@ struct LineInfoT {
 };
 
 /*!
-  \struct ServerTypeT
-  \brief player type parameters
- */
-struct PlayerTypeT {
-    int id_;
-    double player_speed_max_;
-    double stamina_inc_max_;
-    double player_decay_;
-    double inertia_moment_;
-    double dash_power_rate_;
-    double player_size_;
-    double kickable_margin_;
-    double kick_rand_;
-    double extra_stamina_;
-    double effort_max_;
-    double effort_min_;
-
-    double kick_power_rate_;
-    double foul_detect_probability_;
-    double catchable_area_l_stretch_;
-
-    PlayerTypeT();
-
-    /*!
-      \brief print s-exp message
-     */
-    std::ostream & print( std::ostream & os ) const;
-};
-
-/*!
   \struct PlayerParamT
   \brief heterogenious player trade-off parameters
  */
@@ -1345,6 +1315,38 @@ struct ServerParamT {
       \brief print s-exp message
      */
     std::ostream & print( std::ostream & os ) const;
+};
+
+/*!
+  \struct PlayerTypeT
+  \brief player type parameters
+ */
+struct PlayerTypeT {
+    int id_;
+    double player_speed_max_;
+    double stamina_inc_max_;
+    double player_decay_;
+    double inertia_moment_;
+    double dash_power_rate_;
+    double player_size_;
+    double kickable_margin_;
+    double kick_rand_;
+    double extra_stamina_;
+    double effort_max_;
+    double effort_min_;
+
+    double kick_power_rate_;
+    double foul_detect_probability_;
+    double catchable_area_l_stretch_;
+
+    PlayerTypeT();
+
+    /*!
+      \brief print s-exp message
+     */
+    std::ostream & print( std::ostream & os ) const;
+
+    static void set_default_param( const ServerParamT & param );
 };
 
 }

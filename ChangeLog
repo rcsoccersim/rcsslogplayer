@@ -1,3 +1,20 @@
+2009-11-06  Hidehisa Akiyama  <akky@users.sourceforge.jp>
+
+	* qt4/detail_dialog.cpp:
+	* qt4/player_painter.cpp:
+	* qt4/player_type_dialog.cpp:
+	* qt4/qt4.pro:
+	- added the information of kick_power_rate and
+	foul_detect_probability to PlayerTypeDialog.
+	- changed default color settings.
+
+	* rcsslogplayer/parser.cpp:
+	* rcsslogplayer/rcsslogplayer.pro:
+	* rcsslogplayer/types.cpp:
+	* rcsslogplayer/types.h:
+	- added a static method to initialize default player type
+	parameters.
+
 2009-11-05  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 
 	* qt4/detail_dialog.cpp:

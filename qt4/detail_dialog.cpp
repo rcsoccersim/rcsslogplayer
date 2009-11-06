@@ -196,33 +196,33 @@ DetailDialog::createPlayerLabels()
     layout->addWidget( M_player_head, row, 1, Qt::AlignRight );
     ++row;
 
-    layout->addWidget( new QLabel( tr( "CatchProb " ), group_box ),
+    layout->addWidget( new QLabel( tr( "CatchProb " ) ),
                        row, 0, Qt::AlignRight );
-    M_player_catch_prob = new QLabel( tr( "   0.0" ), group_box );
+    M_player_catch_prob = new QLabel( tr( "   0.0" ) );
     layout->addWidget( M_player_catch_prob, row, 1, Qt::AlignRight );
     ++row;
 
-    layout->addWidget( new QLabel( tr( "TackleProb " ), group_box ),
+    layout->addWidget( new QLabel( tr( "TackleProb " ) ),
                        row, 0, Qt::AlignRight );
     M_player_tackle_prob = new QLabel( tr( "   0.0" ), group_box );
     layout->addWidget( M_player_tackle_prob, row, 1, Qt::AlignRight );
     ++row;
 
-    layout->addWidget( new QLabel( tr( "FoulProb " ), group_box ),
+    layout->addWidget( new QLabel( tr( "FoulProb " ) ),
                        row, 0, Qt::AlignRight );
-    M_player_foul_prob = new QLabel( tr( "   0.0" ), group_box );
+    M_player_foul_prob = new QLabel( tr( "   0.0" ) );
     layout->addWidget( M_player_foul_prob, row, 1, Qt::AlignRight );
     ++row;
 
-    layout->addWidget( new QLabel( tr( "PointtoPos " ), group_box ),
+    layout->addWidget( new QLabel( tr( "PointtoPos " ) ),
                        row, 0, Qt::AlignRight );
-    M_player_pointto_pos = new QLabel( tr( "      -,      -" ), group_box );
+    M_player_pointto_pos = new QLabel( tr( "      -,      -" ) );
     layout->addWidget( M_player_pointto_pos, row, 1, Qt::AlignRight );
     ++row;
 
-    layout->addWidget( new QLabel( tr( "Focus " ), group_box ),
+    layout->addWidget( new QLabel( tr( "Focus " ) ),
                        row, 0, Qt::AlignRight );
-    M_player_focus_target = new QLabel( tr( "      -,      -" ), group_box );
+    M_player_focus_target = new QLabel( tr( "      -,      -" ) );
     layout->addWidget( M_player_focus_target, row, 1, Qt::AlignRight );
     ++row;
 
@@ -283,21 +283,21 @@ DetailDialog::createPlayerLabels()
     layout->addWidget( M_change_view_count, row, 1, Qt::AlignRight );
     ++row;
 
-    layout->addWidget( new QLabel( tr( "Tackle " ), group_box ),
+    layout->addWidget( new QLabel( tr( "Tackle " ) ),
                        row, 0, Qt::AlignRight );
-    M_tackle_count = new QLabel( tr( "     0" ), group_box );
+    M_tackle_count = new QLabel( tr( "     0" ) );
     layout->addWidget( M_tackle_count, row, 1, Qt::AlignRight );
     ++row;
 
-    layout->addWidget( new QLabel( tr( "Pointto " ), group_box ),
+    layout->addWidget( new QLabel( tr( "Pointto " ) ),
                        row, 0, Qt::AlignRight );
-    M_pointto_count = new QLabel( tr( "     0" ), group_box );
+    M_pointto_count = new QLabel( tr( "     0" ) );
     layout->addWidget( M_pointto_count, row, 1, Qt::AlignRight );
     ++row;
 
-    layout->addWidget( new QLabel( tr( "AttentionTo " ), group_box ),
+    layout->addWidget( new QLabel( tr( "AttentionTo " ) ),
                        row, 0, Qt::AlignRight );
-    M_attentionto_count = new QLabel( tr( "     0" ), group_box );
+    M_attentionto_count = new QLabel( tr( "     0" ) );
     layout->addWidget( M_attentionto_count, row, 1, Qt::AlignRight );
     ++row;
 
@@ -499,12 +499,11 @@ DetailDialog::updateLabels()
         //
         if ( player.isGoalie() )
         {
-            const double catchable_area
-                = std::sqrt( std::pow( SP.catchable_area_w_ * 0.5, 2.0 )
-                             + std::pow( SP.catchable_area_l_, 2.0 ) );
-            const double stretch_area
-                = std::sqrt( std::pow( SP.catchable_area_w_ * 0.5, 2.0 )
-                             + std::pow( SP.catchable_area_l_ * player_type.catchable_area_l_stretch_, 2.0 ) );
+            const double catchable_area = std::sqrt( std::pow( SP.catchable_area_w_ * 0.5, 2 )
+                                                     + std::pow( SP.catchable_area_l_, 2 ) );
+            const double stretch_l = SP.catchable_area_l_ * player_type.catchable_area_l_stretch_;
+            const double stretch_area = std::sqrt( std::pow( SP.catchable_area_w_ * 0.5, 2 )
+                                                   + std::pow( stretch_l, 2 ) );
             const double ball_dist = player_to_ball.r();
 
             double catch_prob = SP.catch_probability_;
@@ -514,10 +513,11 @@ DetailDialog::updateLabels()
             }
             else if ( ball_dist > catchable_area )
             {
+                double x = ball_dist * ( stretch_l / stretch_area );
                 catch_prob
                     = SP.catch_probability_
-                    - SP.catch_probability_ * ( ( ball_dist - catchable_area )
-                                                / ( stretch_area - catchable_area ) );
+                    - SP.catch_probability_ * ( ( x - SP.catchable_area_l_ )
+                                                / ( stretch_l - SP.catchable_area_l_ ) );
             }
 
             snprintf( buf, 64, " %.4f", catch_prob );
@@ -525,7 +525,7 @@ DetailDialog::updateLabels()
         }
         else
         {
-            M_player_catch_prob->setText( QString::number( 0.0 ) );
+            M_player_catch_prob->setText( tr( "0.0000" ) );
         }
 
         //
@@ -535,7 +535,7 @@ DetailDialog::updateLabels()
                                ? SP.tackle_dist_
                                : SP.tackle_back_dist_ );
         double tackle_fail_prob = 1.0;
-        if ( tackle_dist > 0.0 )
+        if ( tackle_dist > 1.0e-5 )
         {
             tackle_fail_prob = ( std::pow( std::fabs( player_to_ball.x ) / tackle_dist,
                                            SP.tackle_exponent_ )
@@ -552,7 +552,7 @@ DetailDialog::updateLabels()
         // foul prob
         //
         double foul_fail_prob = 1.0;
-        if ( tackle_dist > 0.0 )
+        if ( tackle_dist > 1.0e-5 )
         {
             foul_fail_prob = ( std::pow( std::fabs( player_to_ball.x ) / tackle_dist,
                                          SP.foul_exponent_ )

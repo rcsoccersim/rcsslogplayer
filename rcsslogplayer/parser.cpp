@@ -626,6 +626,8 @@ Parser::parseServerParam( std::istream & is )
     ServerParamT new_params;
     convert( params, new_params );
 
+    PlayerTypeT::set_default_param( new_params );
+
     M_handler.handleServerParam( new_params );
     return true;
 }
@@ -1681,6 +1683,7 @@ Parser::parseServerParamLine( const int n_line,
     }
 
     M_handler.handleServerParam( param );
+    PlayerTypeT::set_default_param( param );
 
     return true;
 }

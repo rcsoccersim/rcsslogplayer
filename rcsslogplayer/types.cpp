@@ -67,6 +67,8 @@ print_param< std::string >( std::ostream & os,
     os << '(' << name << " \"" << value << "\")";
 }
 
+static rcss::rcg::PlayerTypeT s_default_type;
+
 }
 
 namespace rcss {
@@ -89,7 +91,23 @@ PlayerTypeT::PlayerTypeT()
       foul_detect_probability_( 0.5 ),
       catchable_area_l_stretch_( 1.0 )
 {
-
+    if ( this != &s_default_type )
+    {
+        player_speed_max_ = s_default_type.player_speed_max_;
+        stamina_inc_max_ = s_default_type.stamina_inc_max_;
+        player_decay_ = s_default_type.player_decay_;
+        inertia_moment_ = s_default_type.inertia_moment_;
+        dash_power_rate_ = s_default_type.dash_power_rate_;
+        player_size_ = s_default_type.player_size_;
+        kickable_margin_ = s_default_type.kickable_margin_;
+        kick_rand_ = s_default_type.kick_rand_;
+        extra_stamina_ = s_default_type.extra_stamina_;
+        effort_max_ = s_default_type.effort_max_;
+        effort_min_ = s_default_type.effort_min_;
+        kick_power_rate_ = s_default_type.kick_power_rate_;
+        foul_detect_probability_ = s_default_type.foul_detect_probability_;
+        catchable_area_l_stretch_ = s_default_type.catchable_area_l_stretch_;
+    }
 }
 
 std::ostream &
@@ -117,6 +135,24 @@ PlayerTypeT::print( std::ostream & os ) const
     return os;
 }
 
+void
+PlayerTypeT::set_default_param( const ServerParamT & param )
+{
+    s_default_type.player_speed_max_ = param.player_speed_max_;
+    s_default_type.stamina_inc_max_ = param.stamina_inc_max_;
+    s_default_type.player_decay_ = param.player_decay_;
+    s_default_type.inertia_moment_ = param.inertia_moment_;
+    s_default_type.dash_power_rate_ = param.dash_power_rate_;
+    s_default_type.player_size_ = param.player_size_;
+    s_default_type.kickable_margin_ = param.kickable_margin_;
+    s_default_type.kick_rand_ = param.kick_rand_;
+    s_default_type.extra_stamina_ = param.extra_stamina_;
+    s_default_type.effort_max_ = param.effort_init_;
+    s_default_type.effort_min_ = param.effort_min_;
+    s_default_type.kick_power_rate_ = param.kick_power_rate_;
+    s_default_type.foul_detect_probability_ = param.foul_detect_probability_;
+    s_default_type.catchable_area_l_stretch_ = 1.0;
+}
 
 PlayerParamT::PlayerParamT()
     : player_types_( 18 ),
