@@ -90,13 +90,13 @@ PlayerPainter::PlayerPainter( const MainData & main_data )
     , M_left_team_pen( QColor( 255, 215, 0 ), 0, Qt::SolidLine )
     , M_left_team_brush( QColor( 255, 215, 0 ), Qt::SolidPattern )
     , M_left_goalie_pen( QColor( 39, 231, 31 ), 0, Qt::SolidLine )
-    , M_left_goalie_stretch_pen( QColor( 39, 231, 31 ), 0, Qt::DotLine )
+    , M_left_goalie_stretch_pen( QColor( 39, 231, 31 ).darker(), 0, Qt::DotLine )
     , M_left_goalie_brush( QColor( 39, 231, 31 ), Qt::SolidPattern )
     , M_right_team_pen( QColor( 0, 224, 224 ), 0, Qt::SolidLine )
       //, M_right_team_brush( QColor( 0, 224, 224 ), Qt::SolidPattern )
     , M_right_team_brush( QColor( 0, 191, 255 ), Qt::SolidPattern )
     , M_right_goalie_pen( QColor( 255, 153, 255 ), 0, Qt::SolidLine )
-    , M_right_goalie_stretch_pen( QColor( 255, 153, 255 ), 0, Qt::DotLine )
+    , M_right_goalie_stretch_pen( QColor( 255, 153, 255 ).darker(), 0, Qt::DotLine )
     , M_right_goalie_brush( QColor( 255, 153, 255 ), Qt::SolidPattern )
     , M_player_number_pen( QColor( 255, 255, 255 ), 0, Qt::SolidLine )
     , M_player_number_inner_pen( QColor( 0, 0, 0 ), 0, Qt::SolidLine )
@@ -170,8 +170,13 @@ PlayerPainter::readSettings()
     if ( val.isValid() )
     {
         M_left_goalie_pen.setColor( val.toString() );
-        M_left_goalie_stretch_pen.setColor( val.toString() );
         M_left_goalie_brush.setColor( val.toString() );
+    }
+
+    val = settings.value( "left_goalie_unreliable_catch" );
+    if ( val.isValid() )
+    {
+        M_left_goalie_stretch_pen.setColor( val.toString() );
     }
 
     val = settings.value( "right_team" );
@@ -185,8 +190,13 @@ PlayerPainter::readSettings()
     if ( val.isValid() )
     {
         M_right_goalie_pen.setColor( val.toString() );
-        M_right_goalie_stretch_pen.setColor( val.toString() );
         M_right_goalie_brush.setColor( val.toString() );
+    }
+
+    val = settings.value( "right_goalie_unreliable_catch" );
+    if ( val.isValid() )
+    {
+        M_right_goalie_stretch_pen.setColor( val.toString() );
     }
 
     val = settings.value( "player_number_pen" );
@@ -259,8 +269,10 @@ PlayerPainter::writeSettings()
     settings.setValue( "player_pen", M_player_pen.color().name() );
     settings.setValue( "left_team", M_left_team_pen.color().name() );
     settings.setValue( "left_goalie", M_left_goalie_brush.color().name() );
+    settings.setValue( "left_goalie_unreliable_catch", M_left_goalie_stretch_pen.color().name() );
     settings.setValue( "right_team", M_right_team_pen.color().name() );
     settings.setValue( "right_goalie", M_right_goalie_brush.color().name() );
+    settings.setValue( "right_goalie_unreliable_catch", M_right_goalie_stretch_pen.color().name() );
 
     settings.setValue( "player_number_pen", M_player_number_pen.color().name() );
     settings.setValue( "player_number_inner_pen", M_player_number_inner_pen.color().name() );
@@ -646,15 +658,15 @@ PlayerPainter::drawCatchArea( QPainter & painter,
     // goalie's catchable area
     //
     const Options & opt = Options::instance();
-    const rcss::rcg::ServerParamT & sparam = M_main_data.serverParam();
+    const rcss::rcg::ServerParamT & SP = M_main_data.serverParam();
 
     //
     // catchable area
     //
 
     const double catchable_area
-        = std::sqrt( std::pow( sparam.catchable_area_w_ * 0.5, 2.0 )
-                     + std::pow( sparam.catchable_area_l_, 2.0 ) );
+        = std::sqrt( std::pow( SP.catchable_area_w_ * 0.5, 2.0 )
+                     + std::pow( SP.catchable_area_l_, 2.0 ) );
     const int catchable = opt.scale( catchable_area );
     painter.setPen( ( param.player_.side_ == 'l' )
                     ? M_left_goalie_pen
@@ -665,31 +677,44 @@ PlayerPainter::drawCatchArea( QPainter & painter,
                          catchable * 2,
                          catchable * 2 );
 
-    const double stretch_catchable_area_l
-        = sparam.catchable_area_l_
+    const double max_catchable_area_l
+        = SP.catchable_area_l_
         * param.player_type_.catchable_area_l_stretch_;
-    const double stretch_area
-        = std::sqrt( std::pow( sparam.catchable_area_w_ * 0.5, 2.0 )
-                     + std::pow( stretch_catchable_area_l, 2.0 ) );
-    const int stretch = opt.scale( stretch_area );
-    if ( stretch > catchable )
+    const double max_area
+        = std::sqrt( std::pow( SP.catchable_area_w_ * 0.5, 2.0 )
+                     + std::pow( max_catchable_area_l, 2.0 ) );
+    const int max_r = opt.scale( max_area );
+    if ( max_r > catchable )
     {
         painter.setPen( ( param.player_.side_ == 'l' )
                         ? M_left_goalie_stretch_pen
                         : M_right_goalie_stretch_pen );
-        painter.drawEllipse( param.x_ - stretch,
-                             param.y_ - stretch,
-                             stretch * 2,
-                             stretch * 2 );
+        painter.drawEllipse( param.x_ - max_r,
+                             param.y_ - max_r,
+                             max_r * 2,
+                             max_r * 2 );
+
+        const double min_catchable_area_l
+            = SP.catchable_area_l_
+            * ( 1.0 - ( param.player_type_.catchable_area_l_stretch_ - 1.0 ) );
+        const double min_area
+            = std::sqrt( std::pow( SP.catchable_area_w_ * 0.5, 2.0 )
+                         + std::pow( min_catchable_area_l, 2.0 ) );
+        const int min_r = opt.scale( min_area );
+        painter.drawEllipse( param.x_ - min_r,
+                             param.y_ - min_r,
+                             min_r * 2,
+                             min_r * 2 );
     }
 
+#if 0
     //
     // catch probability
     //
 
     const double ball_dist = std::sqrt( std::pow( param.player_.x_ - param.ball_.x_, 2 )
                                         + std::pow( param.player_.y_ - param.ball_.y_, 2 ) );
-    double catch_prob = sparam.catch_probability_;
+    double catch_prob = SP.catch_probability_;
     if ( ball_dist > stretch_area )
     {
         // catch_prob = 0.0;
@@ -700,9 +725,9 @@ PlayerPainter::drawCatchArea( QPainter & painter,
     {
         double x = ball_dist * ( stretch_catchable_area_l / stretch_area );
         catch_prob
-            = sparam.catch_probability_
-            - sparam.catch_probability_ * ( ( x - sparam.catchable_area_l_ )
-                                            / ( stretch_catchable_area_l - sparam.catchable_area_l_ ) );
+            = SP.catch_probability_
+            - SP.catch_probability_ * ( ( x - SP.catchable_area_l_ )
+                                            / ( stretch_catchable_area_l - SP.catchable_area_l_ ) );
     }
 
     int text_radius = std::min( 40, param.draw_radius_ );
@@ -714,6 +739,7 @@ PlayerPainter::drawCatchArea( QPainter & painter,
     painter.drawText( param.x_ + text_radius,
                       param.y_ + ( 2 + painter.fontMetrics().ascent() ) * 2,
                       QString( "Catch=%1" ).arg( catch_prob, 0, 'g', 3 ) );
+#endif
 }
 
 /*-------------------------------------------------------------------*/
@@ -729,7 +755,7 @@ PlayerPainter::drawTackleArea( QPainter & painter,
     //
 
     const Options & opt = Options::instance();
-    const rcss::rcg::ServerParamT & sparam = M_main_data.serverParam();
+    const rcss::rcg::ServerParamT & SP = M_main_data.serverParam();
 
     Vector2D ppos( param.player_.x_,
                    param.player_.y_ );
@@ -740,21 +766,21 @@ PlayerPainter::drawTackleArea( QPainter & painter,
     player_to_ball.rotate( - param.player_.body_ );
 
     double tackle_dist = ( player_to_ball.x > 0.0
-                           ? sparam.tackle_dist_
-                           : sparam.tackle_back_dist_ );
+                           ? SP.tackle_dist_
+                           : SP.tackle_back_dist_ );
     if ( tackle_dist < 1.0e-5 )
     {
         return;
     }
 
     double tackle_fail_prob = ( std::pow( player_to_ball.absX() / tackle_dist,
-                                          sparam.tackle_exponent_ )
-                                + std::pow( player_to_ball.absY() / sparam.tackle_width_,
-                                            sparam.tackle_exponent_ ) );
+                                          SP.tackle_exponent_ )
+                                + std::pow( player_to_ball.absY() / SP.tackle_width_,
+                                            SP.tackle_exponent_ ) );
     double foul_fail_prob = ( std::pow( player_to_ball.absX() / tackle_dist,
-                                        sparam.foul_exponent_ )
-                              + std::pow( player_to_ball.absY() / sparam.tackle_width_,
-                                          sparam.foul_exponent_ ) );
+                                        SP.foul_exponent_ )
+                              + std::pow( player_to_ball.absY() / SP.tackle_width_,
+                                          SP.foul_exponent_ ) );
 
     if ( tackle_fail_prob < 1.0
          || foul_fail_prob < 1.0 )
@@ -766,10 +792,10 @@ PlayerPainter::drawTackleArea( QPainter & painter,
         painter.setPen( M_tackle_pen );
         painter.setBrush( Qt::NoBrush );
 
-        painter.drawRect( opt.scale( - sparam.tackle_back_dist_ ),
-                          opt.scale( - sparam.tackle_width_ ),
-                          opt.scale( sparam.tackle_dist_ + sparam.tackle_back_dist_ ),
-                          opt.scale( sparam.tackle_width_ * 2.0 ) );
+        painter.drawRect( opt.scale( - SP.tackle_back_dist_ ),
+                          opt.scale( - SP.tackle_width_ ),
+                          opt.scale( SP.tackle_dist_ + SP.tackle_back_dist_ ),
+                          opt.scale( SP.tackle_width_ * 2.0 ) );
         painter.restore();
 
         int text_radius = std::min( 40, param.draw_radius_ );
@@ -821,7 +847,7 @@ PlayerPainter::drawKickAccelArea( QPainter & painter,
     }
 
     const Options & opt = Options::instance();
-    const rcss::rcg::ServerParamT & sparam = M_main_data.serverParam();
+    const rcss::rcg::ServerParamT & SP = M_main_data.serverParam();
 
     Vector2D ppos( param.player_.x_,
                    param.player_.y_ );
@@ -835,23 +861,23 @@ PlayerPainter::drawKickAccelArea( QPainter & painter,
 
     if ( ball_dist > ( param.player_type_.player_size_
                        + param.player_type_.kickable_margin_
-                       + sparam.ball_size_ ) )
+                       + SP.ball_size_ ) )
     {
         return;
     }
 
     double max_kick_accel
-        = sparam.max_power_
-        //* sparam.kick_power_rate_
+        = SP.max_power_
+        //* SP.kick_power_rate_
         * param.player_type_.kick_power_rate_
         * ( 1.0 - 0.25 * player_to_ball.th().abs() / 180.0
             - 0.25
-            * ( ball_dist - param.player_type_.player_size_ - sparam.ball_size_ )
+            * ( ball_dist - param.player_type_.player_size_ - SP.ball_size_ )
             / param.player_type_.kickable_margin_ );
 
-    if ( max_kick_accel > sparam.ball_accel_max_ )
+    if ( max_kick_accel > SP.ball_accel_max_ )
     {
-        max_kick_accel = sparam.ball_accel_max_;
+        max_kick_accel = SP.ball_accel_max_;
     }
 
     Vector2D bnext( bpos.x + param.ball_.vx_,
@@ -861,7 +887,7 @@ PlayerPainter::drawKickAccelArea( QPainter & painter,
                         opt.screenY( bpos.y ) );
     QPoint bnext_screen( opt.screenX( bnext.x ),
                          opt.screenY( bnext.y ) );
-    int max_speed_screen = opt.scale( sparam.ball_speed_max_ );
+    int max_speed_screen = opt.scale( SP.ball_speed_max_ );
     int max_kick_accel_screen = opt.scale( max_kick_accel );
 
     painter.setPen( M_kick_accel_pen );
@@ -870,7 +896,7 @@ PlayerPainter::drawKickAccelArea( QPainter & painter,
     // draw no noise ball move line
     painter.drawLine( bpos_screen, bnext_screen );
 
-    Circle2D max_speed_circle( bpos, sparam.ball_speed_max_ );
+    Circle2D max_speed_circle( bpos, SP.ball_speed_max_ );
     Circle2D max_accel_circle( bnext, max_kick_accel );
     Vector2D intersection_1, intersection_2;
 

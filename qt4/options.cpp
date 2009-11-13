@@ -488,7 +488,7 @@ Options::parseCmdLine( int argc,
           "show team graphic." )
         ( "show-draw-info",
           po::value< bool >( &M_show_draw_info )->default_value( true, "on" ),
-          "show team graphic." )
+          "show team draw information." )
         ( "show-ball",
           po::value< bool >( &M_show_ball )->default_value( true, "on" ),
           "show ball." )
