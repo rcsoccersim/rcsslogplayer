@@ -275,7 +275,7 @@ DispHolder::addDispInfo2( const rcss::rcg::dispinfo_t2 & disp )
     case rcss::rcg::PARAM_MODE:
         {
             rcss::rcg::ServerParamT new_params;
-            convert( disp.body.sparams, new_params );
+            rcss::rcg::convert( disp.body.sparams, new_params );
 
             doHandleServerParam( new_params );
         }
@@ -283,7 +283,7 @@ DispHolder::addDispInfo2( const rcss::rcg::dispinfo_t2 & disp )
     case rcss::rcg::PPARAM_MODE:
         {
             rcss::rcg::PlayerParamT new_params;
-            convert( disp.body.pparams, new_params );
+            rcss::rcg::convert( disp.body.pparams, new_params );
 
             doHandlePlayerParam( new_params );
         }

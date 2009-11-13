@@ -1,3 +1,18 @@
+2009-11-13  Hidehisa Akiyama  <akky@users.sourceforge.jp>
+
+        * NEWS:
+        * configure.ac:
+        * qt4/qt4.pro:
+        - updated point version. Official release 14.0.1.
+
+	* qt4/detail_dialog.cpp:
+	* qt4/detail_dialog.h:
+	* qt4/disp_holder.cpp:
+	* qt4/options.cpp:
+	* qt4/player_painter.cpp:
+	* qt4/player_type_dialog.cpp:
+	- fixed catch model.
+
 2009-11-06  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 
 	* NEWS:

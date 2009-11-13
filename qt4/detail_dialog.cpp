@@ -196,11 +196,11 @@ DetailDialog::createPlayerLabels()
     layout->addWidget( M_player_head, row, 1, Qt::AlignRight );
     ++row;
 
-    layout->addWidget( new QLabel( tr( "CatchProb " ) ),
-                       row, 0, Qt::AlignRight );
-    M_player_catch_prob = new QLabel( tr( "   0.0" ) );
-    layout->addWidget( M_player_catch_prob, row, 1, Qt::AlignRight );
-    ++row;
+//     layout->addWidget( new QLabel( tr( "CatchProb " ) ),
+//                        row, 0, Qt::AlignRight );
+//     M_player_catch_prob = new QLabel( tr( "   0.0" ) );
+//     layout->addWidget( M_player_catch_prob, row, 1, Qt::AlignRight );
+//     ++row;
 
     layout->addWidget( new QLabel( tr( "TackleProb " ) ),
                        row, 0, Qt::AlignRight );
@@ -494,6 +494,7 @@ DetailDialog::updateLabels()
                                  ball.y_ - player.y_ );
         player_to_ball.rotate( - player.body_ );
 
+#if 0
         //
         // catch prob
         //
@@ -527,6 +528,7 @@ DetailDialog::updateLabels()
         {
             M_player_catch_prob->setText( tr( "0.0000" ) );
         }
+#endif
 
         //
         // tackle prob
