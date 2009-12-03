@@ -18,8 +18,8 @@
 
 [13.1.0]
   * Added a new command, 'rcgconvert', that can convert any version of
-    rcg files. rcg3to4 and rcg4to3 has been removed from arelease
-	package.
+    rcg files. rcg3to4 and rcg4to3 has been removed from a release
+    package.
 
 [13.0.1]
   * Fixed build problems on some platforms.
