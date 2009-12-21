@@ -3,7 +3,7 @@ TEMPLATE = subdirs
 SUBDIRS = rcsslogplayer qt4
 
 # Input
-DISPFILES += \
+DISTFILES += \
              icons/blank.xpm \
              icons/ff.xpm \
              icons/go.xpm \
