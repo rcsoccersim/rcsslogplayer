@@ -1,3 +1,13 @@
+[15.0.0]
+  * Supported new parameters of rcssserver-15.0.0.
+
+  * Disabled QtOpenGL by default.
+
+  * Disabled the classic logplayer. Now, the distribution package does
+    not contain the code of classic logplayer.
+
+[14.1.0]
+
 [14.0.1]
   * Added minimum catch range information.
 

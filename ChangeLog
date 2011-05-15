@@ -1,5 +1,15 @@
 2011-05-15  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 
+	* configure.ac:
+	* NEWS:
+	- updated a major version number. Official release 15.0.0.
+
+	* rcsslogplayer/Makefile.am:
+	- updated a library major version number.
+
+	* qt4/main.cpp:
+	- updated a copyright message.
+
 	* Makefile.am:
 	* configure.ac:
 	* qt4/Makefile.am:

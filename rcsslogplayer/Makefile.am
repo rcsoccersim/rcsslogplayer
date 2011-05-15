@@ -16,7 +16,7 @@ librcssrcgparserinclude_HEADERS = \
 	util.h \
 	types.h
 
-librcssrcgparser_la_LDFLAGS = -version-info 2:0:0
+librcssrcgparser_la_LDFLAGS = -version-info 3:0:0
 
 pkgdata_DATA =
 
