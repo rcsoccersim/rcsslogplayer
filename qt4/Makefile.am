@@ -1,13 +1,8 @@
 ## Process this file with automake to produce Makefile.in
 
-if BUILD_QT4
-BUILD_PROGS = rcsslogplayer
-BUILD_SCRPTS = rcsslogplay
-endif
+bin_PROGRAMS = rcsslogplayer
 
-bin_PROGRAMS = $(BUILD_PROGS)
-
-bin_SCRIPTS = $(BUILD_SCRPTS)
+# bin_SCRIPTS = rcsslogplay
 
 rcsslogplayer_SOURCES = \
 	angle_deg.cpp \

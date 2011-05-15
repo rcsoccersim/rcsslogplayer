@@ -1,3 +1,15 @@
+2011-05-15  Hidehisa Akiyama  <akky@users.sourceforge.jp>
+
+	* Makefile.am:
+	* configure.ac:
+	* qt4/Makefile.am:
+	* rcsslogplayer/parser.cpp:
+	* rcsslogplayer/types.cpp:
+	* rcsslogplayer/types.h:
+	- supported a new parameter of rcssserver-15
+	- disabled classic logplayer.
+	- disabled glwidget by default.
+
 2010-04-23  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 
 	* m4/ax_boost_base.m4:
