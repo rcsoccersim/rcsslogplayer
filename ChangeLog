@@ -1,3 +1,12 @@
+2012-05-23  Hidehisa Akiyama  <akky@users.sourceforge.jp>
+
+	* m4/ax_boost_base.m4:
+	* m4/ax_boost_program_options.m4:
+	- updated autoconf macro
+
+	* qt4/image_save_dialog.cpp:
+	- fixed a compiler warning
+
 2011-08-31  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 
 	* qt4/main.cpp:

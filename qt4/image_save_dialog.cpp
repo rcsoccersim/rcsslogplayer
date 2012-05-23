@@ -465,7 +465,6 @@ ImageSaveDialog::saveImage( const int start_cycle,
 
     QString file_ext = tr( "." ) + format;
 
-    const QSize size = M_field_canvas->size();
     QImage image( M_field_canvas->size(), QImage::Format_RGB32 );
 
     std::cerr << "Saved image resolution = "
