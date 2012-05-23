@@ -2,7 +2,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ(2.61)
-AC_INIT([rcsslogplayer],[15.0.0],[sserver-admin@users.sf.net],[rcsslogplayer])
+AC_INIT([rcsslogplayer],[15.1.0],[sserver-admin@users.sf.net],[rcsslogplayer])
 
 #LT_PREREQ(2.2.4)
 
@@ -95,7 +95,7 @@ QT4MODULES="QtCore QtGui QtNetwork"
 
 AC_ARG_ENABLE(gl,
               AC_HELP_STRING([--enable-gl],
-                             [enable GLWidget for Qt4 (default yes)]))
+                             [enable GLWidget for Qt4 (default no)]))
 if test "x$enable_gl" == "xyes"; then
   AC_MSG_NOTICE(enabled QtOpenGL)
   CFLAGS="-DUSE_GLWIDGET $CFLAGS"
