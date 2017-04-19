@@ -1,3 +1,12 @@
+2017-04-19  Hidehisa Akiyama  <akky@users.sourceforge.jp>
+
+	* NEWS:
+	* configure.ac:
+	- updated a point version number. Official release 15.2.1.
+
+	* m4/qt.m4:
+	- fix a defect of Qt detection on Ubuntu 16.04.
+
 2016-09-19  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 
 	* NEWS:
