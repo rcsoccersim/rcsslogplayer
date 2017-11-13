@@ -275,7 +275,7 @@ convert( const pos_t & from,
                  : side == RIGHT ? 'r'
                  : 'n' );
     to.unum_ = ntohs( from.unum );
-    to.body_ = static_cast< float >( ntohs( from.angle ) );
+    to.body_ = static_cast< float >( static_cast< Int16 >( ntohs( from.angle ) ) );
     to.x_ = nstohf( from.x );
     to.y_ = nstohf( from.y );
 }
