@@ -34,7 +34,13 @@
 #include <config.h>
 #endif
 
+#include <QtGlobal>
+
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
+#include <QtWidgets>
+#else
 #include <QtGui>
+#endif
 
 #include "main_window.h"
 
@@ -1351,7 +1357,7 @@ MainWindow::openRCG( const QString & file_path )
     {
         name.replace( 125, name.length() - 125, tr( "..." ) );
     }
-    this->setWindowTitle( name + tr( " - "PACKAGE_NAME ) );
+    this->setWindowTitle( name + tr( " - " ) + tr( PACKAGE_NAME ) );
     this->statusBar()->showMessage( name );
 
     createMonitorServer();
@@ -1924,7 +1930,7 @@ MainWindow::showConfigDialog()
 void
 MainWindow::about()
 {
-    QString msg( tr( PACKAGE_NAME"-"VERSION"\n\n" ) );
+    QString msg( tr( PACKAGE_NAME ) + tr( "-" ) + tr( VERSION ) + tr( "\n\n" ) );
     msg += tr( "The RoboCup Soccer Simulator LogPlayer (rcsslogplayer) is a game log replay tool\n"
                "for the RoboCup Soccer Siulator Server (rcssserver).\n"
                "\n"
@@ -1935,7 +1941,7 @@ MainWindow::about()
                "  <sserver-admin@lists.sourceforgenet>" );
 
     QMessageBox::about( this,
-                        tr( "About "PACKAGE_NAME ),
+                        tr( "About " ) + tr( PACKAGE_NAME ),
                         msg );
 
     // from Qt 4.1 documents
@@ -1971,7 +1977,11 @@ MainWindow::printShortcutKeys()
     table_widget->setHorizontalHeaderLabels( header );
 
     table_widget->horizontalHeader()->setStretchLastSection( true );
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
+    table_widget->horizontalHeader()->setSectionResizeMode( QHeaderView::ResizeToContents );
+#else
     table_widget->horizontalHeader()->setResizeMode( QHeaderView::ResizeToContents );
+#endif
     table_widget->verticalHeader()->hide();
 
     int row = 0;
@@ -2086,7 +2096,7 @@ MainWindow::updatePositionLabel( const QPoint & point )
                   "(%.2f, %.2f)",
                   x, y );
 
-        M_position_label->setText( QString::fromAscii( buf ) );
+        M_position_label->setText( QString::fromLatin1( buf ) );
     }
 }
 

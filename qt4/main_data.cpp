@@ -34,7 +34,13 @@
 #include <config.h>
 #endif
 
+#include <QtGlobal>
+
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
+#include <QtWidgets>
+#else
 #include <QtGui>
+#endif
 
 #include "main_data.h"
 
@@ -110,9 +116,9 @@ MainData::openRCG( const QString & file_path,
                    QWidget * parent )
 {
 #ifdef HAVE_LIBZ
-    rcss::gzifstream fin( file_path.toAscii() );
+    rcss::gzifstream fin( file_path.toLatin1() );
 #else
-    std::ifstream fin( file_path.toAscii() );
+    std::ifstream fin( file_path.toLatin1() );
 #endif
 
     if ( ! fin )
@@ -200,7 +206,7 @@ MainData::openOutputFile( const QString & file_path )
         return false;
     }
 
-    M_out = new std::ofstream( file_path.toAscii(),
+    M_out = new std::ofstream( file_path.toLatin1(),
                                std::ios_base::out
                                | std::ios_base::trunc
                                | std::ios_base::binary );

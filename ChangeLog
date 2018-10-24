@@ -1,3 +1,24 @@
+2018-10-24  Hidehisa Akiyama  <akky@users.sourceforge.jp>
+
+	* qt4/ball_painter.cpp:
+        * qt4/config_dialog.cpp:
+        * qt4/detail_dialog.cpp:
+        * qt4/draw_info_painter.cpp:
+        * qt4/field_canvas.cpp:
+        * qt4/field_painter.cpp:
+        * qt4/image_save_dialog.cpp:
+        * qt4/log_player_tool_bar.cpp:
+        * qt4/log_slider_tool_bar.cpp:
+        * qt4/main_data.cpp:
+        * qt4/main_window.cpp:
+        * qt4/monitor_client.cpp:
+        * qt4/player_painter.cpp:
+        * qt4/player_type_dialog.cpp:
+        * qt4/qt4.pro:
+        * qt4/score_board_painter.cpp:
+        * qt4/team_graphic_painter.cpp:
+        - support Qt5.
+
 2017-11-13  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 
 	* rcsslogplayer/util.cpp:

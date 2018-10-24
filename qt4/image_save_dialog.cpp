@@ -34,7 +34,13 @@
 #include <config.h>
 #endif
 
+#include <QtGlobal>
+
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
+#include <QtWidgets>
+#else
 #include <QtGui>
+#endif
 
 #include "image_save_dialog.h"
 
@@ -492,7 +498,7 @@ ImageSaveDialog::saveImage( const int start_cycle,
         snprintf( count, 16, "%05d", i );
 
         QString file_path_all = file_path;
-        file_path_all += QString::fromAscii( count );
+        file_path_all += QString::fromLatin1( count );
         file_path_all += file_ext;
 
         if ( confirm
@@ -535,7 +541,7 @@ ImageSaveDialog::saveImage( const int start_cycle,
         M_main_data.setIndex( i );
         M_field_canvas->draw( painter );
 
-        if ( ! image.save( file_path_all, format.toAscii() ) )
+        if ( ! image.save( file_path_all, format.toLatin1() ) )
         {
             QMessageBox::critical( this,
                                    tr( "Error" ),
